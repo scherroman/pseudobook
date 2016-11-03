@@ -123,7 +123,6 @@ INSERT INTO `Comment` (`postID`,`commentDate`,`content`,`authorID`,`authorType`)
 (8,"2016-02-18 14:06:00","Proin sed turpis nec mauris blandit mattis. Cras eget nisi dictum augue malesuada malesuada. Integer id magna et",4,1),
 (2,"2017-10-29 23:42:01","dui, nec tempus mauris erat eget ipsum. Suspendisse sagittis. Nullam vitae diam. Proin dolor. Nulla semper",1,2);
 
-
 INSERT INTO `Likes` (`parentID`,`authorID`,`authorType`,`contentType`) VALUES 
 (3,8,2,1),
 (5,2,1,1),
@@ -157,7 +156,6 @@ INSERT INTO `Employee` (`userID`,`SSN`,`startDate`,`hourlyRate`) VALUES
 (28,"2945130705","2016-01-06 11:41:28","69031.90"),
 (29,"2704582201","2016-07-18 22:25:51","71612.95"),
 (30,"3216455044","2017-02-13 20:07:26","70397.06");
-
 
 INSERT INTO `Manager` (`userID`) VALUES 
 (21),
