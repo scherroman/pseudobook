@@ -1,43 +1,43 @@
 use pseudobook;
 
 -- basic users
-INSERT INTO `User` (`firstName`,`lastName`,`address`,`city`,`state`,`zipCode`,`telephone`,`email`,`accountCreationDate`,`creditCardNumber`,`rating`) VALUES 
-("Josiah","Gates","248-6520 Magnis St.","Orlando","FL","28336","8327315523","ac.libero.nec@loremsit.edu","2016-12-14 12:12:41","4716405529576",5),
-("Zephania","Gray","Ap #990-9718 Vel Rd.","Augusta","GA","33283","6107022041","et.netus.et@egestasDuis.co.uk","2016-02-29 12:20:08","4716149412642",4),
-("Ashton","Lindsay","P.O. Box 637, 6381 A Street","Reno","NV","19345","1728795170","est.Nunc@eget.edu","2017-10-23 03:25:22","4556057662108794",6),
-("Moses","Kramer","P.O. Box 401, 8296 Sed Av.","Broken Arrow","OK","87908","3383163057","Vestibulum.ante.ipsum@CrasinterdumNunc.net","2016-11-14 19:41:49","4024007154800857",3),
-("Marvin","Maxwell","3728 Morbi St.","Anchorage","AK","99814","6219386969","eu.placerat@eudui.net","2016-04-18 15:41:34","4556912579437",6),
-("Herman","Travis","753-1179 Velit. St.","Kansas City","KS","44248","6426316904","Donec@In.org","2016-04-26 15:53:13","4871863128922",7),
-("Keaton","Gonzales","Ap #251-2398 Mi Road","Covington","KY","53329","3851212078","ullamcorper@Quisquetincidunt.ca","2017-01-19 13:37:32","4716800514798065",9),
-("Declan","Mason","7456 Faucibus. Rd.","Helena","MT","62434","5991876157","Sed.neque@laciniaSedcongue.net","2017-03-09 07:31:52","4485111876719",5),
-("Ronan","Price","9856 Semper Rd.","Tallahassee","FL","53485","2722917145","orci.sem@nequeNullamnisl.co.uk","2017-07-04 00:37:58","4556885598512857",8),
-("Cadman","Pickett","P.O. Box 827, 1764 Mi, Rd.","Annapolis","MD","75550","7862533351","mi.lorem.vehicula@Quisquenonummyipsum.net","2016-08-18 01:46:59","4602244800941",10);
+INSERT INTO `User` (`firstName`,`lastName`,`address`,`city`,`state`,`zipCode`,`telephone`,`email`,`accountCreationDate`,`rating`) VALUES 
+("Josiah","Gates","248-6520 Magnis St.","Orlando","FL","28336","8327315523","ac.libero.nec@loremsit.edu","2016-12-14 12:12:41",5),
+("Zephania","Gray","Ap #990-9718 Vel Rd.","Augusta","GA","33283","6107022041","et.netus.et@egestasDuis.co.uk","2016-02-29 12:20:08",4),
+("Ashton","Lindsay","P.O. Box 637, 6381 A Street","Reno","NV","19345","1728795170","est.Nunc@eget.edu","2017-10-23 03:25:22",6),
+("Moses","Kramer","P.O. Box 401, 8296 Sed Av.","Broken Arrow","OK","87908","3383163057","Vestibulum.ante.ipsum@CrasinterdumNunc.net","2016-11-14 19:41:49",3),
+("Marvin","Maxwell","3728 Morbi St.","Anchorage","AK","99814","6219386969","eu.placerat@eudui.net","2016-04-18 15:41:34",6),
+("Herman","Travis","753-1179 Velit. St.","Kansas City","KS","44248","6426316904","Donec@In.org","2016-04-26 15:53:13",7),
+("Keaton","Gonzales","Ap #251-2398 Mi Road","Covington","KY","53329","3851212078","ullamcorper@Quisquetincidunt.ca","2017-03-09 07:31:52",9),
+("Declan","Mason","7456 Faucibus. Rd.","Helena","MT","62434","5991876157","Sed.neque@laciniaSedcongue.net","2017-07-04 00:37:58",5),
+("Ronan","Price","9856 Semper Rd.","Tallahassee","FL","53485","2722917145","orci.sem@nequeNullamnisl.co.uk","2017-03-09 07:31:52",8),
+("Cadman","Pickett","P.O. Box 827, 1764 Mi, Rd.","Annapolis","MD","75550","7862533351","mi.lorem.vehicula@Quisquenonummyipsum.net","2016-08-18 01:46:59",10);
 
 -- employees
-INSERT INTO `User` (`firstName`,`lastName`,`address`,`city`,`state`,`zipCode`,`telephone`,`email`,`accountCreationDate`,`creditCardNumber`,`rating`) VALUES 
-("Eagan","Gonzales","Ap #832-124 Congue. Av.","Newark","DE","65262","4891622153","blandit@tinciduntnunc.org","2016-02-02 15:32:08","4716021683398690",6),
-("Isaiah","Davenport","P.O. Box 940, 9262 Vivamus St.","Akron","OH","59377","1419120980","et.commodo@molestiedapibusligula.co.uk","2017-09-16 15:06:17","4087485848565470",1),
-("Allen","Downs","P.O. Box 783, 257 Dolor Av.","Allentown","PA","70853","2085231126","bibendum.ullamcorper.Duis@Fusce.org","2016-08-15 09:53:52","4556160229651",7),
-("Nasim","Clements","Ap #172-9187 Fermentum Street","San Antonio","TX","94962","6118249796","Duis@morbi.com","2017-03-25 03:48:39","4916648275052802",5),
-("Judah","Huber","643-5477 Erat Rd.","Milwaukee","WI","48599","7276568237","Suspendisse.sagittis@Fusce.edu","2016-11-04 11:03:18","4024007112911",7),
-("Fuller","Alvarado","P.O. Box 663, 961 Massa. Street","Lincoln","NE","89159","5967529391","felis@sed.com","2017-05-05 12:18:25","4024007176204823",9),
-("Steel","Preston","3481 Ac Avenue","Casper","WY","25780","2112086271","pharetra.felis@sodales.edu","2017-08-16 06:05:53","4556349311730635",9),
-("Ashton","Howard","Ap #608-3479 Ipsum St.","Joliet","IL","71690","3501380905","aliquet.magna@Donecporttitortellus.edu","2017-03-04 04:43:21","4485094998688",9),
-("Basil","Pratt","377-3384 Augue Rd.","Sacramento","CA","95572","2506102243","venenatis@etrutrumeu.edu","2017-03-10 02:42:14","4916848837467",1),
-("Baker","Acosta","312-6667 Ut Rd.","Memphis","TN","20964","5493645759","posuere.cubilia@auctor.org","2016-08-22 08:41:56","4024007138619522",4);
+INSERT INTO `User` (`firstName`,`lastName`,`address`,`city`,`state`,`zipCode`,`telephone`,`email`,`accountCreationDate`,`rating`) VALUES 
+("Eagan","Gonzales","Ap #832-124 Congue. Av.","Newark","DE","65262","4891622153","blandit@tinciduntnunc.org","2016-02-02 15:32:08",6),
+("Isaiah","Davenport","P.O. Box 940, 9262 Vivamus St.","Akron","OH","59377","1419120980","et.commodo@molestiedapibusligula.co.uk","2017-09-16 15:06:17",1),
+("Allen","Downs","P.O. Box 783, 257 Dolor Av.","Allentown","PA","70853","2085231126","bibendum.ullamcorper.Duis@Fusce.org","2016-08-15 09:53:52",7),
+("Nasim","Clements","Ap #172-9187 Fermentum Street","San Antonio","TX","94962","6118249796","Duis@morbi.com","2017-03-25 03:48:39",5),
+("Judah","Huber","643-5477 Erat Rd.","Milwaukee","WI","48599","7276568237","Suspendisse.sagittis@Fusce.edu","2016-11-04 11:03:18",7),
+("Fuller","Alvarado","P.O. Box 663, 961 Massa. Street","Lincoln","NE","89159","5967529391","felis@sed.com","2017-05-05 12:18:25",9),
+("Steel","Preston","3481 Ac Avenue","Casper","WY","25780","2112086271","pharetra.felis@sodales.edu","2017-08-16 06:05:53",9),
+("Ashton","Howard","Ap #608-3479 Ipsum St.","Joliet","IL","71690","3501380905","aliquet.magna@Donecporttitortellus.edu","2017-03-04 04:43:21",9),
+("Basil","Pratt","377-3384 Augue Rd.","Sacramento","CA","95572","2506102243","venenatis@etrutrumeu.edu","2017-03-10 02:42:14",1),
+("Baker","Acosta","312-6667 Ut Rd.","Memphis","TN","20964","5493645759","posuere.cubilia@auctor.org","2016-08-22 08:41:56",4);
 
 -- managers
-INSERT INTO `User` (`firstName`,`lastName`,`address`,`city`,`state`,`zipCode`,`telephone`,`email`,`accountCreationDate`,`creditCardNumber`,`rating`) VALUES 
-("Castor","Strong","P.O. Box 638, 6301 Fusce Rd.","Metairie","LA","20439","2922388657","Cras.convallis@adipiscing.org","2016-01-06 08:30:29","4539026290273",9),
-("Cade","Trujillo","P.O. Box 226, 5580 Tellus. Road","Cambridge","MA","10314","3584156207","aliquam.eros@Namconsequatdolor.ca","2017-04-14 13:53:56","4539997641485981",1),
-("Quamar","Calderon","Ap #990-3883 Fringilla St.","Kapolei","HI","65485","5648060076","orci.consectetuer.euismod@sagittisNullamvitae.com","2015-12-06 06:56:59","4916488814040",2),
-("Lars","Calderon","673-6222 Ac Av.","Little Rock","AR","71935","3466122632","parturient.montes.nascetur@sitamet.ca","2017-03-29 15:00:26","4485737446630983",8),
-("Anthony","Clarke","P.O. Box 584, 9061 Et Rd.","Wichita","KS","41366","3187504830","placerat.augue.Sed@laoreetipsum.co.uk","2015-12-02 19:36:09","4916076180598",3),
-("Fletcher","Small","P.O. Box 986, 4303 Eu Ave","West Jordan","UT","52371","5859441394","id.erat.Etiam@ipsumnonarcu.ca","2016-12-09 21:07:22","4532407733011",5),
-("Felix","Hendrix","467-838 Eu, Ave","Tacoma","WA","23613","3871428435","rutrum@temporlorem.com","2017-07-12 01:47:42","4539515385287",5),
-("Kermit","Lindsey","9039 Quisque Street","San Jose","CA","91770","8602088130","euismod.ac@felis.co.uk","2017-05-30 04:15:50","4485798139498",9),
-("Joshua","Harrison","Ap #896-7302 Nonummy Avenue","Chattanooga","TN","84295","3719453840","libero@a.co.uk","2017-10-01 22:17:03","4716009434033",3),
-("Carlos","Mack","Ap #753-5282 Amet, St.","Annapolis","MD","60247","5498361463","laoreet.libero@arcuAliquamultrices.co.uk","2016-11-05 08:15:01","4485938380762",5);
+INSERT INTO `User` (`firstName`,`lastName`,`address`,`city`,`state`,`zipCode`,`telephone`,`email`,`accountCreationDate`,`rating`) VALUES 
+("Castor","Strong","P.O. Box 638, 6301 Fusce Rd.","Metairie","LA","20439","2922388657","Cras.convallis@adipiscing.org","2016-01-06 08:30:29",9),
+("Cade","Trujillo","P.O. Box 226, 5580 Tellus. Road","Cambridge","MA","10314","3584156207","aliquam.eros@Namconsequatdolor.ca","2017-04-14 13:53:56",1),
+("Quamar","Calderon","Ap #990-3883 Fringilla St.","Kapolei","HI","65485","5648060076","orci.consectetuer.euismod@sagittisNullamvitae.com","2015-12-06 06:56:59",2),
+("Lars","Calderon","673-6222 Ac Av.","Little Rock","AR","71935","3466122632","parturient.montes.nascetur@sitamet.ca","2017-03-29 15:00:26",8),
+("Anthony","Clarke","P.O. Box 584, 9061 Et Rd.","Wichita","KS","41366","3187504830","placerat.augue.Sed@laoreetipsum.co.uk","2015-12-02 19:36:09",3),
+("Fletcher","Small","P.O. Box 986, 4303 Eu Ave","West Jordan","UT","52371","5859441394","id.erat.Etiam@ipsumnonarcu.ca","2016-12-09 21:07:22",5),
+("Felix","Hendrix","467-838 Eu, Ave","Tacoma","WA","23613","3871428435","rutrum@temporlorem.com","2017-07-12 01:47:42",5),
+("Kermit","Lindsey","9039 Quisque Street","San Jose","CA","91770","8602088130","euismod.ac@felis.co.uk","2017-05-30 04:15:50",9),
+("Joshua","Harrison","Ap #896-7302 Nonummy Avenue","Chattanooga","TN","84295","3719453840","libero@a.co.uk","2017-10-01 22:17:03",3),
+("Carlos","Mack","Ap #753-5282 Amet, St.","Annapolis","MD","60247","5498361463","laoreet.libero@arcuAliquamultrices.co.uk","2016-11-05 08:15:01",5);
 
 INSERT INTO `Messages` (`fromID`,`toID`,`subject`,`content`) VALUES 
 (2,1,"Nulla interdum. Curabitur","lobortis quam a felis ullamcorper viverra. Maecenas iaculis aliquet diam."),
@@ -62,6 +62,43 @@ INSERT INTO `Preferences` (`userID`,`preferenceType`,`preferenceVal`) VALUES
 (8,"erat","Cum"),
 (6,"sem","Nam"),
 (2,"convallis","pellentesque");
+
+INSERT INTO `UserAccounts` (`userID`,`creditCardNumber`) VALUES
+(1,"4716405529576"),
+(2,"4716149412642"),
+(3,"4556057662108794"),
+(4,"4024007154800857"),
+(5,"4556912579437"),
+(6,"4871863128922"),
+(7,"4716800514798065"),
+(8,"4485111876719"),
+(9,"4556885598512857"),
+(10,"4602244800941"),
+
+-- employees
+(11,"4716021683398690"),
+(12,"4087485848565470"),
+(13,"4556160229651"),
+(14,"4916648275052802"),
+(15,"4024007112911"),
+(16,"4024007176204823"),
+(17,"4556349311730635"),
+(18,"4485094998688"),
+(19,"4916848837467"),
+(20,"4024007138619522"),
+
+-- managers
+(21,"4539026290273"),
+(22,"4539997641485981"),
+(23,"4916488814040"),
+(24,"4485737446630983"),
+(25,"4916076180598"),
+(26,"4532407733011"),
+(27,"4539515385287"),
+(28,"4485798139498"),
+(29,"4716009434033"),
+(30,"4485938380762");
+
 
 INSERT INTO `Group` (`groupName`,`groupType`,`ownerID`) VALUES 
 ("Mi Enim Condimentum Associates",6,9),
@@ -193,17 +230,17 @@ INSERT INTO `Advertisement` (`employeeID`,`adType`,`datePosted`,`company`,`itemN
 (11,5,"2016-10-13 01:49:58","Quam Vel PC","ac tellus. Suspendisse","cursus purus. Nullam scelerisque neque sed sem egestas blandit. Nam nulla magna, malesuada","35.16",66),
 (19,7,"2017-02-10 02:47:17","Orci LLP","diam nunc, ullamcorper","laoreet, libero et tristique pellentesque, tellus sem mollis dui, in sodales elit erat vitae risus. Duis a mi fringilla","12.11",57);
 
-INSERT INTO `Sales` (`adID`,`buyerId`,`transactionDateTime`,`numberOfUnits`) VALUES 
-(7,5,"2015-12-19 02:39:56",4),
-(2,4,"2016-10-16 12:28:14",5),
-(10,8,"2017-10-13 15:32:56",1),
-(9,7,"2016-02-03 21:06:32",3),
-(7,1,"2016-09-03 00:51:59",5),
-(7,10,"2016-06-11 03:04:05",2),
-(4,7,"2017-09-05 12:14:44",5),
-(6,8,"2017-07-10 07:09:59",3),
-(10,1,"2016-03-04 07:41:37",2),
-(5,9,"2015-12-18 06:12:07",2);
+INSERT INTO `Sales` (`adID`,`buyerId`,`transactionDateTime`,`numberOfUnits`,`approved`) VALUES 
+(7,5,"2015-12-19 02:39:56",4,0),
+(2,4,"2016-10-16 12:28:14",5,0),
+(10,8,"2017-10-13 15:32:56",1,0),
+(9,7,"2016-02-03 21:06:32",3,0),
+(7,1,"2016-09-03 00:51:59",5,0),
+(7,10,"2016-06-11 03:04:05",2,0),
+(4,7,"2017-09-05 12:14:44",5,0),
+(6,8,"2017-07-10 07:09:59",3,0),
+(10,1,"2016-03-04 07:41:37",2,0),
+(5,9,"2015-12-18 06:12:07",2,0);
 
 
 

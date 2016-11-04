@@ -13,7 +13,6 @@ CREATE TABLE `User` (
     telephone CHAR(10),
     email VARCHAR(60),
     accountCreationDate DATETIME,
-    creditCardNumber VARCHAR(16),
     rating INTEGER,
     PRIMARY KEY (userID)
 );
@@ -36,6 +35,13 @@ CREATE TABLE Preferences (
     PRIMARY KEY (userID , preferenceType),
     FOREIGN KEY (userID)
         REFERENCES `User` (userID)
+);
+CREATE TABLE UserAccounts (
+	userID INTEGER NOT NULL,
+    creditCardNumber VARCHAR(16),
+    PRIMARY KEY (userID, creditCardNumber),
+    FOREIGN KEY (userID)
+		REFERENCES `User` (userID)
 );
 CREATE TABLE `Group` (
     groupID INTEGER NOT NULL AUTO_INCREMENT,
@@ -156,9 +162,10 @@ CREATE TABLE Sales (
     buyerId INTEGER,
     transactionDateTime DATETIME,
     numberOfUnits INTEGER,
+    approved TINYINT(1),
     PRIMARY KEY (transactionID),
     FOREIGN KEY (adID)
         REFERENCES Advertisement (adID),
     FOREIGN KEY (buyerID)
-        REFERENCES User (userID)
+        REFERENCES UserAccounts (userID)
 );
