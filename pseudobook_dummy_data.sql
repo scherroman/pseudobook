@@ -63,41 +63,42 @@ INSERT INTO `Preferences` (`userID`,`preferenceType`,`preferenceVal`) VALUES
 (6,"sem","Nam"),
 (2,"convallis","pellentesque");
 
-INSERT INTO `UserAccounts` (`userID`,`creditCardNumber`) VALUES
-(1,"4716405529576"),
-(2,"4716149412642"),
-(3,"4556057662108794"),
-(4,"4024007154800857"),
-(5,"4556912579437"),
-(6,"4871863128922"),
-(7,"4716800514798065"),
-(8,"4485111876719"),
-(9,"4556885598512857"),
-(10,"4602244800941"),
+INSERT INTO `UserAccounts` (`userID`,`accountNumber`,`creditCardNumber`) VALUES
+(1,1,"4716405529576"),
+(1,2,"4716954302679"),
+(2,1,"4716149412642"),
+(3,1,"4556057662108794"),
+(4,1,"4024007154800857"),
+(5,1,"4556912579437"),
+(6,1,"4871863128922"),
+(7,1,"4716800514798065"),
+(8,1,"4485111876719"),
+(9,1,"4556885598512857"),
+(10,1,"4602244800941"),
 
 -- employees
-(11,"4716021683398690"),
-(12,"4087485848565470"),
-(13,"4556160229651"),
-(14,"4916648275052802"),
-(15,"4024007112911"),
-(16,"4024007176204823"),
-(17,"4556349311730635"),
-(18,"4485094998688"),
-(19,"4916848837467"),
-(20,"4024007138619522"),
+(11,1,"4716021683398690"),
+(12,1,"4087485848565470"),
+(13,1,"4556160229651"),
+(14,1,"4916648275052802"),
+(15,1,"4024007112911"),
+(16,1,"4024007176204823"),
+(17,1,"4556349311730635"),
+(18,1,"4485094998688"),
+(19,1,"4916848837467"),
+(20,1,"4024007138619522"),
 
 -- managers
-(21,"4539026290273"),
-(22,"4539997641485981"),
-(23,"4916488814040"),
-(24,"4485737446630983"),
-(25,"4916076180598"),
-(26,"4532407733011"),
-(27,"4539515385287"),
-(28,"4485798139498"),
-(29,"4716009434033"),
-(30,"4485938380762");
+(21,1,"4539026290273"),
+(22,1,"4539997641485981"),
+(23,1,"4916488814040"),
+(24,1,"4485737446630983"),
+(25,1,"4916076180598"),
+(26,1,"4532407733011"),
+(27,1,"4539515385287"),
+(28,1,"4485798139498"),
+(29,1,"4716009434033"),
+(30,1,"4485938380762");
 
 
 INSERT INTO `Group` (`groupName`,`groupType`,`ownerID`) VALUES 
@@ -228,19 +229,21 @@ INSERT INTO `Advertisement` (`employeeID`,`adType`,`datePosted`,`company`,`itemN
 (13,3,"2016-02-20 00:17:21","Nec Cursus Incorporated","Phasellus dapibus quam","urna. Vivamus molestie dapibus ligula. Aliquam erat volutpat. Nulla dignissim. Maecenas ornare egestas ligula. Nullam feugiat placerat velit. Quisque varius.","53.82",10),
 (18,3,"2017-09-28 01:17:05","Et Magnis Dis Inc.","habitant morbi tristique","tellus. Suspendisse sed dolor. Fusce mi lorem, vehicula et, rutrum","5.28",54),
 (11,5,"2016-10-13 01:49:58","Quam Vel PC","ac tellus. Suspendisse","cursus purus. Nullam scelerisque neque sed sem egestas blandit. Nam nulla magna, malesuada","35.16",66),
-(19,7,"2017-02-10 02:47:17","Orci LLP","diam nunc, ullamcorper","laoreet, libero et tristique pellentesque, tellus sem mollis dui, in sodales elit erat vitae risus. Duis a mi fringilla","12.11",57);
+(19,7,"2017-02-10 02:47:17","Orci LLP","diam nunc, ullamcorper","laoreet, libero et tristique pellentesque, tellus sem mollis dui, in sodales elit erat vitae risus. Duis a mi fringilla","12.11",57),
+(20,4,"2016-03-11 01:48:16","Orci LLP","diam nunc, ullamcorper 2: bigger and better","laoreet, libero et tristique pellentesque, tellus sem mollis dui, in sodales elit erat vitae risus. Duis a mi fringilla","102.11",34);
 
-INSERT INTO `Sales` (`adID`,`buyerId`,`transactionDateTime`,`numberOfUnits`,`approved`) VALUES 
-(7,5,"2015-12-19 02:39:56",4,0),
-(2,4,"2016-10-16 12:28:14",5,0),
-(10,8,"2017-10-13 15:32:56",1,0),
-(9,7,"2016-02-03 21:06:32",3,0),
-(7,1,"2016-09-03 00:51:59",5,0),
-(7,10,"2016-06-11 03:04:05",2,0),
-(4,7,"2017-09-05 12:14:44",5,0),
-(6,8,"2017-07-10 07:09:59",3,0),
-(10,1,"2016-03-04 07:41:37",2,0),
-(5,9,"2015-12-18 06:12:07",2,0);
+
+INSERT INTO `Sales` (`adID`,`buyerId`,`buyerAccount`,`transactionDateTime`,`numberOfUnits`,`approved`) VALUES 
+(7,5,1,"2015-12-19 02:39:56",4,0),
+(2,4,1,"2016-10-16 12:28:14",5,0),
+(10,8,1,"2017-10-13 15:32:56",1,0),
+(9,7,1,"2016-02-03 21:06:32",3,0),
+(7,1,1,"2016-09-03 00:51:59",5,0),
+(7,10,1,"2016-06-11 03:04:05",2,0),
+(4,7,1,"2017-09-05 12:14:44",5,0),
+(6,8,1,"2017-07-10 07:09:59",3,0),
+(10,1,2,"2016-03-04 07:41:37",2,0),
+(5,9,1,"2015-12-18 06:12:07",2,0);
 
 
 

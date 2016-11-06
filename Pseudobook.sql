@@ -38,8 +38,9 @@ CREATE TABLE Preferences (
 );
 CREATE TABLE UserAccounts (
 	userID INTEGER NOT NULL,
+    accountNumber INTEGER NOT NULL,
     creditCardNumber VARCHAR(16),
-    PRIMARY KEY (userID, creditCardNumber),
+    PRIMARY KEY (userID, accountNumber),
     FOREIGN KEY (userID)
 		REFERENCES `User` (userID)
 );
@@ -160,12 +161,13 @@ CREATE TABLE Sales (
     transactionID INTEGER NOT NULL AUTO_INCREMENT,
     adID INTEGER NOT NULL,
     buyerId INTEGER,
+    buyerAccount INTEGER,
     transactionDateTime DATETIME,
     numberOfUnits INTEGER,
     approved TINYINT(1),
     PRIMARY KEY (transactionID),
     FOREIGN KEY (adID)
         REFERENCES Advertisement (adID),
-    FOREIGN KEY (buyerID)
-        REFERENCES UserAccounts (userID)
+    FOREIGN KEY (buyerID, buyerAccount)
+        REFERENCES UserAccounts (userID, accountNumber)
 );
