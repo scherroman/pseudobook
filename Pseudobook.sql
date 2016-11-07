@@ -20,7 +20,7 @@ CREATE TABLE Messages (
     messageID INTEGER NOT NULL AUTO_INCREMENT,
     fromID INTEGER,
     toID INTEGER,
-    subject CHAR(100),
+    `subject` CHAR(100),
     content TEXT,
     PRIMARY KEY (messageID),
     FOREIGN KEY (fromID)
@@ -37,12 +37,12 @@ CREATE TABLE Preferences (
         REFERENCES `User` (userID)
 );
 CREATE TABLE UserAccounts (
-	userID INTEGER NOT NULL,
+    userID INTEGER NOT NULL,
     accountNumber INTEGER NOT NULL,
     creditCardNumber VARCHAR(16),
-    PRIMARY KEY (userID, accountNumber),
+    PRIMARY KEY (userID , accountNumber),
     FOREIGN KEY (userID)
-		REFERENCES `User` (userID)
+        REFERENCES `User` (userID)
 );
 CREATE TABLE `Group` (
     groupID INTEGER NOT NULL AUTO_INCREMENT,
@@ -58,7 +58,8 @@ CREATE TABLE GroupUsers (
     userID INTEGER NOT NULL,
     PRIMARY KEY (groupID , userID),
     FOREIGN KEY (groupID)
-        REFERENCES `Group` (groupID),
+        REFERENCES `Group` (groupID)
+        ON DELETE CASCADE,
     FOREIGN KEY (userID)
         REFERENCES `User` (userID)
 );
@@ -75,11 +76,10 @@ CREATE TABLE `Page` (
 );
 CREATE TABLE Post (
     postID INTEGER NOT NULL AUTO_INCREMENT,
-    pageID INTEGER,
+    pageID INTEGER NOT NULL,
     postDate DATETIME,
     postContent VARCHAR(140),
-    commentCount INTEGER,
-    authorID INTEGER,
+    authorID INTEGER NOT NULL,
     authorType CHAR(2),
     PRIMARY KEY (postID),
     FOREIGN KEY (pageID)
@@ -88,6 +88,7 @@ CREATE TABLE Post (
         REFERENCES `User` (userID),
     FOREIGN KEY (authorID)
         REFERENCES `Group` (groupID)
+        ON DELETE CASCADE
 );
 CREATE TABLE `Comment` (
     commentID INTEGER NOT NULL AUTO_INCREMENT,
@@ -98,11 +99,13 @@ CREATE TABLE `Comment` (
     authorType CHAR(2),
     PRIMARY KEY (commentID),
     FOREIGN KEY (postID)
-        REFERENCES Post (postID),
+        REFERENCES Post (postID)
+        ON DELETE CASCADE,
     FOREIGN KEY (authorID)
         REFERENCES `User` (userID),
     FOREIGN KEY (authorID)
         REFERENCES `Group` (groupID)
+        ON DELETE CASCADE
 );
 CREATE TABLE Likes (
     parentID INTEGER NOT NULL,
@@ -111,13 +114,16 @@ CREATE TABLE Likes (
     contentType CHAR(2) NOT NULL,
     PRIMARY KEY (parentID , authorId),
     FOREIGN KEY (parentID)
-        REFERENCES Post (postID),
+        REFERENCES Post (postID)
+        ON DELETE CASCADE,
     FOREIGN KEY (parentID)
-        REFERENCES `Comment` (commentID),
+        REFERENCES `Comment` (commentID)
+        ON DELETE CASCADE,
     FOREIGN KEY (authorID)
         REFERENCES `User` (userID),
     FOREIGN KEY (authorID)
         REFERENCES `Group` (groupID)
+        ON DELETE CASCADE
 );
 CREATE TABLE Employee (
     userID INTEGER NOT NULL,
@@ -168,6 +174,6 @@ CREATE TABLE Sales (
     PRIMARY KEY (transactionID),
     FOREIGN KEY (adID)
         REFERENCES Advertisement (adID),
-    FOREIGN KEY (buyerID, buyerAccount)
-        REFERENCES UserAccounts (userID, accountNumber)
+    FOREIGN KEY (buyerID , buyerAccount)
+        REFERENCES UserAccounts (userID , accountNumber)
 );
