@@ -15,7 +15,7 @@
 DROP VIEW SalesReport;
 
 CREATE VIEW SalesReport AS
-SELECT A.itemName AS ItemName, A.adType AS ItemType, A.adID AS ItemID, A.company AS Company, A.unitPrice AS Price, CONCAT(E.firstName,' ',E.lastName) AS CustomerRepName, E.userID AS CustomerRepID, CONCAT(B.firstName,' ',B.lastName) AS CustomerName, B.userID AS CustomerID, S.buyerAccount AS CustomerAccountNumber, S.numberOfUnits AS UnitsSold, S.transactionDateTime AS TransactionDateTime
+SELECT A.itemName AS ItemName, A.adType AS ItemType, A.adID AS ItemID, A.company AS Company, A.unitPrice AS Price, CONCAT(E.firstName,' ',E.lastName) AS CustomerRepName, E.userID AS CustomerRepID, CONCAT(B.firstName,' ',B.lastName) AS CustomerName, B.userID AS CustomerID, B.email AS CustomerEmail, S.buyerAccount AS CustomerAccountNumber, S.numberOfUnits AS UnitsSold, S.transactionDateTime AS TransactionDateTime
 FROM Sales S
 JOIN Advertisement A ON S.adID = A.adID
 JOIN `User` E ON A.employeeID = E.userID
