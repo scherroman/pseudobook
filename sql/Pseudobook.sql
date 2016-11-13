@@ -96,7 +96,7 @@ CREATE TABLE `Comment` (
     postID INTEGER,
     commentDate DATETIME,
     content VARCHAR(140),
-    authorID INTEGER,
+    authorID INTEGER NOT NULL,
     authorType CHAR(2),
     PRIMARY KEY (commentID),
     FOREIGN KEY (postID)
