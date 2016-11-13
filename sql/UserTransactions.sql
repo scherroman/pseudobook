@@ -29,8 +29,12 @@ CREATE PROCEDURE postToPage(
     authorType CHAR(2)
 )
 BEGIN
-	INSERT INTO Post (pageID, postDate, postContent, authorID, authorType)
-    VALUES (pageID, postDate, postContent, authorID, authorType);
+	DECLARE ownID INTEGER;
+	SELECT ownerID into ownID FROM `Page` WHERE (pageID = `Page`.pageID);
+    IF(ownID = authorID) THEN
+		INSERT INTO Post (pageID, postDate, postContent, authorID, authorType)
+		VALUES (pageID, postDate, postContent, authorID, authorType);
+    END IF;
 END$
 
 CREATE PROCEDURE sendMessage(
@@ -45,11 +49,18 @@ BEGIN
 END$
 
 CREATE PROCEDURE deleteMessage(
+	selfID INTEGER,
 	messageID INTEGER
 )
 BEGIN
-	DELETE FROM Messages
-    WHERE messageID = Messages.messageID;
+	DECLARE frID INTEGER;
+    DECLARE tID INTEGER;
+	SELECT fromID into frID FROM Messages WHERE (messageID = Messages.messageID);
+    SELECT toID into tID FROM Messages WHERE (messageID = Messages.messageID);
+    IF(selfID = frID OR tID = selfID) THEN
+		DELETE FROM Messages
+		WHERE messageID = Messages.messageID;
+	END IF;
 END$
 
 CREATE PROCEDURE createGroup(
@@ -64,6 +75,8 @@ BEGIN
     SELECT last_insert_id() into lastID;
     INSERT INTO `Page` (ownerID, postCount, pageType)
     VALUES (lastID, 0, "gr");
+    INSERT INTO GroupUsers (groupID, userID)
+    VALUES (lastID, ownerID);
 END$
 
 CREATE PROCEDURE searchForUser(
@@ -77,13 +90,33 @@ BEGIN
     WHERE ((firstName = `User`.firstName AND lastName = `User`.lastName) OR userID = `User`.userID);
 END$
 
-CREATE PROCEDURE addUserToGroup(
-	groupID INTEGER,
+CREATE PROCEDURE addUserToOwnGroup(
+	selfID INTEGER,
+    groupID INTEGER,
     userID INTEGER
 )
 BEGIN
-	INSERT INTO GroupUsers (groupID, userID)
-    VALUES (groupID, userID);
+	IF (SELECT 1 FROM `Group` WHERE (selfID = `Group`.ownerID AND groupID = `Group`.groupID)) THEN
+		INSERT INTO GroupUsers (groupID, userID)
+		VALUES (groupID, userID);
+	END IF;
+END$
+
+CREATE PROCEDURE makePost(
+	selfID INTEGER,
+	pageID INTEGER,
+    postDate DATETIME,
+    postContent VARCHAR(140),
+    authorID INTEGER,
+    authorType CHAR(2)
+)
+BEGIN
+    DECLARE ownID INTEGER;
+    SELECT ownerID into ownID FROM `Page` WHERE (pageID = `Page`.pageID) LIMIT 1;
+	IF (SELECT 1 FROM GroupUsers WHERE (selfID = GroupUsers.userID AND ownID = GroupUsers.groupID)) THEN
+		INSERT INTO Post (pageID, postDate, postContent, authorID, authorType)
+		VALUES (pageID, postDate, postContent, authorID, authorType);
+	END IF;
 END$
 
 CREATE PROCEDURE makeComment(
@@ -92,10 +125,18 @@ CREATE PROCEDURE makeComment(
     content VARCHAR(140),
     authorID INTEGER,
     authorType CHAR(2)
-)
+) -- (1, now(), "blah", 6, "us");
 BEGIN
-	INSERT INTO makeComment(postID, commentDate, content, authorID, authorType)
-    VALUES (postID, commentDate, content, authorID, authorType);
+	DECLARE pgID INTEGER;
+    DECLARE ownID INTEGER;
+    DECLARE userExistsInGroup TINYINT;
+    SELECT pageID into pgID FROM Post WHERE (postID = Post.postID) LIMIT 1;
+    SELECT ownerID into ownID FROM `Page` WHERE (pageID = `Page`.pageID) LIMIT 1;
+    SELECT 1 into userExistsInGroup FROM GroupUsers WHERE (authorID = GroupUsers.userID AND ownID = GroupUsers.groupID) LIMIT 1;
+	IF (userExistsInGroup != 0) THEN
+		INSERT INTO `Comment`(postID, commentDate, content, authorID, authorType)
+		VALUES (postID, commentDate, content, authorID, authorType);
+    END IF;
 END$
 
 CREATE PROCEDURE `like`(
@@ -114,8 +155,10 @@ CREATE PROCEDURE removeUserFromGroup(
     userID INTEGER
 )
 BEGIN
-	DELETE FROM GroupUsers
-    WHERE (groupID = GroupUsers.groupID AND userID = GroupUsers.userID);
+	IF (SELECT 1 FROM `Group` WHERE (selfID = `Group`.ownerID AND groupID = `Group`.groupID)) THEN
+		DELETE FROM GroupUsers
+		WHERE (groupID = GroupUsers.groupID AND userID = GroupUsers.userID);
+	END IF;
 END$
 
 CREATE PROCEDURE unlike(
@@ -128,55 +171,62 @@ BEGIN
 END$
 
 CREATE PROCEDURE removeComment(
+	authorID INTEGER,
 	commentID INTEGER
 )
 BEGIN
 	DELETE FROM `Comment`
-    WHERE commentID = `Comment`.commentID;
+    WHERE (commentID = `Comment`.commentID AND authorID = `Comment`.authorID);
 END$
 
 CREATE PROCEDURE removePost(
+	authorID INTEGER,
 	postID INTEGER
 )
 BEGIN
 	DELETE FROM Post
-    WHERE postID = Post.postID;
+    WHERE (postID = Post.postID AND authorID = Post.authorID);
 END$
 
 CREATE PROCEDURE modifyPost(
+	selfID INTEGER,
 	postID INTEGER,
     postContent VARCHAR(140)
 )
 BEGIN
 	UPDATE Post
     SET Post.postContent = postContent
-    WHERE postID = Post.postID;
+    WHERE (postID = Post.postID AND selfID = Post.authorID);
 END$
 
 CREATE PROCEDURE modifyComment(
+	selfID INTEGER,
 	commentID INTEGER,
     content VARCHAR(140)
 )
 BEGIN
 	UPDATE `Comment`
     SET `Comment`.content = content
-    WHERE commentID = `Comment`.commentID;
+    WHERE (commentID = `Comment`.commentID AND selfID = `Comment`.authorID);
 END$
 
 CREATE PROCEDURE deleteGroup(
+	selfID INTEGER,
 	groupID INTEGER
 )
 BEGIN
 	DELETE FROM `Group`
-    WHERE groupID = `Group`.groupID;
+    WHERE (groupID = `Group`.groupID AND selfID = `Group`.ownerID);
 END$
 
 CREATE PROCEDURE renameGroup(
+	selfID INTEGER,
 	groupID INTEGER,
     groupName VARCHAR(60)
 )
 BEGIN
 	UPDATE `Group`
     SET `Group`.groupName = groupName
-    WHERE groupID = `Group`.groupID;
+    WHERE (groupID = `Group`.groupID AND selfID = `Group`.ownerID);
 END$
+-- join/unjoin group, CHECK contraints on like, word document, check ON DELETE cascades
