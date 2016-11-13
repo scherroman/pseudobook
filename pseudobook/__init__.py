@@ -1,0 +1,3 @@
+'''
+Module indicator for routes
+'''

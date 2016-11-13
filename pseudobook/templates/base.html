@@ -1,0 +1,58 @@
+<html>
+  <head>
+    {% block meta %}
+    <title>Pseudobook - its some sort of facebook or other</title>
+    {% endblock %}
+
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='normalize.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  </head>
+  <body>
+
+    <!-- Navbar -->
+    <div class="container">
+      <nav class="navbar navbar-default">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar1">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">
+              <img src="" class="img-responsive" alt="Pseudobook Logo">
+            </a>
+          </div>
+          <span class="divider"></span>
+          <div id="navbar1" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+              {% if not current_user.is_anonymous %}
+              <li><a href="{{ url_for('user_view', username=current_user.username) }}">my page</a></li>
+              {% else %}
+              <li><a href="{{ url_for('login_manager_route.login') }}">my page</a></li>
+              {% endif %}
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+              {% if current_user.is_anonymous %}
+              <li class="navbar-right"><a href="{{ url_for('login_manager_route.login') }}">login</a></li>
+              {% else %}
+              <li class="navbar-right"><a href="{{ url_for('login_manager_route.logout') }}">logout</a></li>
+              {% endif %}
+            </ul>
+          </div>
+          <!--/.nav-collapse -->
+        </div>
+        <!--/.container-fluid -->
+      </nav>
+    </div>
+
+    <!-- Content -->
+    {% block content %}{% endblock %}
+  </body>
+</html>

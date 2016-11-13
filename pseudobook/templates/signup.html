@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="col-xs-12">
+  <form action="/internal/form_user_create" method="POST" name="link_submit">
+    <div class="input-container form-group col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4">
+      {{ form.hidden_tag() }}
+      {{ form.username(class="form-control") }}
+    </div>
+    <div class="input-container form-group col-xs-12 col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4">
+      <div class="col-xs-6 nopadding-left lesspadding-right">
+        {{ form.password(class="form-control") }}
+      </div>
+      <div class="col-xs-6 nopadding-right lesspadding-left">
+        {{ form.password_two(class="form-control") }}
+      </div>
+    </div>
+    <div class="col-xs-12 center-block">
+      <button type="submit" class="btn btn-default center-block">signup</button>
+    </div>
+  </form>
+</div>
+
+{% endblock %}
