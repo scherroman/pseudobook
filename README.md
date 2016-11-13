@@ -4,7 +4,7 @@
 
 1. [Install Miniconda](http://conda.pydata.org/miniconda.html) (A Python package manager)
 
-2. [Install homebrew](http://brew.sh/) (General purpose package manager for mac)
+2. [Install Homebrew](http://brew.sh/) (General purpose package manager for mac)
 
 3. Install mysql
 `brew install mysql`
