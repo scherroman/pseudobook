@@ -2,59 +2,59 @@
 
 ## Start Guide
 
-1. [Install Miniconda](http://conda.pydata.org/miniconda.html) (A Python package manager)
+1 - [Install Miniconda](http://conda.pydata.org/miniconda.html) (A Python package manager)
 
-2. [Install Homebrew](http://brew.sh/) (General purpose package manager for mac)
+2 - [Install Homebrew](http://brew.sh/) (General purpose package manager for mac)
 
-3. Install mysql
+3 - Install mysql
 `brew install mysql`
 
-4. Add mysql to PATH
+4 - Add mysql to PATH
 `PATH=$PATH:/usr/local/mysql/bin`
 
-5. Create pseudobook virtual environment
+5 - Create pseudobook virtual environment
 `conda env create -f environment.yml`
 
-6. Activate pseudobook environment
+6 - Activate pseudobook environment
 `source activate pseudobook`
 
-7. Navigate to pseudobook project dir
+7 - Navigate to pseudobook project dir
 `cd pseudobook`
 
-8. Set FLASK_APP environment variable
+8 - Set FLASK_APP environment variable
 `export FLASK_APP=app.py`
 
-9. Run App
+9 - Run App
 `flask run`
 
 ## Dev Guide
 
-1. Pull/Sync git repo master branch
+1 - Pull/Sync git repo master branch
 
-2. Create new feature branch from master
+2 - Create new feature branch from master
 
-3. Activate pseudobook environment
+3 - Activate pseudobook environment
 `source activate pseudobook`
 
-4. Update environment packages if there are new dependencies
+4 - Update environment packages if there are new dependencies
 `conda env update -f environment.yml`
 
-5. Navigate to pseudobook project dir
+5 - Navigate to pseudobook project dir
 `cd pseudobook`
 
-6. Set FLASK_APP environment variable
+6 - Set FLASK_APP environment variable
 `export FLASK_APP=app.py`
 
-7. Run App
+7 - Run App
 `flask run`
 
-8. Code out the feature on the new feature branch, test locally
+8 - Code out the feature on the new feature branch, test locally
 
-9. When finished, pull/sync master branch again
+9 - When finished, pull/sync master branch again
 
-10. Merge feature branch into master branch locally, resolve conflicts
+10 - Merge feature branch into master branch locally, resolve conflicts
 
-11. Push/Sync master branch
+11 - Push/Sync master branch
 
 ## Helpful stuff
 
