@@ -1,0 +1,10 @@
+name: pseudobook
+dependencies:
+- python=3.5.1
+- pip
+- pip:
+  - flask==0.10.1
+  - Flask-WTF==0.12
+  - flask-login==0.3.2
+  - passlib==1.6.5
+  - flask-mysqldb==0.2.0
