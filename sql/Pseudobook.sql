@@ -66,13 +66,16 @@ CREATE TABLE GroupUsers (
 );
 CREATE TABLE `Page` (
     pageID INTEGER NOT NULL AUTO_INCREMENT,
-    ownerID INTEGER,
+    userID INTEGER,
+    groupID INTEGER,
+    authorID INTEGER,
     postCount INTEGER,
     pageType CHAR(2),
     PRIMARY KEY (pageID),
-    FOREIGN KEY (ownerID)
-        REFERENCES `Group` (groupID),
-    FOREIGN KEY (ownerID)
+    FOREIGN KEY (groupID)
+        REFERENCES `Group` (groupID)
+        ON DELETE CASCADE,
+    FOREIGN KEY (userID)
         REFERENCES `User` (userID)
 );
 CREATE TABLE Post (
@@ -80,50 +83,40 @@ CREATE TABLE Post (
     pageID INTEGER NOT NULL,
     postDate DATETIME,
     postContent VARCHAR(140),
-    authorID INTEGER NOT NULL,
-    authorType CHAR(2),
+    authorID INTEGER,
     PRIMARY KEY (postID),
     FOREIGN KEY (pageID)
-        REFERENCES `Page` (pageID),
+        REFERENCES `Page` (pageID)
+        ON DELETE CASCADE,
     FOREIGN KEY (authorID)
-        REFERENCES `User` (userID),
-    FOREIGN KEY (authorID)
-        REFERENCES `Group` (groupID)
-        ON DELETE CASCADE
+        REFERENCES `User` (userID)
 );
 CREATE TABLE `Comment` (
     commentID INTEGER NOT NULL AUTO_INCREMENT,
     postID INTEGER,
     commentDate DATETIME,
     content VARCHAR(140),
-    authorID INTEGER NOT NULL,
-    authorType CHAR(2),
+    authorID INTEGER,
     PRIMARY KEY (commentID),
     FOREIGN KEY (postID)
         REFERENCES Post (postID)
         ON DELETE CASCADE,
     FOREIGN KEY (authorID)
-        REFERENCES `User` (userID),
-    FOREIGN KEY (authorID)
-        REFERENCES `Group` (groupID)
-        ON DELETE CASCADE
+        REFERENCES `User` (userID)
 );
 CREATE TABLE Likes (
     parentID INTEGER NOT NULL,
     authorID INTEGER NOT NULL,
-    authorType CHAR(2) NOT NULL,
+    postID INTEGER,
+    commentID INTEGER,
+    -- contentType: page or comment
     contentType CHAR(2) NOT NULL,
-    PRIMARY KEY (parentID , authorId),
-    FOREIGN KEY (parentID)
+    PRIMARY KEY (parentID , contentType , authorID),
+    FOREIGN KEY (postID)
         REFERENCES Post (postID)
         ON DELETE CASCADE,
-    FOREIGN KEY (parentID)
+    FOREIGN KEY (commentID)
         REFERENCES `Comment` (commentID)
-        ON DELETE CASCADE,
-    FOREIGN KEY (authorID)
-        REFERENCES `User` (userID),
-    FOREIGN KEY (authorID)
-        REFERENCES `Group` (groupID)
         ON DELETE CASCADE
 );
 CREATE TABLE Employee (
