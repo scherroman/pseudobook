@@ -68,7 +68,6 @@ CREATE TABLE `Page` (
     pageID INTEGER NOT NULL AUTO_INCREMENT,
     userID INTEGER,
     groupID INTEGER,
-    authorID INTEGER,
     postCount INTEGER,
     pageType CHAR(2),
     PRIMARY KEY (pageID),
@@ -109,6 +108,7 @@ CREATE TABLE Likes (
     authorID INTEGER NOT NULL,
     postID INTEGER,
     commentID INTEGER,
+    -- parentID == postID or commentID
     -- contentType: page or comment
     contentType CHAR(2) NOT NULL,
     PRIMARY KEY (parentID , contentType , authorID),
@@ -117,7 +117,9 @@ CREATE TABLE Likes (
         ON DELETE CASCADE,
     FOREIGN KEY (commentID)
         REFERENCES `Comment` (commentID)
-        ON DELETE CASCADE
+        ON DELETE CASCADE,
+	FOREIGN KEY (authorID)
+        REFERENCES `User` (userID)
 );
 CREATE TABLE Employee (
     userID INTEGER NOT NULL,
