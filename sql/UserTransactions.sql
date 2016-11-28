@@ -1,3 +1,5 @@
+USE pseudobook;
+
 delimiter $
 
 CREATE PROCEDURE registerUser (

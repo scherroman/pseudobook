@@ -6,32 +6,43 @@
 
 2 - [Install Homebrew](http://brew.sh/) (General purpose package manager for mac)
 
-3 - Install mysql
+3 - Add homebrew to top of path in `~/.bash_profile`
+
+```
+#Homebrew
+export PATH=/usr/local/bin:/usr/local/sbin:$PATH
+```
+
+4 - Install mysql via homebrew
 
 `brew install mysql`
 
-4 - Add mysql to PATH
+5 - Run mysql setup scripts
 
-`PATH=$PATH:/usr/local/mysql/bin`
+Login as root
+`mysql -u root -p`
 
-5 - Create pseudobook virtual environment
+Setup tables, Create pseudobook user
+`source Pseudobook.sql`
+
+Add user transaction procedures
+`source UserTransactions.sql`
+
+6 - Create pseudobook virtual environment
 
 `conda env create -f environment.yml`
 
-6 - Activate pseudobook environment
+7 - Activate pseudobook environment
 
 `source activate pseudobook`
 
-7 - Navigate to pseudobook project dir
+8 - Set Flask environment variables
 
-`cd pseudobook`
-
-8 - Set FLASK_APP environment variable
-
-`export FLASK_APP=app.py`
+`export FLASK_APP=app.py && export FLASK_DEBUG=1`
 
 9 - Run App
 
+`cd pseudobook`
 `flask run`
 
 ## Dev Guide
@@ -48,25 +59,22 @@
 
 `conda env update -f environment.yml`
 
-5 - Navigate to pseudobook project dir
+5 - Set FLASK_APP environment variable
+
+`Set Flask environment variables`
+
+6 - Run App
 
 `cd pseudobook`
-
-6 - Set FLASK_APP environment variable
-
-`export FLASK_APP=app.py`
-
-7 - Run App
-
 `flask run`
 
-8 - Code out the feature on the new feature branch, test locally
+7 - Code out the feature on the new feature branch, test locally
 
-9 - When finished, pull/sync master branch again
+8 - When finished, pull/sync master branch again
 
-10 - Merge feature branch into master branch locally, resolve conflicts
+9 - Merge feature branch into master branch locally, resolve conflicts
 
-11 - Push/Sync master branch
+10 - Push/Sync master branch
 
 ## Helpful stuff
 

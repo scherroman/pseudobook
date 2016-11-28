@@ -1,3 +1,3 @@
 '''
-Module indicator for routes
+Module indicator for blueprints
 '''

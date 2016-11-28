@@ -1,3 +1,3 @@
 '''
-Module indicator for our app
+Module indicator for our routes
 '''

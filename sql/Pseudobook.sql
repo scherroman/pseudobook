@@ -1,12 +1,14 @@
 DROP SCHEMA pseudobook;
 CREATE SCHEMA pseudobook;
 USE pseudobook;
+CREATE USER IF NOT EXISTS 'pseudobook'@'localhost' IDENTIFIED BY '';
+GRANT ALL PRIVILEGES ON pseudobook.* To 'pseudobook'@'localhost';
 
 CREATE TABLE `User` (
     userID INTEGER NOT NULL AUTO_INCREMENT,
     firstName VARCHAR(20),
     lastName VARCHAR(20),
-    email VARCHAR(60),
+    email VARCHAR(60) NOT NULL UNIQUE,
     passwordHash CHAR(128),
     address VARCHAR(40),
     city VARCHAR(20),
