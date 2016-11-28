@@ -20,12 +20,15 @@ export PATH=/usr/local/bin:/usr/local/sbin:$PATH
 5 - Run mysql setup scripts
 
 Login as root
+
 `mysql -u root -p`
 
 Setup tables, Create pseudobook user
+
 `source Pseudobook.sql`
 
 Add user transaction procedures
+
 `source UserTransactions.sql`
 
 6 - Create pseudobook virtual environment
