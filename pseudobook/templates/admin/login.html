@@ -2,12 +2,14 @@
 
 {% block content %}
 
+<p class="page-title">Pseudobook</p>
+
 <div class="content-container container">
-    <div class="col-xs-12">
+    <div class="row" style="margin-bottom: 15px;">
       <form action="/login" method="POST" name="link_submit">
         <div class="input-container form-group col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4">
           {{ form.hidden_tag() }}
-          {{ form.username(class="form-control") }}
+          {{ form.email(class="form-control") }}
         </div>
         <div class="input-container form-group col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4">
           {{ form.password(class="form-control") }}
@@ -19,14 +21,14 @@
     </div>
 
     {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <div class="flashes">
-        {% for message in messages %}
-          <p>{{ message }}</p>
-        {% endfor %}
-        </div>
-      {% endif %}
-    {% endwith %}
+    {% if messages %}
+      <div class="flashes row">
+      {% for message in messages %}
+        <p style="text-align:center;">{{ message }}</p>
+      {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
 </div>
 
 {% endblock %}

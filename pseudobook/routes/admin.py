@@ -19,18 +19,23 @@ Routes
 '''
 @mod.route('/login', methods=['GET', 'POST'])
 def login():
+
     # User already logged in
     if not current_user.is_anonymous:
-        return redirect(url_for('user_page', userID=current_user.userID))
+        return redirect(url_for('user_page.user_page', userID=current_user.userID))
     # Render login page
     elif request.method == 'GET':
         login_user_form = LoginUserForm()
         return render_template('login.html', form=login_user_form)
     # Validate login
     else:
-        if verify_password(request.form['email'], request.form['password']):
-            login_user(get_user_by_email(request.form['email']))
-            return redirect(url_for('user_page', userID=current_user.userID))
+        email = request.form['email']
+        password = request.form['password']
+
+        user = user_model.User.get_user_by_email(email)
+        if user and user.verify_password(password):
+            login_user(user)
+            return redirect(url_for('user_page.user_page', userID=current_user.userID))
         else:
             # tell user about failed login
             flash('Invalid login credentials')
@@ -51,33 +56,30 @@ def signup():
         return render_template('signup.html', form=create_user_form)
     # Validate signup
     else:
-        create_user = CreateUserForm(request.form)
 
+        firstName = request.form['firstName']
+        lastName = request.form['lastName']
+        email = request.form['email']
+        password = request.form['password']
+        password_B = request.form['password_B']
+
+        create_user = CreateUserForm(request.form)
         if request.form and create_user.validate_on_submit():
-            if user_model.User.get_user_by_email(request.form['email']):
+            if user_model.User.get_user_by_email(email):
                 flash('A user with that email already exists.')
                 return redirect(url_for('admin.signup'))
-            elif request.form['password'] != request.form['password_B']:
+            elif password != password_B:
                 flash('The two passwords did not match.')
                 return redirect(url_for('admin.signup'))
             else:
                 try:
-                    created_user = user_model.User.register_user(request.form['firstName'], request.form['lastName'], request.form['email'], request.form['password_hash'])
+                    new_user = user_model.User(None, firstName, lastName, email, None)
+                    new_user.register_user(password)
                 except (mysql.connection.Error, mysql.connection.Warning) as e:
                     print(e)
                 else:
-                    login_user(created_user)
-                    return redirect(url_for('user_page', userID=created_user.userID))
-                
+                    login_user(new_user)
+                    return redirect(url_for('user_page.user_page', userID=new_user.userID))
+
         flash('There was an error in account creation. Please try again.')
         return redirect(url_for('admin.signup'))
-
-'''
-Helper Methods
-'''
-def verify_password(email, password):
-    user = user_model.User.get_user_by_email(email)
-    if user and user_model.verify_password(password):
-        return True
-    else:
-        return False

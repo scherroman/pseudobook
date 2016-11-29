@@ -46,6 +46,7 @@ Add user transaction procedures
 9 - Run App
 
 `cd pseudobook`
+
 `flask run`
 
 ## Dev Guide
@@ -62,13 +63,28 @@ Add user transaction procedures
 
 `conda env update -f environment.yml`
 
-5 - Set FLASK_APP environment variable
+5 - Wipe/Recreate database if there are changes to sql tables (rather than dealing with migrations)
 
-`Set Flask environment variables`
+Login as root
 
-6 - Run App
+`mysql -u root -p`
+
+Setup tables, Create pseudobook user
+
+`source Pseudobook.sql`
+
+Add user transaction procedures
+
+`source UserTransactions.sql`
+
+6 - Set Flask environment variables
+
+`export FLASK_APP=app.py && export FLASK_DEBUG=1`
+
+7 - Run App
 
 `cd pseudobook`
+
 `flask run`
 
 7 - Code out the feature on the new feature branch, test locally

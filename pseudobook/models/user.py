@@ -22,43 +22,57 @@ class User():
                 self.lastName
         )
 
+    def get_id(self):
+        return self.userID
+
     def hash_password(self, password):
-        self.password_hash = pwd_context.encrypt(password)
+        return pwd_context.encrypt(password)
 
     def verify_password(self, password):
         return pwd_context.verify(password, self.password_hash)
 
+    def register_user(self, password):
+        self.password_hash = self.hash_password(password)
+        
+        cursor = mysql.connection.cursor()
+        try:
+            cursor.callproc('registerUser', (self.firstName, self.lastName, self.email, self.password_hash, None, None, None, None, None, None, None))
+            mysql.connection.commit()
+        except (mysql.connection.Error, mysql.connection.Warning) as e:
+            raise
+        else:
+            self.userID = cursor.lastrowid
+            return self
+
     @staticmethod
     def get_user_by_id(userID):
-        cur = mysql.connection.cursor()
-        cur.execute('''SELECT U.userID, U.firstName, U.lastName, U.email, U.passwordHash
+        cursor = mysql.connection.cursor()
+        cursor.execute('''SELECT U.userID, U.firstName, U.lastName, U.email, U.passwordHash
                         FROM User AS U
                         WHERE U.userID = %s''' % (userID))
-        user = cur.fetchone()
+        result = cursor.fetchone()
+        user = User.user_from_dict(result) if result else None
+
         return user
 
     @staticmethod
     def get_user_by_email(email):
-        cur = mysql.connection.cursor()
-        cur.execute('''SELECT U.userID, U.firstName, U.lastName, U.email, U.passwordHash
+        cursor = mysql.connection.cursor()
+        cursor.execute('''SELECT U.userID, U.firstName, U.lastName, U.email, U.passwordHash
                         FROM User AS U
                         WHERE U.email = "%s"''' % (email))
-        user = cur.fetchone()
+        result = cursor.fetchone()
+        user = User.user_from_dict(result) if result else None
+
         return user
 
     @staticmethod
-    def register_user(firstName, lastName, email, password):
-        password_hash = User.hash_password(password)
-
-        cur = mysql.connection.cursor()
-        try:
-            cur.callproc('registerUser', (firstName, lastName, email, password_hash, None, None, None, None, None, None, None))
-            return User(cur.lastrowid, firstName, lastName, email, password_hash)
-        except (mysql.connection.Error, mysql.connection.Warning) as e:
-            raise
-
-    def get_id(self):
-        return self.userID
+    def user_from_dict(u_dict):
+        return User(u_dict.get('userID'), 
+                    u_dict.get('firstName'),
+                    u_dict.get('lastName'),
+                    u_dict.get('email'),
+                    u_dict.get('passwordHash'))
         
 '''
 author @roman

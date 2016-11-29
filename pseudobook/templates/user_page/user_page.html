@@ -1,11 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-	<p class="page-title">Pseudobook</p>
-	
+    
     <div class="content-container container">
-    	<h2 class="list-title">some sort of facebook or other</h2>
+        <h2 class="list-title">{{ user.firstName }} {{user.lastName}}'s Page</h2>
     </div>
 
 {% endblock %}

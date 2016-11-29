@@ -1,28 +1,30 @@
 USE pseudobook;
 
 delimiter $
-
+DROP PROCEDURE IF EXISTS registerUser;
 CREATE PROCEDURE registerUser (
     firstName VARCHAR(20),
     lastName VARCHAR(20),
+    email VARCHAR(60),
+    passwordHash CHAR(128),
     address VARCHAR(40),
     city VARCHAR(20),
     state CHAR(2),
     zipCode CHAR(5),
     telephone CHAR(10),
-    email VARCHAR(60),
     accountCreationDate DATETIME,
     rating INTEGER
 )
 BEGIN
 	DECLARE lastID INTEGER;
-	INSERT INTO `User` (firstName, lastName, address, city, state, zipCode, telephone, email, accountCreationDate, rating)
-    VALUES (firstName, lastName, address, city, state, zipCode, telephone, email, accountCreationDate, rating);
+	INSERT INTO `User` (firstName, lastName, email, passwordHash, address, city, state, zipCode, telephone, accountCreationDate, rating)
+    VALUES (firstName, lastName, email, passwordHash, address, city, state, zipCode, telephone, accountCreationDate, rating);
     SELECT last_insert_id() into lastID;
     INSERT INTO `Page` (userID, postCount, pageType)
     VALUES (lastID, 0, "pr");
 END$
 
+DROP PROCEDURE IF EXISTS postToPage;
 CREATE PROCEDURE postToPage(
 	selfID INTEGER,
 	pageID INTEGER,
@@ -45,6 +47,7 @@ BEGIN
     END IF;
 END$
 
+DROP PROCEDURE IF EXISTS sendMessage;
 CREATE PROCEDURE sendMessage(
     fromID INTEGER,
     toID INTEGER,
@@ -56,6 +59,7 @@ BEGIN
 	VALUES (fromID, toID, `subject`, content);
 END$
 
+DROP PROCEDURE IF EXISTS deleteMessage;
 CREATE PROCEDURE deleteMessage(
 	selfID INTEGER,
 	messageID INTEGER
@@ -71,6 +75,7 @@ BEGIN
 	END IF;
 END$
 
+DROP PROCEDURE IF EXISTS createGroup;
 CREATE PROCEDURE createGroup(
 	groupName VARCHAR(60),
     groupType CHAR(2),
@@ -87,6 +92,7 @@ BEGIN
     VALUES (lastID, ownerID);
 END$
 
+DROP PROCEDURE IF EXISTS searchForUser;
 CREATE PROCEDURE searchForUser(
 	userID INTEGER,
 	firstName VARCHAR(20),
@@ -98,6 +104,7 @@ BEGIN
     WHERE ((firstName = `User`.firstName AND lastName = `User`.lastName) OR userID = `User`.userID);
 END$
 
+DROP PROCEDURE IF EXISTS addUserToOwnGroup;
 CREATE PROCEDURE addUserToOwnGroup(
 	selfID INTEGER,
     groupID INTEGER,
@@ -110,6 +117,7 @@ BEGIN
 	END IF;
 END$
 
+DROP PROCEDURE IF EXISTS makePost;
 CREATE PROCEDURE makePost(
 	selfID INTEGER,
 	pageID INTEGER,
@@ -136,6 +144,7 @@ BEGIN
     
 END$
 
+DROP PROCEDURE IF EXISTS makeComment;
 CREATE PROCEDURE makeComment(
 	postID INTEGER,
     commentDate DATETIME,
@@ -158,6 +167,7 @@ BEGIN
     -- END IF;
 END$
 
+DROP PROCEDURE IF EXISTS `like`;
 CREATE PROCEDURE `like`(
 	parentID INTEGER,
     authorID INTEGER,
@@ -173,6 +183,7 @@ BEGIN
 	END IF;
 END$
 
+DROP PROCEDURE IF EXISTS removeUserFromGroup;
 CREATE PROCEDURE removeUserFromGroup(
 	selfID INTEGER,
 	groupID INTEGER,
@@ -185,6 +196,7 @@ BEGIN
 	END IF;
 END$
 
+DROP PROCEDURE IF EXISTS unlike;
 CREATE PROCEDURE unlike(
 	parentID INTEGER,
     authorID INTEGER,
@@ -199,6 +211,7 @@ BEGIN
     );
 END$
 
+DROP PROCEDURE IF EXISTS removeComment;
 CREATE PROCEDURE removeComment(
 	selfID INTEGER,
 	commentID INTEGER
@@ -208,6 +221,7 @@ BEGIN
 	WHERE (commentID = `Comment`.commentID AND authorID = `Comment`.authorID);
 END$
 
+DROP PROCEDURE IF EXISTS removePost;
 CREATE PROCEDURE removePost(
 	authorID INTEGER,
 	postID INTEGER,
@@ -224,6 +238,7 @@ BEGIN
 	END IF;
 END$
 
+DROP PROCEDURE IF EXISTS modifyPost;
 CREATE PROCEDURE modifyPost(
 	selfID INTEGER,
     selfType CHAR(2),
@@ -239,6 +254,7 @@ BEGIN
     );
 END$
 
+DROP PROCEDURE IF EXISTS modifyComment;
 CREATE PROCEDURE modifyComment(
 	selfID INTEGER,
     selfType CHAR(2),
@@ -254,6 +270,7 @@ BEGIN
     );
 END$
 
+DROP PROCEDURE IF EXISTS deleteGroup;
 CREATE PROCEDURE deleteGroup(
 	selfID INTEGER,
 	groupID INTEGER
@@ -263,6 +280,7 @@ BEGIN
     WHERE (groupID = `Group`.groupID AND selfID = `Group`.ownerID);
 END$
 
+DROP PROCEDURE IF EXISTS renameGroup;
 CREATE PROCEDURE renameGroup(
 	selfID INTEGER,
 	groupID INTEGER,
@@ -274,6 +292,7 @@ BEGIN
     WHERE (groupID = `Group`.groupID AND selfID = `Group`.ownerID);
 END$
 
+DROP PROCEDURE IF EXISTS joinGroup;
 CREATE PROCEDURE joinGroup(
 	selfID INTEGER,
 	groupID INTEGER
@@ -287,6 +306,7 @@ BEGIN
 	END IF;
 END$
 
+DROP PROCEDURE IF EXISTS unjoinGroup;
 CREATE PROCEDURE unjoinGroup(
 	selfID INTEGER,
 	groupID INTEGER

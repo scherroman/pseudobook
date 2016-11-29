@@ -1,10 +1,10 @@
 <html>
   <head>
     {% block meta %}
-    <title>Pseudobook - its some sort of facebook or other</title>
+    <title>Pseudobook - some sort of facebook or other</title>
     {% endblock %}
 
-    <link rel="shortcut icon" type="image/png" href="static/favicon.png">
+    <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
@@ -26,14 +26,14 @@
               <span class="icon-bar"></span>
             </button>
             <a class="navbar-brand" href="/">
-              <img src="static/pseudobook_logo.png" class="img-responsive" alt="Pseudobook Logo">
+              <img src="{{ url_for('static', filename='pseudobook_logo.png') }}" class="img-responsive" alt="Pseudobook Logo">
             </a>
           </div>
           <span class="divider"></span>
           <div id="navbar1" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
               {% if not current_user.is_anonymous %}
-              <li><a href="{{ url_for('user_page', username=current_user.username) }}">my page</a></li>
+              <li><a href="{{ url_for('user_page.user_page', userID=current_user.userID) }}">my page</a></li>
               {% else %}
               <li><a href="{{ url_for('admin.login') }}">my page</a></li>
               {% endif %}
@@ -52,8 +52,6 @@
         <!--/.container-fluid -->
       </nav>
     </div>
-
-    <p class="page-title">Pseudobook</p>
 
     <!-- Content -->
     {% block content %}{% endblock %}
