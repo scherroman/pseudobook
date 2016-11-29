@@ -69,7 +69,7 @@ Login as root
 
 `mysql -u root -p`
 
-Setup tables, Create pseudobook user
+Setup tables
 
 `source Pseudobook.sql`
 
