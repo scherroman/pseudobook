@@ -3,6 +3,7 @@ USE pseudobook;
 delimiter $
 DROP PROCEDURE IF EXISTS registerUser;
 CREATE PROCEDURE registerUser (
+	OUT userID INTEGER,
     firstName VARCHAR(20),
     lastName VARCHAR(20),
     email VARCHAR(60),
@@ -16,12 +17,11 @@ CREATE PROCEDURE registerUser (
     rating INTEGER
 )
 BEGIN
-	DECLARE lastID INTEGER;
 	INSERT INTO `User` (firstName, lastName, email, passwordHash, address, city, state, zipCode, telephone, accountCreationDate, rating)
     VALUES (firstName, lastName, email, passwordHash, address, city, state, zipCode, telephone, accountCreationDate, rating);
-    SELECT last_insert_id() into lastID;
+    SET userID = last_insert_id();
     INSERT INTO `Page` (userID, postCount, pageType)
-    VALUES (lastID, 0, "pr");
+    VALUES (userID, 0, "pr");
 END$
 
 DROP PROCEDURE IF EXISTS postToPage;

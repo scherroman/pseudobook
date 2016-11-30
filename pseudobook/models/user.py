@@ -25,24 +25,27 @@ class User():
     def get_id(self):
         return self.userID
 
-    def hash_password(self, password):
-        return pwd_context.encrypt(password)
-
     def verify_password(self, password):
         return pwd_context.verify(password, self.password_hash)
 
-    def register_user(self, password):
-        self.password_hash = self.hash_password(password)
-        
+    def register_user(self): 
         cursor = mysql.connection.cursor()
         try:
-            cursor.callproc('registerUser', (self.firstName, self.lastName, self.email, self.password_hash, None, None, None, None, None, None, None))
+            cursor.execute('''CALL registerUser(@userID, "%s", "%s", "%s", "%s", NULL, NULL, NULL, NULL, NULL, NULL, NULL)'''
+                            % (self.firstName, self.lastName, self.email, self.password_hash))
             mysql.connection.commit()
+            cursor.execute('''SELECT @userID''')
         except (mysql.connection.Error, mysql.connection.Warning) as e:
             raise
         else:
-            self.userID = cursor.lastrowid
-            return self
+            result = cursor.fetchone()
+            userID = result.get('@userID') if result else None
+            
+            return userID
+
+    @staticmethod
+    def hash_password(password):
+        return pwd_context.encrypt(password)
 
     @staticmethod
     def get_user_by_id(userID):

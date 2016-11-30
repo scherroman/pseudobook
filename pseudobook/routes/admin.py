@@ -72,11 +72,11 @@ def signup():
                 flash('The two passwords did not match.')
                 return redirect(url_for('admin.signup'))
             else:
+                new_user = user_model.User(None, firstName, lastName, email, user_model.User.hash_password(password))
                 try:
-                    new_user = user_model.User(None, firstName, lastName, email, None)
-                    new_user.register_user(password)
+                    new_user.userID = new_user.register_user()
                 except (mysql.connection.Error, mysql.connection.Warning) as e:
-                    print(e)
+                    print("Exeption of type {} occured: {}".format(type(e), e))
                 else:
                     login_user(new_user)
                     return redirect(url_for('user_page.user_page', userID=new_user.userID))
