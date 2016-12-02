@@ -1,6 +1,6 @@
 object { width: 135px; height: 40px; padding-bottom: 10px; padding-top: 10px; }
 body { font-family: 'Avenir', sans-serif; color: #F1EED9; background-color: #A31E39; }
-hr { border: 0; height: 1px; background-image: -webkit-linear-gradient(left, transparent, #F1EED9, transparent); background-image: -moz-linear-gradient(left, transparent, #F1EED9, transparent); background-image: -ms-linear-gradient(left, transparent, #F1EED9, transparent); background-image: -o-linear-gradient(left, transparent, #F1EED9, transparent); }
+/*hr { border: 0; height: 1px; background-image: -webkit-linear-gradient(left, transparent, #F1EED9, transparent); background-image: -moz-linear-gradient(left, transparent, #F1EED9, transparent); background-image: -ms-linear-gradient(left, transparent, #F1EED9, transparent); background-image: -o-linear-gradient(left, transparent, #F1EED9, transparent); }*/
 footer { position: fixed; bottom: 0; right: 0; height: 20px; }
 a:link, a:visited, a:hover, a:active { color: #F1EED9; }
 p { font-size: 15px; }
@@ -35,7 +35,11 @@ p { font-size: 15px; }
 .center-container input { color: black; }
 .left-container { max-width: 800px; margin-bottom: 35px }
 .page-title { font-size: 2.8em; text-align: center; }
+.aux-title { font-size: 1.9em; text-align: center; }
 
+.list-header { margin-top: 20px; margin-bottom: 0px }
+.list-title { margin-bottom: 0px; }
+.list-divider { margin-top: 9px !important; }
 .list-content { margin-top: 12.5px; margin-bottom: 7.5px; }
 .list-link-div { position:relative; }
 .list-link { 
