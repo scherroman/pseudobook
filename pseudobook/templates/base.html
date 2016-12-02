@@ -29,21 +29,29 @@
               <img src="{{ url_for('static', filename='pseudobook_logo.png') }}" class="img-responsive" alt="Pseudobook Logo">
             </a>
           </div>
-          <span class="divider"></span>
+          <span class="logo_divider"></span>
           <div id="navbar1" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
               {% if not current_user.is_anonymous %}
-              <li><a href="{{ url_for('user_page.user_page', userID=current_user.userID) }}">my page</a></li>
+              <li><a href="{{ url_for('users.user_page', userID=current_user.userID) }}">My page</a></li>
               {% else %}
-              <li><a href="{{ url_for('admin.login') }}">my page</a></li>
+              <li><a href="{{ url_for('admin.login') }}">My page</a></li>
               {% endif %}
+              <li><a href="{{ url_for('users.users') }}">Users</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
               {% if current_user.is_anonymous %}
               <li class="navbar-right"><a href="{{ url_for('admin.login') }}">login</a></li>
               <li class="navbar-right"><a href="{{ url_for('admin.signup') }}">signup</a></li>
               {% else %}
-              <li class="navbar-right"><a href="{{ url_for('admin.logout') }}">logout</a></li>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ current_user.firstName }} {{ current_user.lastName }} <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li><a href="#"><span class="glyphicon glyphicon-envelope" style="padding-right:10px;"></span>Messages</a></li>
+                  <li role="separator" class="divider"></li>
+                  <li><a href="{{ url_for('admin.logout') }}">Logout</a></li>
+                </ul>
+              </li>
               {% endif %}
             </ul>
           </div>

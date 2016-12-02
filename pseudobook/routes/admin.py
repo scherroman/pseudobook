@@ -22,7 +22,7 @@ Routes
 def login():
     # User already logged in
     if not current_user.is_anonymous:
-        return redirect(url_for('user_page.user_page', userID=current_user.userID))
+        return redirect(url_for('users.user_page', userID=current_user.userID))
 
     # Render login page
     login_user_form = LoginUserForm()
@@ -58,7 +58,7 @@ def login_form():
         if target and is_safe_url(target):
             return redirect(target)
         else:
-            return redirect(url_for('user_page.user_page', userID=current_user.userID))
+            return redirect(url_for('users.user_page', userID=current_user.userID))
     else:
         # tell user about failed login
         flash('Invalid login credentials')
@@ -88,7 +88,7 @@ def signup_form():
                 print("Exeption of type {} occured: {}".format(type(e), e))
             else:
                 login_user(new_user)
-                return redirect(url_for('user_page.user_page', userID=new_user.userID))
+                return redirect(url_for('users.user_page', userID=new_user.userID))
 
     flash('There was an error in account creation. Please try again.')
     return redirect(url_for('admin.signup'))

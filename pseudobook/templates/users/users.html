@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+    
+    <div class="left-container container">
+        <h2 class="page-header">Users</h2>
+        <div class="list-content">
+        {% for user in users %}
+	        <div class="list-link-div">
+	            <a class="list-link" href="{{ url_for('users.user_page', userID=user.userID) }}">
+	            	{{ user.firstName }} {{ user.lastName}}
+	            </a>
+	            <span class="btn-group list-link-dropdown">
+	              <button class="dropdown-button btn btn-mini button-transparent dropdown-toggle" data-toggle="dropdown">
+	                  <span class="caret"></span>
+	              </button>
+	              <ul class="dropdown-menu pull-right">
+	                  <li><a class="message-user" style="cursor:pointer;"><span class="glyphicon glyphicon-envelope" style="padding-right:10px;"></span>Message</a></li>
+	              </ul>
+	            </span>
+	          </a>
+	        </div>
+        {% endfor %}
+        </div>
+
+        {% if prev or next %}
+        	<div class="row">
+        		{% if prev %}
+        			<a class="fade-link nextprev float-left" href="{{ url_for('users.users', offset=offset - 1) }}">❮ Prev</a>
+        		{% endif %}
+    			{% if next %}
+    	    		<a class="fade-link nextprev float-right" href="{{ url_for('users.users', offset=offset + 1) }}">Next ❯</a>
+        		{% endif %}
+        	</div>
+    	{% endif %}
+    </div>
+
+{% endblock %}

@@ -70,6 +70,34 @@ class User():
         return user
 
     @staticmethod
+    def scroll_users(offset, num_users):
+        users = []
+
+        cursor = mysql.connection.cursor()
+        cursor.execute('''SELECT U.userID, U.firstName, U.lastName
+                        FROM User AS U
+                        ORDER BY U.firstName
+                        LIMIT %s OFFSET %s
+                        ''' % (num_users, offset * num_users))
+        results = cursor.fetchall()
+        
+        for result in results:
+            user = User.user_from_dict(result) if result else None
+            users.append(user)
+
+        return users
+
+    @staticmethod
+    def count_users():
+        cursor = mysql.connection.cursor()
+        cursor.execute('''SELECT COUNT(*)
+                        FROM User AS U''' )
+        results = cursor.fetchone()
+        count = results.get('COUNT(*)')
+
+        return count
+
+    @staticmethod
     def user_from_dict(u_dict):
         return User(u_dict.get('userID'), 
                     u_dict.get('firstName'),
