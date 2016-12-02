@@ -9,7 +9,7 @@ CREATE TABLE `User` (
     firstName VARCHAR(20),
     lastName VARCHAR(20),
     email VARCHAR(60) NOT NULL UNIQUE,
-    passwordHash CHAR(128),
+    passwordHash CHAR(128) NOT NULL,
     address VARCHAR(40),
     city VARCHAR(20),
     state CHAR(2),

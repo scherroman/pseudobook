@@ -2,11 +2,11 @@
 
 ## Start Guide
 
-**1 - [Install Miniconda](http://conda.pydata.org/miniconda.html) (A Python package manager)**
+**1 - [Install Miniconda 3.5](http://conda.pydata.org/miniconda.html) (A Python package manager)**
 
 **2 - [Install Homebrew](http://brew.sh/) (General purpose package manager for mac)**
 
-**3 - Add homebrew to top of path in `~/.bash_profile`**
+**3 - Add homebrew to top of path by adding the text below to bottom of `~/.bash_profile`**
 
 ```
 #Homebrew
