@@ -31,8 +31,8 @@ class User():
     def register_user(self): 
         cursor = mysql.connection.cursor()
         try:
-            cursor.execute('''CALL registerUser(@userID, "%s", "%s", "%s", "%s", NULL, NULL, NULL, NULL, NULL, NULL, NULL)'''
-                            % (self.firstName, self.lastName, self.email, self.password_hash))
+            cursor.execute('''CALL registerUser(@userID, "{}", "{}", "{}", "{}", NULL, NULL, NULL, NULL, NULL, NULL, NULL)
+                              '''.format(self.firstName, self.lastName, self.email, self.password_hash))
             mysql.connection.commit()
             cursor.execute('''SELECT @userID''')
         except (mysql.connection.Error, mysql.connection.Warning) as e:
@@ -51,8 +51,9 @@ class User():
     def get_user_by_id(userID):
         cursor = mysql.connection.cursor()
         cursor.execute('''SELECT U.userID, U.firstName, U.lastName, U.email, U.passwordHash
-                        FROM User AS U
-                        WHERE U.userID = %s''' % (userID))
+                          FROM User AS U
+                          WHERE U.userID = {}
+                          '''.format(userID))
         result = cursor.fetchone()
         user = User.user_from_dict(result) if result else None
 
@@ -62,23 +63,29 @@ class User():
     def get_user_by_email(email):
         cursor = mysql.connection.cursor()
         cursor.execute('''SELECT U.userID, U.firstName, U.lastName, U.email, U.passwordHash
-                        FROM User AS U
-                        WHERE U.email = "%s"''' % (email))
+                          FROM User AS U
+                          WHERE U.email = "{}"
+                          '''.format(email))
         result = cursor.fetchone()
         user = User.user_from_dict(result) if result else None
 
         return user
 
     @staticmethod
-    def scroll_users(offset, num_users):
+    def scroll_users(offset, num_users, search):
+        search = search if search else ""
         users = []
-
+        
         cursor = mysql.connection.cursor()
         cursor.execute('''SELECT U.userID, U.firstName, U.lastName
-                        FROM User AS U
-                        ORDER BY U.firstName
-                        LIMIT %s OFFSET %s
-                        ''' % (num_users, offset * num_users))
+                          FROM User AS U
+                          WHERE U.firstName LIKE \'{0}%\' 
+                                OR U.lastName LIKE \'{0}%\' 
+                                OR CONCAT(U.firstName, \' \', U.lastName) LIKE \'{0}\'
+                          ORDER BY U.firstName
+                          LIMIT {1} OFFSET {2}
+                          '''.format(search, num_users, offset * num_users))
+        # WHERE 
         results = cursor.fetchall()
         
         for result in results:
@@ -88,10 +95,17 @@ class User():
         return users
 
     @staticmethod
-    def count_users():
+    def count_users(search):
+        search = search if search else ""
+
         cursor = mysql.connection.cursor()
         cursor.execute('''SELECT COUNT(*)
-                        FROM User AS U''' )
+                          FROM User AS U
+                          WHERE U.firstName LIKE \'{0}%\' 
+                                OR U.lastName LIKE \'{0}%' 
+                                OR CONCAT(U.firstName, \' \', U.lastName) LIKE \'{0}\'
+                          '''.format(search))
+
         results = cursor.fetchone()
         count = results.get('COUNT(*)')
 

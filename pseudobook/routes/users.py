@@ -30,11 +30,13 @@ def user_page(userID):
 def users():
 	offset = request.values.get('offset')
 	offset = int(offset) if offset else 0
+	search = request.values.get('search')
 
-	total_users = user_model.User.count_users()
-	users = user_model.User.scroll_users(offset, USERS_PER_PAGE)
+	print("search: {}".format(search))
+
+	total_users = user_model.User.count_users(search)
+	users = user_model.User.scroll_users(offset, USERS_PER_PAGE, search)
 	prev_users = True if offset > 0 else False
-	print(offset + 1 * USERS_PER_PAGE)
 	next_users = True if ((offset + 1) * USERS_PER_PAGE) < total_users else False
 
 	return render_template('users.html', 
@@ -42,4 +44,5 @@ def users():
 							users=users, 
 							prev=prev_users, 
 							next=next_users,
-							offset=offset)
+							offset=offset,
+							search=search)

@@ -17,6 +17,8 @@ CREATE TABLE `User` (
     telephone CHAR(10),
     accountCreationDate DATETIME,
     rating INTEGER,
+    INDEX (firstName),
+    INDEX (lastName),
     PRIMARY KEY (userID)
 );
 CREATE TABLE Messages (
@@ -52,6 +54,7 @@ CREATE TABLE `Group` (
     groupName VARCHAR(60),
     groupType CHAR(2),
     ownerID INTEGER,
+    INDEX (groupName),
     PRIMARY KEY (groupID),
     FOREIGN KEY (ownerID)
         REFERENCES `User` (userID)

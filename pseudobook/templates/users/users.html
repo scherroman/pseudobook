@@ -3,7 +3,10 @@
 {% block content %}
     
     <div class="left-container container">
-        <h2 class="page-header">Users</h2>
+    	<div class="row list-header">
+        	<h2 class="col-xs-6 list-title">Users</h2>
+        </div>
+        <hr class="list-divider">
         <div class="list-content">
         {% for user in users %}
 	        <div class="list-link-div">
@@ -21,15 +24,18 @@
 	          </a>
 	        </div>
         {% endfor %}
+        {% if users|length == 0 %}
+        	<p>No Results</p>
+        {% endif %}
         </div>
 
         {% if prev or next %}
         	<div class="row">
         		{% if prev %}
-        			<a class="fade-link nextprev float-left" href="{{ url_for('users.users', offset=offset - 1) }}">❮ Prev</a>
+        			<a class="fade-link nextprev float-left" href="{{ url_for('users.users', offset=offset - 1, search=search) }}">❮ Prev</a>
         		{% endif %}
     			{% if next %}
-    	    		<a class="fade-link nextprev float-right" href="{{ url_for('users.users', offset=offset + 1) }}">Next ❯</a>
+    	    		<a class="fade-link nextprev float-right" href="{{ url_for('users.users', offset=offset + 1, search=search) }}">Next ❯</a>
         		{% endif %}
         	</div>
     	{% endif %}
