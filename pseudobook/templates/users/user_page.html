@@ -3,7 +3,68 @@
 {% block content %}
     
     <div class="left-container container">
-        <h2 class="page-header">{{ user.firstName }} {{user.lastName}}'s page</h2>
+        <div id="status_section" class="row">
+			<h2 class="page-header">{{ user.firstName }} {{user.lastName}}'s page</h2>
+			<form action="{{ url_for('users.make_post_form') }}" method="POST">
+				<div class="col-xs-12 post-status-form form-group">
+				  {{ make_post_form.hidden_tag() }}
+				  {% if is_current_users_page %}
+				  	{{ make_post_form.content(class="form-control",rows="2") }}
+				  {% else %}
+				  	{{ make_post_form.content(class="form-control",rows="2",placeholder="Write something on " + user.firstName + " " + user.lastName + "'s page") }}
+				  {% endif %}
+				  {{ make_post_form.pageID(type="hidden", value=page.pageID) }}
+				  {{ make_post_form.authorID(type="hidden", value=current_user.userID) }}
+				</div>
+				<div class="col-xs-12 center-block">
+				  <button type="submit" class="btn btn-default center-block">post</button>
+				</div>
+			</form>
+        </div>
+        <div id="posts_section" class="row">
+        	<h2 class="page-header">Posts</h2>
+	        {% for post in posts %}
+		        <div class="list-link-div">
+		        	<a class="list-link post-author" href="{{ url_for('users.user_page', userID=post.authorID) }}">
+		            	<b>{{ post.author_name }}</b> 
+		            </a>
+		            <small class='post-timestamp'> {{ post.postDate }}</small>
+		            {% if is_current_users_page %}
+			            <span class="btn-group list-link-dropdown">
+							<button class="dropdown-button btn btn-mini button-transparent dropdown-toggle" data-toggle="dropdown">
+							  <span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu pull-right">
+								<li>
+									<a onclick="$(this).find('>:first-child').submit()" style="cursor:pointer;">
+										<form action="{{ url_for('users.remove_post_form') }}" method="POST" style="display:none;">
+										    {{ post.remove_post_form.hidden_tag() }}
+										    {{ post.remove_post_form.postID(type="hidden", value=post.postID) }}
+										</form>
+										<span class="glyphicon glyphicon-envelope" style="padding-right:10px;"></span>
+										Delete
+									</a>
+								</li>
+							</ul>
+			            </span>
+
+			        {% endif %}
+		            <br>
+		        	<p class="post-text">{{ post.postContent }}</p>
+		          </a>
+		        </div>
+	        {% endfor %}
+            {% if prev or next %}
+            	<div class="row">
+            		{% if prev %}
+            			<a class="fade-link nextprev float-left" href="{{ url_for('users.user_page', userID=user.userID, offset=offset - 1, search=search) }}">❮ Prev</a>
+            		{% endif %}
+        			{% if next %}
+        	    		<a class="fade-link nextprev float-right" href="{{ url_for('users.user_page', userID=user.userID, offset=offset + 1, search=search) }}">Next ❯</a>
+            		{% endif %}
+            	</div>
+        	{% endif %}
+        </div>
     </div>
 
 {% endblock %}

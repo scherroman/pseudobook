@@ -41,7 +41,7 @@ class User():
             result = cursor.fetchone()
             userID = result.get('@userID') if result else None
             
-            return userID
+        return userID
 
     @staticmethod
     def hash_password(password):
@@ -81,11 +81,10 @@ class User():
                           FROM User AS U
                           WHERE U.firstName LIKE \'{0}%\' 
                                 OR U.lastName LIKE \'{0}%\' 
-                                OR CONCAT(U.firstName, \' \', U.lastName) LIKE \'{0}\'
+                                OR CONCAT(U.firstName, \' \', U.lastName) LIKE \'{0}%\'
                           ORDER BY U.firstName
                           LIMIT {1} OFFSET {2}
                           '''.format(search, num_users, offset * num_users))
-        # WHERE 
         results = cursor.fetchall()
         
         for result in results:
@@ -99,15 +98,14 @@ class User():
         search = search if search else ""
 
         cursor = mysql.connection.cursor()
-        cursor.execute('''SELECT COUNT(*)
+        cursor.execute('''SELECT COUNT(*) AS count
                           FROM User AS U
                           WHERE U.firstName LIKE \'{0}%\' 
                                 OR U.lastName LIKE \'{0}%' 
                                 OR CONCAT(U.firstName, \' \', U.lastName) LIKE \'{0}\'
                           '''.format(search))
-
         results = cursor.fetchone()
-        count = results.get('COUNT(*)')
+        count = results.get('count')
 
         return count
 
