@@ -5,20 +5,20 @@
 <div class="center-container container">
   <p class="page-title">Pseudobook</p>
   <div class="row" style="margin-bottom: 15px;">
-    <form action="/admin/forms/signup" method="POST" name="link_submit">
-      <div class="input-container form-group col-sm-6 col-sm-offset-3">
+    <form action="{{ url_for('admin.signup_form') }}" method="POST">
+      <div class="form-group col-sm-6 col-sm-offset-3">
         {{ form.hidden_tag() }}
         {{ form.firstName(class="form-control") }}
       </div>
-      <div class="input-container form-group col-sm-6 col-sm-offset-3">
+      <div class="form-group col-sm-6 col-sm-offset-3">
         {{ form.hidden_tag() }}
         {{ form.lastName(class="form-control") }}
       </div>
-      <div class="input-container form-group col-sm-6 col-sm-offset-3">
+      <div class="form-group col-sm-6 col-sm-offset-3">
         {{ form.hidden_tag() }}
         {{ form.email(class="form-control") }}
       </div>
-      <div class="input-container form-group col-xs-12 col-sm-6 col-sm-offset-3">
+      <div class="form-group col-xs-12 col-sm-6 col-sm-offset-3">
         <div class="col-xs-6 nopadding-left lesspadding-right">
           {{ form.password(class="form-control") }}
         </div>
