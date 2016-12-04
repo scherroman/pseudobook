@@ -66,6 +66,11 @@ p { font-size: 15px; }
     box-shadow: none !important;
 }
 
+.post-text { font-size: 17px; }
+.post-author:after {
+    content: "\00b7";
+}
+
 .nextprev { font-size: 20px; }
 
 input[type=submit] {

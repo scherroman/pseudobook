@@ -24,29 +24,6 @@ BEGIN
     VALUES (userID, 0, "pr");
 END$
 
-DROP PROCEDURE IF EXISTS postToPage;
-CREATE PROCEDURE postToPage(
-	selfID INTEGER,
-	pageID INTEGER,
-    pageType CHAR(2),
-    postDate DATETIME,
-    postContent VARCHAR(140)
-)
-BEGIN
-	DECLARE ownID INTEGER;
-    IF(pageType = "pr") THEN
-		SELECT userID into ownID FROM `Page` WHERE (pageID = `Page`.pageID);
-	ELSE SELECT groupID into ownID FROM `Page` WHERE (pageID = `Page`.pageID);
-    END IF;
-    IF(pageType = "pr" AND ownID = selfID) THEN
-		INSERT INTO Post (pageID, postDate, postContent, userID, authorID)
-		VALUES (pageID, postDate, postContent, selfID, selfID);
-	ELSEIF (pageType = "gr" AND ownID = selfID) THEN
-		INSERT INTO Post (pageID, postDate, postContent, groupID, authorID)
-		VALUES (pageID, postDate, postContent, selfID, selfID);
-    END IF;
-END$
-
 DROP PROCEDURE IF EXISTS sendMessage;
 CREATE PROCEDURE sendMessage(
     fromID INTEGER,
@@ -119,6 +96,7 @@ END$
 
 DROP PROCEDURE IF EXISTS makePost;
 CREATE PROCEDURE makePost(
+	OUT postID INTEGER,
 	selfID INTEGER,
 	pageID INTEGER,
     pageType CHAR(2),
@@ -128,7 +106,7 @@ CREATE PROCEDURE makePost(
 BEGIN
     DECLARE pgType CHAR(2);
     DECLARE ownID INTEGER;
-    SELECT pageType into pgType FROM `Page` WHERE (pageID = `Page`.pageID);
+    -- SELECT pageType into pgType FROM `Page` WHERE (pageID = `Page`.pageID);
     
     IF (pageType = 'gr') THEN
 		SELECT groupID into ownID FROM `Page` WHERE (pageID = `Page`.pageID);
@@ -137,11 +115,12 @@ BEGIN
     IF (pageType = 'gr' AND (SELECT 1 FROM GroupUsers WHERE(ownID = GroupUsers.groupID AND selfID = GroupUsers.userID)) ) THEN
 		INSERT INTO Post (pageID, postDate, postContent, authorID)
 		VALUES (pageID, postDate, postContent, selfID);
-	ELSEIF (pageType = 'pr' AND ownID = selfID) THEN
+	ELSEIF (pageType = 'pr') THEN
 		INSERT INTO Post (pageID, postDate, postContent, authorID)
 		VALUES (pageID, postDate, postContent, selfID);
     END IF;
-    
+
+    SET postID = last_insert_id();
 END$
 
 DROP PROCEDURE IF EXISTS makeComment;
@@ -223,19 +202,11 @@ END$
 
 DROP PROCEDURE IF EXISTS removePost;
 CREATE PROCEDURE removePost(
-	authorID INTEGER,
-	postID INTEGER,
-    authorType CHAR(2)
+	postID INTEGER
 )
 BEGIN
-	IF (authorType = 'pr') THEN
-		DELETE FROM Post
-		WHERE (postID = Post.postID AND authorID = Post.userID);
-	END IF;
-    IF (authorType = 'gr') THEN
-		DELETE FROM Post
-        WHERE (postID = Post.postID AND authorID = Post.groupID);
-	END IF;
+	DELETE FROM Post
+	WHERE postID = Post.postID;
 END$
 
 DROP PROCEDURE IF EXISTS modifyPost;
