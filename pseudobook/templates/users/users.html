@@ -3,42 +3,95 @@
 {% block content %}
     
     <div class="left-container container">
-    	<div class="row list-header">
-        	<h2 class="col-xs-6 list-title">Users</h2>
+    	<div>
+            <ul class="nav nav-tabs page-menu">
+              <li class="active"><a data-toggle="tab" href="#activity-section">Activity</a></li>
+              <li><a data-toggle="tab" href="#users-section">Users</a></li>
+            </ul>
         </div>
-        <hr class="list-divider">
-        <div class="list-content">
-        {% for user in users %}
-	        <div class="list-link-div">
-	            <a class="list-link" href="{{ url_for('users.user_page', userID=user.userID) }}">
-	            	{{ user.firstName }} {{ user.lastName}}
-	            </a>
-	            <span class="btn-group list-link-dropdown">
-	              <button class="dropdown-button btn btn-mini button-transparent dropdown-toggle" data-toggle="dropdown">
-	                  <span class="caret"></span>
-	              </button>
-	              <ul class="dropdown-menu pull-right">
-	                  <li><a class="message-user" style="cursor:pointer;"><span class="glyphicon glyphicon-envelope" style="padding-right:10px;"></span>Message</a></li>
-	              </ul>
-	            </span>
-	          </a>
-	        </div>
-        {% endfor %}
-        {% if users|length == 0 %}
-        	<p>No Results</p>
-        {% endif %}
+        <div class="tab-content">
+            <div id="activity-section" class="tab-pane fade in active">
+            {% for user_post in user_posts %}
+                <div class="list-link-div">
+                    <span class="post-author">
+                    <a class="list-link" href="{{ url_for('users.user_page', userID=user_post.authorID) }}">
+                        {% if user_post.authorID == user_post.page_owner_id %}
+                            <b>{{ user_post.author_name }}</a> posted a status</b>
+                        {% else %}
+                            <b>{{ user_post.author_name }}</a> wrote on <a class="list-link" href="{{ url_for('users.user_page', userID=user_post.page_owner_id) }}">{{ user_post.page_owner_name }}'s</a> page</b>
+                        {% endif %}
+                    </span>
+                    <small class='post-timestamp'> {{ user_post.postDate }}</small>
+                    <span class="btn-group list-link-dropdown">
+                        <button class="dropdown-button btn btn-mini button-transparent dropdown-toggle" data-toggle="dropdown">
+                          <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu pull-right">
+                            {% if current_user.userID == user_post.authorID %}
+                            <li>
+                                <a onclick="$(this).find('> form:first').submit()" style="cursor:pointer;">
+                                    <form action="{{ url_for('users.remove_post_form') }}" method="POST" style="display:none;">
+                                        {{ user_post.remove_post_form.hidden_tag() }}
+                                        {{ user_post.remove_post_form.postID(type="hidden", value=user_post.postID) }}
+                                    </form>
+                                    <span class="glyphicon glyphicon-remove" style="padding-right:10px;"></span>
+                                    Delete
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </span>
+                    <br>
+                    <p class="post-text">{{ user_post.postContent }}</p>
+                  </a>
+                </div>
+            {% endfor %}
+            {% if prev_user_posts or next_user_posts %}
+                <div>
+                    {% if prev_user_posts %}
+                        <a class="fade-link nextprev float-left" href="{{ url_for('users.users', user_post_offset=user_post_offset - 1) }}">❮ Prev</a>
+                    {% endif %}
+                    {% if next_user_posts %}
+                        <a class="fade-link nextprev float-right" href="{{ url_for('users.users', user_post_offset=user_post_offset + 1) }}">Next ❯</a>
+                    {% endif %}
+                </div>
+            {% endif %}
+            </div>
+            <div id="users-section" class="tab-pane fade in">
+            {% for user in users %}
+                <div class="list-link-div">
+                    <a class="list-link" href="{{ url_for('users.user_page', userID=user.userID) }}">
+                        {{ user.firstName }} {{ user.lastName}}
+                    </a>
+                    <span class="btn-group list-link-dropdown">
+                      <button class="dropdown-button btn btn-mini button-transparent dropdown-toggle" data-toggle="dropdown">
+                          <span class="caret"></span>
+                      </button>
+                      <ul class="dropdown-menu pull-right">
+                          <li><a class="message-user" style="cursor:pointer;"><span class="glyphicon glyphicon-envelope" style="padding-right:10px;"></span>Message</a></li>
+                      </ul>
+                    </span>
+                  </a>
+                </div>
+            {% endfor %}
+            {% if users|length == 0 %}
+                <p>No Results</p>
+            {% endif %}
+            {% if prev_users or next_users %}
+                <div>
+                    {% if prev_users %}
+                        <a class="fade-link nextprev float-left" href="{{ url_for('users.users', offset=offset - 1, search=search) }}">❮ Prev</a>
+                    {% endif %}
+                    {% if next_users %}
+                        <a class="fade-link nextprev float-right" href="{{ url_for('users.users', offset=offset + 1, search=search) }}">Next ❯</a>
+                    {% endif %}
+                </div>
+            {% endif %}
+            </div>
         </div>
+        
 
-        {% if prev or next %}
-        	<div class="row">
-        		{% if prev %}
-        			<a class="fade-link nextprev float-left" href="{{ url_for('users.users', offset=offset - 1, search=search) }}">❮ Prev</a>
-        		{% endif %}
-    			{% if next %}
-    	    		<a class="fade-link nextprev float-right" href="{{ url_for('users.users', offset=offset + 1, search=search) }}">Next ❯</a>
-        		{% endif %}
-        	</div>
-    	{% endif %}
+        
     </div>
 
 {% endblock %}

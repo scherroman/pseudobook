@@ -49,21 +49,20 @@ class Page():
         posts = []
         
         cursor = mysql.connection.cursor()
-        cursor.execute('''SELECT P.postID, P.pageID, P.postDate, P.postContent, P.authorID
-                          FROM Post AS P
-                          WHERE P.pageID = {0} AND P.postContent LIKE \'%{1}%\'
-                          ORDER BY P.postDate
+        cursor.execute('''SELECT P.postID, P.pageID, P.postDate, P.postContent, P.authorID, CONCAT(U.firstName, \' \', U.lastName) AS author_name
+                          FROM Post AS P, User AS U
+                          WHERE P.authorID = U.userID
+                                AND P.pageID = {0} 
+                                AND P.postContent LIKE \'%{1}%\'
+                          ORDER BY P.postDate DESC
                           LIMIT {2} OFFSET {3}
                           '''.format(self.pageID, search, num_posts, offset * num_posts))
         results = cursor.fetchall()
         
         for result in results:
             post = post_model.Post.post_from_dict(result) if result else None
+            post.author_name = result.get('author_name')
             posts.append(post)
-
-        # Get names of users for each post
-        for post in posts:
-          post.author_name = post.get_author_name()
 
         return posts
 
@@ -115,6 +114,49 @@ class Page():
         page = Page.page_from_dict(result) if result else None
 
         return page
+
+    @staticmethod
+    def scroll_posts_for_user_pages(offset, num_posts, search): 
+        search = search if search else ""
+        posts = []
+        
+        cursor = mysql.connection.cursor()
+        cursor.execute('''SELECT P.postID, P.pageID, P.postDate, P.postContent, P.authorID, CONCAT(U.firstName, \' \', U.lastName) AS author_name, U2.userID AS page_owner_id, CONCAT(U2.firstName, \' \', U2.lastName) AS page_owner_name
+                          FROM Post AS P, User AS U, Page AS Pa, User AS U2
+                          WHERE Pa.pageType = '{0}'
+                                AND P.authorID = U.userID
+                                AND P.pageID = Pa.pageID
+                                AND Pa.userID = U2.userID
+                                AND P.postContent LIKE \'%{1}%\'
+                          ORDER BY P.postDate DESC
+                          LIMIT {2} OFFSET {3}
+                          '''.format(Page.PAGE_TYPE_USER, search, num_posts, offset * num_posts))
+        results = cursor.fetchall()
+        
+        for result in results:
+            post = post_model.Post.post_from_dict(result) if result else None
+            post.author_name = result.get('author_name')
+            post.page_owner_id = result.get('page_owner_id')
+            post.page_owner_name = result.get('page_owner_name')
+            posts.append(post)
+
+        return posts
+
+    @staticmethod
+    def count_posts_for_page_type(pageType, search):
+        search = search if search else ""
+
+        cursor = mysql.connection.cursor()
+        cursor.execute('''SELECT COUNT(*) AS count
+                          FROM Post AS P, Page AS Pa
+                          WHERE Pa.pageType = '{0}'
+                                AND P.pageID = Pa.pageID
+                                AND P.postContent LIKE \'%{1}%\'
+                          '''.format(pageType, search))
+        results = cursor.fetchone()
+        count = results.get('count')
+
+        return count
  
     @staticmethod
     def page_from_dict(p_dict):
