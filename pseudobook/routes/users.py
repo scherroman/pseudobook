@@ -106,7 +106,7 @@ def remove_post_form():
 	post = post_model.Post.get_post_by_id(postID)
 	page = page_model.Page.get_page_by_id(post.pageID)
 	if page.pageType == page_model.Page.PAGE_TYPE_USER:
-		if current_user.userID == page.userID:
+		if current_user.userID == page.userID or current_user.userID == post.authorID:
 			page.remove_post(postID)
 		else:
 			abort(403)

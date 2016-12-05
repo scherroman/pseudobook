@@ -29,19 +29,19 @@
 		            	<b>{{ post.author_name }}</b> 
 		            </a>
 		            <small class='post-timestamp'> {{ post.postDate }}</small>
-		            {% if is_current_users_page %}
+		            {% if is_current_users_page or current_user.userID == post.authorID %}
 			            <span class="btn-group list-link-dropdown">
 							<button class="dropdown-button btn btn-mini button-transparent dropdown-toggle" data-toggle="dropdown">
 							  <span class="caret"></span>
 							</button>
 							<ul class="dropdown-menu pull-right">
 								<li>
-									<a onclick="$(this).find('>:first-child').submit()" style="cursor:pointer;">
+									<a onclick="$(this).find('> form:first').submit()" style="cursor:pointer;">
 										<form action="{{ url_for('users.remove_post_form') }}" method="POST" style="display:none;">
 										    {{ post.remove_post_form.hidden_tag() }}
 										    {{ post.remove_post_form.postID(type="hidden", value=post.postID) }}
 										</form>
-										<span class="glyphicon glyphicon-envelope" style="padding-right:10px;"></span>
+										<span class="glyphicon glyphicon-remove" style="padding-right:10px;"></span>
 										Delete
 									</a>
 								</li>
