@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        function setCurrentReport(val) {
+            $(".individual-report").hide();
+            $("#revenue-filter").hide();
+            switch (val) {
+                case "1": $("#all-items").show(); $("#report-name").html("Items"); break;
+                case "2": $("#all-sales").show(); $("#report-name").html("Sales"); break;
+                case "3": $("#revenue-generated").show(); $("#report-name").html("Revenue"); $("#revenue-filter").show(); break;
+            }
+        }
+
+        setCurrentReport("1");
+
+        $("#report-type-select").change(function() {
+            setCurrentReport($(this).val());
+        });
+    });
+</script>
+
+<style>
+    span {
+        padding-right: 8px;
+    }
+</style>
+
+<div class="left-container container">
+    <div class="row list-header">
+        <h2 id="report-name" class="col-xs-3 list-title">Sales Report</h2>
+
+        <!-- Report type selector -->
+        <span>
+            Report Type:
+            <select id="report-type-select" style="margin-top:28px;">
+                <!-- Add ability to sort by column -->
+                <option value="1">Items</option><!-- TODO: When you click on a row, see which customers have purchased the item -->
+                <option value="2">Sales</option>
+                <option value="3">Revenue</option>
+            </select>
+        </span>
+
+        <!-- Revenue type selector -->
+        <span id="revenue-filter">
+            By:
+            <select id="revenue-type-filter">
+                <option value="1">Item</option>
+                <option value="2">Item Type</option>
+                <option value="3">Customer</option>
+                <option value="4">Employee</option>
+            </select>
+        </span>
+
+        <!-- Month selector -->
+        <span>
+            During:
+            <select>
+                <option value="0">All Months</option>
+                {% for month in months %}
+                    <option value="{{ month[0] }}">{{ month[1] }}</option>
+                {% endfor %}
+            </select>
+        </span>
+        
+        <!-- Search -->
+        <span>
+            Search for:
+            <select id="search-column-selector"></select>
+
+        </span>
+    </div>
+    <hr class="list-divider">
+
+    <div id="all-items" class="individual-report">
+        <table>
+            <thead>
+                <th>Item Name</th>
+                <th>Posted By</th>
+                <th>Type</th>
+                <th>Date Posted</th>
+                <th>Company</th>
+                <th>Unit Price</th>
+                <th>Available Units</th>
+            </thead>
+            {% for ad in all_ads %}
+                <tr>
+                    <td>{{ ad.itemName }}</td>
+                    <td>{{ ad.associatedEmployeeName }}</td>
+                    <td>{{ ad.adType }}</td>
+                    <td>{{ ad.datePosted }}</td>
+                    <td>{{ ad.company }}</td>
+                    <td>{{ ad.unitPrice }}</td>
+                    <td>{{ ad.numberAvailableUnits }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div id="all-sales" class="individual-report">
+        <table>
+            <thead>
+                <th>Item</th>
+                <th>Company</th>
+                <th>Customer</th>
+                <th>Ad Posted By</th>
+                <th>Transaction Date</th>
+                <th>Units Purchased</th>
+                <th>Unit Price</th>
+            </thead>
+            {% for sale in all_sales %}
+                <tr>
+                    <td>{{ sale.itemName }}</td>
+                    <td>{{ sale.company }}</td>
+                    <td>{{ sale.customerName }}</td>
+                    <td>{{ sale.customerRepName }}</td>
+                    <td>{{ sale.transactionDateTime }}</td>
+                    <td>{{ sale.unitsSold }}</td>
+                    <td>{{ sale.price }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div id="revenue-generated" class="individual-report">
+        <table>
+            <thead>
+                <th>Item Name</th>
+                <th>Revenue Generated</th>
+            </thead>
+            {% for revenue in all_revenues %}
+                <tr>
+                    <td>{{ revenue[0] }}</td>
+                    <td>{{ revenue[1] }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+
+{% endblock %}

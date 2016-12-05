@@ -1,3 +1,15 @@
+USE pseudobook;
+
+delimiter $
+DROP VIEW IF EXISTS SalesReport;
+
+CREATE VIEW SalesReport AS
+SELECT A.itemName AS ItemName, A.adType AS ItemType, A.adID AS ItemID, A.company AS Company, A.unitPrice AS Price, CONCAT(E.firstName,' ',E.lastName) AS CustomerRepName, E.userID AS CustomerRepID, CONCAT(B.firstName,' ',B.lastName) AS CustomerName, B.userID AS CustomerID, B.email AS CustomerEmail, S.buyerAccount AS CustomerAccountNumber, S.numberOfUnits AS UnitsSold, S.transactionDateTime AS TransactionDateTime, S.transactionID AS TransactionID
+FROM Sales S
+JOIN Advertisement A ON S.adID = A.adID
+JOIN `User` E ON A.employeeID = E.userID
+JOIN `User` B ON S.buyerID = B.userID;
+
 -- Manager-Level Transactions
 -- The manager should be able to:
 -- Add, Edit and Delete information for an employee
@@ -11,16 +23,8 @@
 -- DELETE FROM Employee
 -- WHERE `userID` = ?;
 
+/*
 -- Obtain a sales report for a particular month
-DROP VIEW SalesReport;
-
-CREATE VIEW SalesReport AS
-SELECT A.itemName AS ItemName, A.adType AS ItemType, A.adID AS ItemID, A.company AS Company, A.unitPrice AS Price, CONCAT(E.firstName,' ',E.lastName) AS CustomerRepName, E.userID AS CustomerRepID, CONCAT(B.firstName,' ',B.lastName) AS CustomerName, B.userID AS CustomerID, B.email AS CustomerEmail, S.buyerAccount AS CustomerAccountNumber, S.numberOfUnits AS UnitsSold, S.transactionDateTime AS TransactionDateTime
-FROM Sales S
-JOIN Advertisement A ON S.adID = A.adID
-JOIN `User` E ON A.employeeID = E.userID
-JOIN `User` B ON S.buyerID = B.userID;
-
 SELECT ItemName, ItemType, Company, CustomerRepName, CustomerName, UnitsSold, Price, TransactionDateTime
 FROM SalesReport
 WHERE TransactionDateTime >= '2015-12-10T00:00:00' AND TransactionDateTime <= '2016-1-1T00:00:00';
@@ -145,3 +149,4 @@ SELECT A.adID AS AdID, A.itemName AS ItemName, A.unitPrice AS UnitPrice, S.Compa
 FROM Advertisement A
 JOIN SalesReport S ON A.company = S.Company
 WHERE S.CustomerID = 1;
+*/

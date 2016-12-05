@@ -31,6 +31,10 @@ Add user transaction procedures
 
 `source UserTransactions.sql`
 
+Add manager and sales oriented transaction procedures
+
+`source ManagerEmployeeCustomerTransactions.sql`
+
 **6 - Create pseudobook virtual environment**
 
 `conda env create -f environment.yml`
@@ -76,6 +80,10 @@ Setup tables
 Add user transaction procedures
 
 `source UserTransactions.sql`
+
+Add manager and sales oriented transaction procedures
+
+`source ManagerEmployeeCustomerTransactions.sql`
 
 **6 - Set Flask environment variables**
 

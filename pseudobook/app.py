@@ -7,6 +7,7 @@ from pseudobook.authentication import login_manager
 # Blueprints
 from pseudobook.routes import admin
 from pseudobook.routes import users
+from pseudobook.routes import manager
 
 '''
 Setup
@@ -27,6 +28,7 @@ View Routing
 '''
 app.register_blueprint(admin.mod)
 app.register_blueprint(users.mod)
+app.register_blueprint(manager.mod)
 
 @app.route('/', methods=['GET'])
 def home_page():
