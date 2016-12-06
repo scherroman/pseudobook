@@ -90,6 +90,10 @@ input[type=submit] {
 }
 input[type=submit]:active { color: #A31E39; }
 
+input[type=text] {
+    color: black;
+}
+
 select {
     color: black;
 }

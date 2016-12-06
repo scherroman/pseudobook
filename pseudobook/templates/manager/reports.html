@@ -4,6 +4,41 @@
 
 <script type="text/javascript">
     $(document).ready(function() {
+        function setTableData(tableIndex, data) {
+            var currentTable;
+            var rowClass;
+            var desiredCols;
+            switch(tableIndex) {
+                case "1": rowClass = "items-row"; currentTable = "#items-table";
+                    desiredCols=["itemName","employeeName","adType","datePosted","company","unitPrice","numberAvailableUnits"];
+                    break;
+            }
+            $("."+rowClass).remove();
+            data.forEach(function(d) {
+                var rowString = "<tr class='"+rowClass+"'>";
+                desiredCols.forEach(function(c) {
+                    rowString += "<td>"+d[c]+"</td>";
+                });
+                rowString += "</tr>";
+                $(currentTable).append(rowString);
+            });
+        }
+
+        function search() {
+            var searchCol = $("#search-column-selector").val();
+            var searchString = $("#search-input").val();
+            $.ajax({
+                type: "POST",
+                url: "/reports/getads",
+                contentType: 'application/json;charset=UTF-8',
+                data: JSON.stringify({year: "2017", month: "9", searchcol: searchCol, search: searchString }),
+                success: function(data) {
+                    console.log(JSON.parse(data));
+                    setTableData("1",JSON.parse(data));
+                }
+            });
+        }
+
         function setCurrentReport(val) {
             $(".individual-report").hide();
             $("#revenue-filter").hide();
@@ -14,16 +49,24 @@
             }
         }
 
-        setCurrentReport("1");
-
         $("#report-type-select").change(function() {
             setCurrentReport($(this).val());
         });
+
+        $("#search-column-selector").change(search);
+
+        $("#search-input").keypress(function(e) {
+            if (e.which != 13)
+                return;
+            search();
+        });
+
+        setCurrentReport("1");
     });
 </script>
 
 <style>
-    span {
+    .filter-selector {
         padding-right: 8px;
     }
 </style>
@@ -33,7 +76,7 @@
         <h2 id="report-name" class="col-xs-3 list-title">Sales Report</h2>
 
         <!-- Report type selector -->
-        <span>
+        <span class="filter-selector">
             Report Type:
             <select id="report-type-select" style="margin-top:28px;">
                 <!-- Add ability to sort by column -->
@@ -44,7 +87,7 @@
         </span>
 
         <!-- Revenue type selector -->
-        <span id="revenue-filter">
+        <span id="revenue-filter" class="filter-selector">
             By:
             <select id="revenue-type-filter">
                 <option value="1">Item</option>
@@ -55,7 +98,7 @@
         </span>
 
         <!-- Month selector -->
-        <span>
+        <span class="filter-selector">
             During:
             <select>
                 <option value="0">All Months</option>
@@ -66,16 +109,20 @@
         </span>
         
         <!-- Search -->
-        <span>
+        <span class="filter-selector">
             Search for:
-            <select id="search-column-selector"></select>
-
+            <select id="search-column-selector">
+                {% for col in ad_columns %}
+                    <option val="{{col}}">{{col}}</option>
+                {% endfor %}
+            </select>
+            <input id="search-input" type="text" />
         </span>
     </div>
     <hr class="list-divider">
 
     <div id="all-items" class="individual-report">
-        <table>
+        <table id="items-table">
             <thead>
                 <th>Item Name</th>
                 <th>Posted By</th>
@@ -86,9 +133,9 @@
                 <th>Available Units</th>
             </thead>
             {% for ad in all_ads %}
-                <tr>
+                <tr class="items-row">
                     <td>{{ ad.itemName }}</td>
-                    <td>{{ ad.associatedEmployeeName }}</td>
+                    <td>{{ ad.employeeName }}</td>
                     <td>{{ ad.adType }}</td>
                     <td>{{ ad.datePosted }}</td>
                     <td>{{ ad.company }}</td>

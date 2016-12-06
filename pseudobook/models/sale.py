@@ -2,6 +2,13 @@ from enum import Enum
 from pseudobook.database import mysql, MySQL
 from pseudobook.models import user as user_model
 
+searchable_sale_columns = dict()
+searchable_sale_columns['Item Name'] = 'ItemName'
+searchable_sale_columns['Item Type'] = 'ItemType'
+searchable_sale_columns['Company'] = 'Company'
+searchable_sale_columns['Ad Posted By'] = 'CustomerRepName'
+searchable_sale_columns['Customer'] = 'CustomerName'
+
 class REVENUE_REPORT_TYPES(Enum):
     Item = 1
     ItemType = 2
