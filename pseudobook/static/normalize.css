@@ -421,7 +421,12 @@ table {
   border-spacing: 0;
 }
 
+th {
+  padding-bottom: 6px;
+}
+
 td,
 th {
-  padding: 0;
+  padding-left: 8px;
+  padding-right: 8px;
 }

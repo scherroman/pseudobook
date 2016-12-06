@@ -1,43 +1,43 @@
 use pseudobook;
 
 -- basic users
-INSERT INTO `User` (`firstName`,`lastName`,`address`,`city`,`state`,`zipCode`,`telephone`,`email`,`accountCreationDate`,`rating`) VALUES 
-("Josiah","Gates","248-6520 Magnis St.","Orlando","FL","28336","8327315523","ac.libero.nec@loremsit.edu","2016-12-14 12:12:41",5),
-("Zephania","Gray","Ap #990-9718 Vel Rd.","Augusta","GA","33283","6107022041","et.netus.et@egestasDuis.co.uk","2016-02-29 12:20:08",4),
-("Ashton","Lindsay","P.O. Box 637, 6381 A Street","Reno","NV","19345","1728795170","est.Nunc@eget.edu","2017-10-23 03:25:22",6),
-("Moses","Kramer","P.O. Box 401, 8296 Sed Av.","Broken Arrow","OK","87908","3383163057","Vestibulum.ante.ipsum@CrasinterdumNunc.net","2016-11-14 19:41:49",3),
-("Marvin","Maxwell","3728 Morbi St.","Anchorage","AK","99814","6219386969","eu.placerat@eudui.net","2016-04-18 15:41:34",6),
-("Herman","Travis","753-1179 Velit. St.","Kansas City","KS","44248","6426316904","Donec@In.org","2016-04-26 15:53:13",7),
-("Keaton","Gonzales","Ap #251-2398 Mi Road","Covington","KY","53329","3851212078","ullamcorper@Quisquetincidunt.ca","2017-03-09 07:31:52",9),
-("Declan","Mason","7456 Faucibus. Rd.","Helena","MT","62434","5991876157","Sed.neque@laciniaSedcongue.net","2017-07-04 00:37:58",5),
-("Ronan","Price","9856 Semper Rd.","Tallahassee","FL","53485","2722917145","orci.sem@nequeNullamnisl.co.uk","2017-03-09 07:31:52",8),
-("Cadman","Pickett","P.O. Box 827, 1764 Mi, Rd.","Annapolis","MD","75550","7862533351","mi.lorem.vehicula@Quisquenonummyipsum.net","2016-08-18 01:46:59",10);
+INSERT INTO `User` (`passwordHash`,`firstName`,`lastName`,`address`,`city`,`state`,`zipCode`,`telephone`,`email`,`accountCreationDate`,`rating`) VALUES 
+("pwd","Josiah","Gates","248-6520 Magnis St.","Orlando","FL","28336","8327315523","ac.libero.nec@loremsit.edu","2016-12-14 12:12:41",5),
+("pwd","Zephania","Gray","Ap #990-9718 Vel Rd.","Augusta","GA","33283","6107022041","et.netus.et@egestasDuis.co.uk","2016-02-29 12:20:08",4),
+("pwd","Ashton","Lindsay","P.O. Box 637, 6381 A Street","Reno","NV","19345","1728795170","est.Nunc@eget.edu","2017-10-23 03:25:22",6),
+("pwd","Moses","Kramer","P.O. Box 401, 8296 Sed Av.","Broken Arrow","OK","87908","3383163057","Vestibulum.ante.ipsum@CrasinterdumNunc.net","2016-11-14 19:41:49",3),
+("pwd","Marvin","Maxwell","3728 Morbi St.","Anchorage","AK","99814","6219386969","eu.placerat@eudui.net","2016-04-18 15:41:34",6),
+("pwd","Herman","Travis","753-1179 Velit. St.","Kansas City","KS","44248","6426316904","Donec@In.org","2016-04-26 15:53:13",7),
+("pwd","Keaton","Gonzales","Ap #251-2398 Mi Road","Covington","KY","53329","3851212078","ullamcorper@Quisquetincidunt.ca","2017-03-09 07:31:52",9),
+("pwd","Declan","Mason","7456 Faucibus. Rd.","Helena","MT","62434","5991876157","Sed.neque@laciniaSedcongue.net","2017-07-04 00:37:58",5),
+("pwd","Ronan","Price","9856 Semper Rd.","Tallahassee","FL","53485","2722917145","orci.sem@nequeNullamnisl.co.uk","2017-03-09 07:31:52",8),
+("pwd","Cadman","Pickett","P.O. Box 827, 1764 Mi, Rd.","Annapolis","MD","75550","7862533351","mi.lorem.vehicula@Quisquenonummyipsum.net","2016-08-18 01:46:59",10);
 
 -- employees
-INSERT INTO `User` (`firstName`,`lastName`,`address`,`city`,`state`,`zipCode`,`telephone`,`email`,`accountCreationDate`,`rating`) VALUES 
-("Eagan","Gonzales","Ap #832-124 Congue. Av.","Newark","DE","65262","4891622153","blandit@tinciduntnunc.org","2016-02-02 15:32:08",6),
-("Isaiah","Davenport","P.O. Box 940, 9262 Vivamus St.","Akron","OH","59377","1419120980","et.commodo@molestiedapibusligula.co.uk","2017-09-16 15:06:17",1),
-("Allen","Downs","P.O. Box 783, 257 Dolor Av.","Allentown","PA","70853","2085231126","bibendum.ullamcorper.Duis@Fusce.org","2016-08-15 09:53:52",7),
-("Nasim","Clements","Ap #172-9187 Fermentum Street","San Antonio","TX","94962","6118249796","Duis@morbi.com","2017-03-25 03:48:39",5),
-("Judah","Huber","643-5477 Erat Rd.","Milwaukee","WI","48599","7276568237","Suspendisse.sagittis@Fusce.edu","2016-11-04 11:03:18",7),
-("Fuller","Alvarado","P.O. Box 663, 961 Massa. Street","Lincoln","NE","89159","5967529391","felis@sed.com","2017-05-05 12:18:25",9),
-("Steel","Preston","3481 Ac Avenue","Casper","WY","25780","2112086271","pharetra.felis@sodales.edu","2017-08-16 06:05:53",9),
-("Ashton","Howard","Ap #608-3479 Ipsum St.","Joliet","IL","71690","3501380905","aliquet.magna@Donecporttitortellus.edu","2017-03-04 04:43:21",9),
-("Basil","Pratt","377-3384 Augue Rd.","Sacramento","CA","95572","2506102243","venenatis@etrutrumeu.edu","2017-03-10 02:42:14",1),
-("Baker","Acosta","312-6667 Ut Rd.","Memphis","TN","20964","5493645759","posuere.cubilia@auctor.org","2016-08-22 08:41:56",4);
+INSERT INTO `User` (`passwordHash`,`firstName`,`lastName`,`address`,`city`,`state`,`zipCode`,`telephone`,`email`,`accountCreationDate`,`rating`) VALUES 
+("pwd","Eagan","Gonzales","Ap #832-124 Congue. Av.","Newark","DE","65262","4891622153","blandit@tinciduntnunc.org","2016-02-02 15:32:08",6),
+("pwd","Isaiah","Davenport","P.O. Box 940, 9262 Vivamus St.","Akron","OH","59377","1419120980","et.commodo@molestiedapibusligula.co.uk","2017-09-16 15:06:17",1),
+("pwd","Allen","Downs","P.O. Box 783, 257 Dolor Av.","Allentown","PA","70853","2085231126","bibendum.ullamcorper.Duis@Fusce.org","2016-08-15 09:53:52",7),
+("pwd","Nasim","Clements","Ap #172-9187 Fermentum Street","San Antonio","TX","94962","6118249796","Duis@morbi.com","2017-03-25 03:48:39",5),
+("pwd","Judah","Huber","643-5477 Erat Rd.","Milwaukee","WI","48599","7276568237","Suspendisse.sagittis@Fusce.edu","2016-11-04 11:03:18",7),
+("pwd","Fuller","Alvarado","P.O. Box 663, 961 Massa. Street","Lincoln","NE","89159","5967529391","felis@sed.com","2017-05-05 12:18:25",9),
+("pwd","Steel","Preston","3481 Ac Avenue","Casper","WY","25780","2112086271","pharetra.felis@sodales.edu","2017-08-16 06:05:53",9),
+("pwd","Ashton","Howard","Ap #608-3479 Ipsum St.","Joliet","IL","71690","3501380905","aliquet.magna@Donecporttitortellus.edu","2017-03-04 04:43:21",9),
+("pwd","Basil","Pratt","377-3384 Augue Rd.","Sacramento","CA","95572","2506102243","venenatis@etrutrumeu.edu","2017-03-10 02:42:14",1),
+("pwd","Baker","Acosta","312-6667 Ut Rd.","Memphis","TN","20964","5493645759","posuere.cubilia@auctor.org","2016-08-22 08:41:56",4);
 
 -- managers
-INSERT INTO `User` (`firstName`,`lastName`,`address`,`city`,`state`,`zipCode`,`telephone`,`email`,`accountCreationDate`,`rating`) VALUES 
-("Castor","Strong","P.O. Box 638, 6301 Fusce Rd.","Metairie","LA","20439","2922388657","Cras.convallis@adipiscing.org","2016-01-06 08:30:29",9),
-("Cade","Trujillo","P.O. Box 226, 5580 Tellus. Road","Cambridge","MA","10314","3584156207","aliquam.eros@Namconsequatdolor.ca","2017-04-14 13:53:56",1),
-("Quamar","Calderon","Ap #990-3883 Fringilla St.","Kapolei","HI","65485","5648060076","orci.consectetuer.euismod@sagittisNullamvitae.com","2015-12-06 06:56:59",2),
-("Lars","Calderon","673-6222 Ac Av.","Little Rock","AR","71935","3466122632","parturient.montes.nascetur@sitamet.ca","2017-03-29 15:00:26",8),
-("Anthony","Clarke","P.O. Box 584, 9061 Et Rd.","Wichita","KS","41366","3187504830","placerat.augue.Sed@laoreetipsum.co.uk","2015-12-02 19:36:09",3),
-("Fletcher","Small","P.O. Box 986, 4303 Eu Ave","West Jordan","UT","52371","5859441394","id.erat.Etiam@ipsumnonarcu.ca","2016-12-09 21:07:22",5),
-("Felix","Hendrix","467-838 Eu, Ave","Tacoma","WA","23613","3871428435","rutrum@temporlorem.com","2017-07-12 01:47:42",5),
-("Kermit","Lindsey","9039 Quisque Street","San Jose","CA","91770","8602088130","euismod.ac@felis.co.uk","2017-05-30 04:15:50",9),
-("Joshua","Harrison","Ap #896-7302 Nonummy Avenue","Chattanooga","TN","84295","3719453840","libero@a.co.uk","2017-10-01 22:17:03",3),
-("Carlos","Mack","Ap #753-5282 Amet, St.","Annapolis","MD","60247","5498361463","laoreet.libero@arcuAliquamultrices.co.uk","2016-11-05 08:15:01",5);
+INSERT INTO `User` (`passwordHash`,`firstName`,`lastName`,`address`,`city`,`state`,`zipCode`,`telephone`,`email`,`accountCreationDate`,`rating`) VALUES 
+("pwd","Castor","Strong","P.O. Box 638, 6301 Fusce Rd.","Metairie","LA","20439","2922388657","Cras.convallis@adipiscing.org","2016-01-06 08:30:29",9),
+("pwd","Cade","Trujillo","P.O. Box 226, 5580 Tellus. Road","Cambridge","MA","10314","3584156207","aliquam.eros@Namconsequatdolor.ca","2017-04-14 13:53:56",1),
+("pwd","Quamar","Calderon","Ap #990-3883 Fringilla St.","Kapolei","HI","65485","5648060076","orci.consectetuer.euismod@sagittisNullamvitae.com","2015-12-06 06:56:59",2),
+("pwd","Lars","Calderon","673-6222 Ac Av.","Little Rock","AR","71935","3466122632","parturient.montes.nascetur@sitamet.ca","2017-03-29 15:00:26",8),
+("pwd","Anthony","Clarke","P.O. Box 584, 9061 Et Rd.","Wichita","KS","41366","3187504830","placerat.augue.Sed@laoreetipsum.co.uk","2015-12-02 19:36:09",3),
+("pwd","Fletcher","Small","P.O. Box 986, 4303 Eu Ave","West Jordan","UT","52371","5859441394","id.erat.Etiam@ipsumnonarcu.ca","2016-12-09 21:07:22",5),
+("pwd","Felix","Hendrix","467-838 Eu, Ave","Tacoma","WA","23613","3871428435","rutrum@temporlorem.com","2017-07-12 01:47:42",5),
+("pwd","Kermit","Lindsey","9039 Quisque Street","San Jose","CA","91770","8602088130","euismod.ac@felis.co.uk","2017-05-30 04:15:50",9),
+("pwd","Joshua","Harrison","Ap #896-7302 Nonummy Avenue","Chattanooga","TN","84295","3719453840","libero@a.co.uk","2017-10-01 22:17:03",3),
+("pwd","Carlos","Mack","Ap #753-5282 Amet, St.","Annapolis","MD","60247","5498361463","laoreet.libero@arcuAliquamultrices.co.uk","2016-11-05 08:15:01",5);
 
 INSERT INTO `Messages` (`fromID`,`toID`,`subject`,`content`) VALUES 
 (2,1,"Nulla interdum. Curabitur","lobortis quam a felis ullamcorper viverra. Maecenas iaculis aliquet diam."),
