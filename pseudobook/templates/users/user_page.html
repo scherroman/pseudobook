@@ -3,68 +3,89 @@
 {% block content %}
     
     <div class="left-container container">
-        <div id="status_section" class="row">
-			<h2 class="page-header">{{ user.firstName }} {{user.lastName}}'s page</h2>
+        <div id="status_section">
+			<h2 class="page-header">{{ user.firstName }} {{user.lastName}}'s wall</h2>
 			<form action="{{ url_for('users.make_post_form') }}" method="POST">
-				<div class="col-xs-12 post-status-form form-group">
+				<div class="post-status-form form-group">
 				  {{ make_post_form.hidden_tag() }}
 				  {% if is_current_users_page %}
 				  	{{ make_post_form.content(class="form-control",rows="2") }}
 				  {% else %}
-				  	{{ make_post_form.content(class="form-control",rows="2",placeholder="Write something on " + user.firstName + " " + user.lastName + "'s page") }}
+				  	{{ make_post_form.content(class="form-control",rows="2",placeholder="Write something on " + user.firstName + " " + user.lastName + "'s wall") }}
 				  {% endif %}
 				  {{ make_post_form.pageID(type="hidden", value=page.pageID) }}
 				  {{ make_post_form.authorID(type="hidden", value=current_user.userID) }}
 				</div>
-				<div class="col-xs-12 center-block">
+				<div>
 				  <button type="submit" class="btn btn-default center-block">post</button>
 				</div>
 			</form>
         </div>
-        <div id="posts_section" class="row">
-        	<h2 class="page-header">Posts</h2>
-	        {% for post in posts %}
-		        <div class="list-link-div">
-		        	<a class="list-link post-author" href="{{ url_for('users.user_page', userID=post.authorID) }}">
-		            	<b>{{ post.author_name }}</b> 
-		            </a>
-		            <small class='post-timestamp'> {{ post.postDate }}</small>
-		            {% if is_current_users_page %}
+        <div>
+	        <ul class="nav nav-tabs page-menu">
+	          <li class="active"><a data-toggle="tab" href="#posts-section">Posts</a></li>
+	          <li><a data-toggle="tab" href="#groups-section">Groups</a></li>
+	        </ul>
+	    </div>
+	    <div class="tab-content">
+	        <div id="posts-section" class="tab-pane fade in active">
+		        {% for post in posts %}
+			        <div class="list-link-div">
+			        	<a class="list-link post-author" href="{{ url_for('users.user_page', userID=post.authorID) }}">
+			            	<b>{{ post.author_name }}</b> 
+			            </a>
+			            <small class='post-timestamp'> {{ post.postDate }}</small>
 			            <span class="btn-group list-link-dropdown">
 							<button class="dropdown-button btn btn-mini button-transparent dropdown-toggle" data-toggle="dropdown">
 							  <span class="caret"></span>
 							</button>
 							<ul class="dropdown-menu pull-right">
+								{% if is_current_users_page or current_user.userID == post.authorID %}
 								<li>
-									<a onclick="$(this).find('>:first-child').submit()" style="cursor:pointer;">
+									<a onclick="$(this).find('> form:first').submit()" style="cursor:pointer;">
 										<form action="{{ url_for('users.remove_post_form') }}" method="POST" style="display:none;">
 										    {{ post.remove_post_form.hidden_tag() }}
 										    {{ post.remove_post_form.postID(type="hidden", value=post.postID) }}
 										</form>
-										<span class="glyphicon glyphicon-envelope" style="padding-right:10px;"></span>
+										<span class="glyphicon glyphicon-remove" style="padding-right:10px;"></span>
 										Delete
 									</a>
 								</li>
+								{% endif %}
 							</ul>
 			            </span>
-
-			        {% endif %}
-		            <br>
-		        	<p class="post-text">{{ post.postContent }}</p>
-		          </a>
-		        </div>
-	        {% endfor %}
-            {% if prev or next %}
-            	<div class="row">
-            		{% if prev %}
-            			<a class="fade-link nextprev float-left" href="{{ url_for('users.user_page', userID=user.userID, offset=offset - 1, search=search) }}">❮ Prev</a>
-            		{% endif %}
-        			{% if next %}
-        	    		<a class="fade-link nextprev float-right" href="{{ url_for('users.user_page', userID=user.userID, offset=offset + 1, search=search) }}">Next ❯</a>
-            		{% endif %}
-            	</div>
-        	{% endif %}
-        </div>
+			            <br>
+			        	<p class="post-text">{{ post.postContent }}</p>
+			          </a>
+			        </div>
+		        {% endfor %}
+	            {% if prev_posts or next_posts %}
+	            	<div>
+	            		{% if prev_posts %}
+	            			<a class="fade-link nextprev float-left" href="{{ url_for('users.user_page', userID=user.userID, offset=offset - 1, search=search) }}">❮ Prev</a>
+	            		{% endif %}
+	        			{% if next_posts %}
+	        	    		<a class="fade-link nextprev float-right" href="{{ url_for('users.user_page', userID=user.userID, offset=offset + 1, search=search) }}">Next ❯</a>
+	            		{% endif %}
+	            	</div>
+	        	{% endif %}
+	        </div>
+            <div id="groups-section" class="tab-pane fade in">
+    	        {% for group in groups %}
+    		        
+    	        {% endfor %}
+                {% if prev_groups or next_groups %}
+                	<div>
+                		{% if prev_groups %}
+                			<a class="fade-link nextprev float-left" href="{{ url_for('users.user_page', userID=user.userID, offset=offset - 1, search=search) }}">❮ Prev</a>
+                		{% endif %}
+            			{% if next_groups %}
+            	    		<a class="fade-link nextprev float-right" href="{{ url_for('users.user_page', userID=user.userID, offset=offset + 1, search=search) }}">Next ❯</a>
+                		{% endif %}
+                	</div>
+            	{% endif %}
+            </div>
+	    </div>
     </div>
 
 {% endblock %}

@@ -66,6 +66,7 @@ p { font-size: 15px; }
     box-shadow: none !important;
 }
 
+.page-menu { margin: 20px 0px 22px; }
 .post-text { font-size: 17px; }
 .post-author:after {
     content: "\00b7";

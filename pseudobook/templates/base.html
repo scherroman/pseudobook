@@ -33,7 +33,7 @@
           <div id="navbar1" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
               {% if not current_user.is_anonymous %}
-              <li><a href="{{ url_for('users.user_page', userID=current_user.userID) }}">My page</a></li>
+              <li><a href="{{ url_for('users.user_page', userID=current_user.userID) }}">My wall</a></li>
               {% else %}
               <li><a href="{{ url_for('admin.login') }}">My page</a></li>
               {% endif %}
