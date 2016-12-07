@@ -54,6 +54,7 @@ END$
 
 DROP PROCEDURE IF EXISTS createGroup;
 CREATE PROCEDURE createGroup(
+    OUT lastID INTEGER,
 	groupName VARCHAR(60),
     groupType CHAR(2),
     ownerID INTEGER
