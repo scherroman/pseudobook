@@ -7,6 +7,7 @@ from pseudobook.database import mysql
 from pseudobook.models import user as user_model
 from pseudobook.models import page as page_model
 from pseudobook.models import post as post_model
+from pseudobook.models import group as group_model
 
 from pseudobook.forms.make_post import MakePost as MakePostForm
 from pseudobook.forms.remove_post import RemovePost as RemovePostForm
@@ -38,7 +39,7 @@ def user_page(userID):
 		prev_posts = True if offset > 0 else False
 		next_posts = True if ((offset + 1) * POSTS_PER_PAGE) < total_posts else False
 
-		groups = []
+		groups = group_model.Group.group_names(userID)
 		prev_groups = None
 		next_groups = None
 
