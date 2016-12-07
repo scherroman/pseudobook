@@ -2,7 +2,8 @@ from pseudobook.database import mysql, MySQL
 
 class Group():
     
-    def __init__(self, groupName, groupType, ownerID):
+    def __init__(self, groupID, groupName, groupType, ownerID):
+        self.groupID = groupID
         self.groupName = groupName
         self.groupType = ownerID
         self.ownerID = ownerID
@@ -14,18 +15,26 @@ class Group():
                 self.ownerID
         )
 
+    def create_group(self):
+        cursor = mysql.connection.cursor()
+        try:
+            cursor.execute('''CALL createGroup(@groupID, "{}", "{}", "{}")
+                              '''.format(self.groupName, self.groupType, self.ownerID))
+            mysql.connection.commit()
+            cursor.execute('''SELECT @groupID''')
+        except (mysql.connection.Error, mysql.connection.Warning) as e:
+            raise
+        else:
+            result = cursor.fetchone()
+            groupID = result.get('@groupID') if result else None
+            
+        return groupID
+
+
     @staticmethod
     def group_names(userID):
 
         cursor = mysql.connection.cursor()
-            # cursor.execute('''SELECT U.userID, U.firstName, U.lastName
-            #               FROM User AS U
-            #               WHERE U.firstName LIKE \'{0}%\' 
-            #                     OR U.lastName LIKE \'{0}%\' 
-            #                     OR CONCAT(U.firstName, \' \', U.lastName) LIKE \'{0}%\'
-            #               ORDER BY U.firstName
-            #               LIMIT {1} OFFSET {2}
-            #               '''.format(search, num_users, offset * num_users))
         query = '''SELECT G.groupName AS group_name
                           FROM GroupUsers GU, `Group` G
                           WHERE GU.userID = {} AND G.groupID = GU.groupID
