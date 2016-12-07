@@ -1,11 +1,10 @@
 from flask_wtf import Form
 from wtforms.fields import TextAreaField, StringField, SubmitField, PasswordField
-from wtforms.validators import DataRequired
+from wtforms.validators import DataRequired, Length
 
 class CreateGroup(Form):
-    content = TextAreaField('groupName', validators=[DataRequired()], render_kw={"placeholder": "Group Name"})
-    pageID = StringField('groupType', validators=[DataRequired()], render_kw={"placeholder": "Group Type"})
-    authorID = StringField('ownerID', validators=[DataRequired()])
+    groupName = TextAreaField('groupName', validators=[DataRequired()], render_kw={"placeholder": "Group Name"})
+    groupType = StringField('groupType', validators=[DataRequired(), Length(max=2)], render_kw={"placeholder": "2-character Group Type"})
 
 '''
 author @edgar
