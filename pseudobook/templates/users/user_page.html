@@ -72,8 +72,22 @@
 	        </div>
             <div id="groups-section" class="tab-pane fade in">
     	        {% for group in groups %}
-    		        
-    	        {% endfor %}
+    		        <div class="list-link-div">
+			        	<a class="list-link post-author" href="{{ url_for('groups.group_page', groupID=group.groupID) }}">
+			            	<b>{{ group.groupName }}</b> 
+			            </a>
+			            <span class="btn-group list-link-dropdown">
+							<button class="dropdown-button btn btn-mini button-transparent dropdown-toggle" data-toggle="dropdown">
+							  <span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu pull-right">
+
+							</ul>
+			            </span>
+			            <br>
+			          </a>
+			        </div>
+		        {% endfor %}
                 {% if prev_groups or next_groups %}
                 	<div>
                 		{% if prev_groups %}
