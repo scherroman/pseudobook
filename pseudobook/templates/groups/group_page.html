@@ -4,15 +4,11 @@
     
     <div class="left-container container">
         <div id="status_section">
-			<h2 class="page-header">{{ user.firstName }} {{user.lastName}}'s wall</h2>
-			<form action="{{ url_for('users.make_post_form') }}" method="POST">
+			<h2 class="page-header">{{ group.groupName }} group wall</h2>
+			<form action="{{ url_for('groups.make_post_form') }}" method="POST">
 				<div class="post-status-form form-group">
 				  {{ make_post_form.hidden_tag() }}
-				  {% if is_current_users_page %}
-				  	{{ make_post_form.content(class="form-control",rows="2") }}
-				  {% else %}
-				  	{{ make_post_form.content(class="form-control",rows="2",placeholder="Write something on " + user.firstName + " " + user.lastName + "'s wall...") }}
-				  {% endif %}
+				  	{{ make_post_form.content(class="form-control",rows="2",placeholder="Write something to this group...") }}
 				  {{ make_post_form.pageID(type="hidden", value=page.pageID) }}
 				  {{ make_post_form.authorID(type="hidden", value=current_user.userID) }}
 				</div>
@@ -24,7 +20,7 @@
         <div>
 	        <ul class="nav nav-tabs page-menu">
 	          <li class="active"><a data-toggle="tab" href="#posts-section">Posts</a></li>
-	          <li><a data-toggle="tab" href="#groups-section">Groups</a></li>
+	          <li><a data-toggle="tab" href="#users-section">Users</a></li>
 	        </ul>
 	    </div>
 	    <div class="tab-content">
@@ -40,10 +36,10 @@
 							  <span class="caret"></span>
 							</button>
 							<ul class="dropdown-menu pull-right">
-								{% if is_current_users_page or current_user.userID == post.authorID %}
+								{% if current_user.userID == post.authorID %}
 								<li>
 									<a onclick="$(this).find('> form:first').submit()" style="cursor:pointer;">
-										<form action="{{ url_for('users.remove_post_form') }}" method="POST" style="display:none;">
+										<form action="{{ url_for('groups.remove_post_form') }}" method="POST" style="display:none;">
 										    {{ post.remove_post_form.hidden_tag() }}
 										    {{ post.remove_post_form.postID(type="hidden", value=post.postID) }}
 										</form>
@@ -62,19 +58,19 @@
 	            {% if prev_posts or next_posts %}
 	            	<div>
 	            		{% if prev_posts %}
-	            			<a class="fade-link nextprev float-left" href="{{ url_for('users.user_page', userID=user.userID, offset=offset - 1, search=search) }}">❮ Prev</a>
+	            			<a class="fade-link nextprev float-left" href="{{ url_for('groups.group_page', groupID=group.groupID, posts_offset=posts_offset - 1, posts_search=posts_search) }}">❮ Prev</a>
 	            		{% endif %}
 	        			{% if next_posts %}
-	        	    		<a class="fade-link nextprev float-right" href="{{ url_for('users.user_page', userID=user.userID, offset=offset + 1, search=search) }}">Next ❯</a>
+	        	    		<a class="fade-link nextprev float-right" href="{{ url_for('groups.group_page', groupID=group.groupID, posts_offset=posts_offset + 1, posts_search=posts_search) }}">Next ❯</a>
 	            		{% endif %}
 	            	</div>
 	        	{% endif %}
 	        </div>
-            <div id="groups-section" class="tab-pane fade in">
-    	        {% for group in groups %}
+            <div id="users-section" class="tab-pane fade in">
+    	        {% for user in users %}
     		        <div class="list-link-div">
-			        	<a class="list-link post-author" href="{{ url_for('groups.group_page', groupID=group.groupID) }}">
-			            	<b>{{ group.groupName }}</b> 
+			        	<a class="list-link" href="{{ url_for('users.user_page', userID=user.userID) }}">
+			            	<b>{{ user.firstName }} {{ user.lastName }}</b> 
 			            </a>
 			            <span class="btn-group list-link-dropdown">
 							<button class="dropdown-button btn btn-mini button-transparent dropdown-toggle" data-toggle="dropdown">
@@ -91,10 +87,10 @@
                 {% if prev_groups or next_groups %}
                 	<div>
                 		{% if prev_groups %}
-                			<a class="fade-link nextprev float-left" href="{{ url_for('users.user_page', userID=user.userID, offset=offset - 1, search=search) }}">❮ Prev</a>
+                			<a class="fade-link nextprev float-left" href="{{ url_for('groups.group_page', groupID=group.groupID, users_offset=users_offset - 1, users_search=users_search) }}">❮ Prev</a>
                 		{% endif %}
             			{% if next_groups %}
-            	    		<a class="fade-link nextprev float-right" href="{{ url_for('users.user_page', userID=user.userID, offset=offset + 1, search=search) }}">Next ❯</a>
+            	    		<a class="fade-link nextprev float-right" href="{{ url_for('groups.group_page', groupID=group.groupID, users_offset=users_offset + 1, users_search=users_search) }}">Next ❯</a>
                 		{% endif %}
                 	</div>
             	{% endif %}

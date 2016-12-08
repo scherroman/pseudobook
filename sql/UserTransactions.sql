@@ -54,7 +54,7 @@ END$
 
 DROP PROCEDURE IF EXISTS createGroup;
 CREATE PROCEDURE createGroup(
-    OUT lastID INTEGER,
+    OUT groupID INTEGER,
 	groupName VARCHAR(60),
     groupType CHAR(2),
     ownerID INTEGER
@@ -63,11 +63,11 @@ BEGIN
 	DECLARE lastID INTEGER;
 	INSERT INTO `Group` (groupName, groupType, ownerID)
     VALUES (groupName, groupType, ownerID);
-    SELECT last_insert_id() into lastID;
+    SET groupID = last_insert_id();
     INSERT INTO `Page` (groupID, postCount, pageType)
-    VALUES (lastID, 0, "gr");
+    VALUES (groupID, 0, "gr");
     INSERT INTO GroupUsers (groupID, userID)
-    VALUES (lastID, ownerID);
+    VALUES (groupID, ownerID);
 END$
 
 DROP PROCEDURE IF EXISTS searchForUser;
@@ -113,9 +113,14 @@ BEGIN
 		SELECT groupID into ownID FROM `Page` WHERE (pageID = `Page`.pageID);
 	ELSE SELECT userID into ownID FROM `Page` WHERE (pageID = `Page`.pageID);
 	END IF;
-    IF (pageType = 'gr' AND (SELECT 1 FROM GroupUsers WHERE(ownID = GroupUsers.groupID AND selfID = GroupUsers.userID)) ) THEN
-		INSERT INTO Post (pageID, postDate, postContent, authorID)
-		VALUES (pageID, postDate, postContent, selfID);
+    IF (pageType = 'gr') THEN
+        IF (SELECT EXISTS(SELECT 1 FROM GroupUsers WHERE (ownID = GroupUsers.groupID AND selfID = GroupUsers.userID))) THEN
+    		INSERT INTO Post (pageID, postDate, postContent, authorID)
+    		VALUES (pageID, postDate, postContent, selfID);
+        ELSE
+            SIGNAL SQLSTATE '45000' 
+            SET MESSAGE_TEXT = 'Not authorized to post to this group';
+        END IF;
 	ELSEIF (pageType = 'pr') THEN
 		INSERT INTO Post (pageID, postDate, postContent, authorID)
 		VALUES (pageID, postDate, postContent, selfID);

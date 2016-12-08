@@ -3,19 +3,15 @@
 {% block content %}
 
 <div class="center-container container">
-  <p class="page-title">Pseudobook</p>
+  <p class="page-title">Create Group</p>
   <div class="row" style="margin-bottom: 15px;">
     <form action="{{ url_for('groups.create_group_form') }}" method="POST">
       <div class="form-group col-sm-6 col-sm-offset-3">
         {{ form.hidden_tag() }}
         {{ form.groupName(class="form-control") }}
       </div>
-      <div class="form-group col-sm-6 col-sm-offset-3">
-        {{ form.hidden_tag() }}
-        {{ form.groupType(class="form-control") }}
-      </div>
       <div class="col-xs-12 center-block">
-        <button type="submit" class="btn btn-default center-block">signup</button>
+        <button type="submit" class="btn btn-default center-block">create</button>
       </div>
     </form>
   </div>

@@ -21,14 +21,14 @@
     </div>
 
     {% with messages = get_flashed_messages() %}
-    {% if messages %}
-      <div class="flashes row">
-      {% for message in messages %}
-        <p style="text-align:center;">{{ message }}</p>
-      {% endfor %}
-      </div>
-    {% endif %}
-  {% endwith %}
+      {% if messages %}
+        <div class="flashes row">
+        {% for message in messages %}
+          <p style="text-align:center;">{{ message }}</p>
+        {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
 </div>
 
 {% endblock %}
