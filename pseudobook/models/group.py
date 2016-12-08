@@ -30,6 +30,41 @@ class Group():
             
         return groupID
 
+    @staticmethod
+    def scroll_groups(offset, num_users, search):
+        search = search if search else ""
+        
+        cursor = mysql.connection.cursor()
+        cursor.execute('''SELECT *
+                          FROM `Group` AS G
+                          WHERE G.groupName LIKE \'{0}%\'
+                          ORDER BY G.groupName
+                          LIMIT {1} OFFSET {2}
+                          '''.format(search, num_users, offset * num_users))
+        results = cursor.fetchall()
+        
+        groups = [Group.group_from_dict(tup) for tup in (x for x in results)]
+
+        return groups
+
+    @staticmethod
+    def group_from_dict(g_dict):
+        return Group(g_dict['groupID'], 
+                    g_dict['groupName'],
+                    g_dict['groupType'],
+                    g_dict['ownerID'])
+
+    @staticmethod
+    def count_groups(search):
+        search = search if search else ""
+
+        cursor = mysql.connection.cursor()
+        cursor.execute('''SELECT COUNT(*) AS count
+                          FROM `Group` AS G
+                          WHERE G.groupName LIKE \'{0}%\'
+                          '''.format(search))
+        results = cursor.fetchone()
+        return results['count']
 
     @staticmethod
     def group_list(userID):
