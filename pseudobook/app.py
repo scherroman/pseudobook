@@ -9,6 +9,7 @@ from pseudobook.routes import admin
 from pseudobook.routes import users
 from pseudobook.routes import manager
 from pseudobook.routes import groups
+
 '''
 Setup
 '''
