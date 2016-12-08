@@ -38,8 +38,7 @@ def user_page(userID):
 		posts = page.scroll_posts(offset, POSTS_PER_PAGE, search)
 		prev_posts = True if offset > 0 else False
 		next_posts = True if ((offset + 1) * POSTS_PER_PAGE) < total_posts else False
-
-		groups = group_model.Group.group_names(userID)
+		groups = group_model.Group.group_list(userID)
 		prev_groups = None
 		next_groups = None
 
