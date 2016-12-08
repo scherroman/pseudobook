@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block content %}
+    
+    <div class="left-container container">
+    	<div>
+            <ul class="nav nav-tabs page-menu">
+              <li class="active"><a data-toggle="tab" href="#activity-section">Activity</a></li>
+              <li><a data-toggle="tab" href="#groups-section">Groups</a></li>
+            </ul>
+        </div>
+        <div class="tab-content">
+            <div id="activity-section" class="tab-pane fade in active">
+            {% for group_post in group_posts %}
+                <div class="list-link-div">
+                    <span class="post-author">
+                    <a class="list-link" href="{{ url_for('groups.group_page', groupID=group_post.ownerID) }}">
+                        {% if group_post.ownerID == group_post.page_owner_id %}
+                            <b>{{ group_post.author_name }}</a> posted a status</b>
+                        {% else %}
+                            <b>{{ group_post.author_name }}</a> wrote on <a class="list-link" href="{{ url_for('groups.group_page', groupID=group_post.page_owner_id) }}">{{ group_post.page_owner_name }}'s</a> page</b>
+                        {% endif %}
+                    </span>
+                    <small class='post-timestamp'> {{ group_post.postDate }}</small>
+                    <span class="btn-group list-link-dropdown">
+                        <button class="dropdown-button btn btn-mini button-transparent dropdown-toggle" data-toggle="dropdown">
+                          <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu pull-right">
+
+                        </ul>
+                    </span>
+                    <br>
+                    <p class="post-text">{{ group_post.postContent }}</p>
+                  </a>
+                </div>
+            {% endfor %}
+            {% if prev_group_posts or next_group_posts %}
+                <div>
+                    {% if prev_group_posts %}
+                        <a class="fade-link nextprev float-left" href="{{ url_for('groups.groups', group_post_offset=group_post_offset - 1) }}">❮ Prev</a>
+                    {% endif %}
+                    {% if next_group_posts %}
+                        <a class="fade-link nextprev float-right" href="{{ url_for('groups.groups', groups_post_offset=group_post_offset + 1) }}">Next ❯</a>
+                    {% endif %}
+                </div>
+            {% endif %}
+            </div>
+            <div id="groups-section" class="tab-pane fade in">
+            {% for group in groups %}
+                <div class="list-link-div">
+                    <a class="list-link" href="{{ url_for('groups.group_page', groupID=group.groupID) }}">
+                        {{ group.groupName }}
+                    </a>
+                    <span class="btn-group list-link-dropdown">
+                      <button class="dropdown-button btn btn-mini button-transparent dropdown-toggle" data-toggle="dropdown">
+                          <span class="caret"></span>
+                      </button>
+                      <ul class="dropdown-menu pull-right">
+
+                      </ul>
+                    </span>
+                  </a>
+                </div>
+            {% endfor %}
+            {% if groups|length == 0 %}
+                <p>No Results</p>
+            {% endif %}
+            {% if prev_groups or next_groups %}
+                <div>
+                    {% if prev_groups %}
+                        <a class="fade-link nextprev float-left" href="{{ url_for('groups.groups', offset=offset - 1, search=search) }}">❮ Prev</a>
+                    {% endif %}
+                    {% if next_groups %}
+                        <a class="fade-link nextprev float-right" href="{{ url_for('groups.groups', offset=offset + 1, search=search) }}">Next ❯</a>
+                    {% endif %}
+                </div>
+            {% endif %}
+            </div>
+        </div>
+        
+
+        
+    </div>
+
+{% endblock %}
