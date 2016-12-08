@@ -72,14 +72,21 @@
 			        	<a class="list-link" href="{{ url_for('users.user_page', userID=user.userID) }}">
 			            	<b>{{ user.firstName }} {{ user.lastName }}</b> 
 			            </a>
+			            {% if current_user.userID == user.userID %}
 			            <span class="btn-group list-link-dropdown">
 							<button class="dropdown-button btn btn-mini button-transparent dropdown-toggle" data-toggle="dropdown">
 							  <span class="caret"></span>
 							</button>
 							<ul class="dropdown-menu pull-right">
-
+								<li>
+									<a style="cursor:pointer;">
+										<span class="glyphicon glyphicon-minus" style="padding-right:10px;"></span>
+										Remove From Group
+									</a>
+								</li>
 							</ul>
 			            </span>
+			            {% endif %}
 			            <br>
 			          </a>
 			        </div>

@@ -22,14 +22,26 @@
                         {% endif %}
                     </span>
                     <small class='post-timestamp'> {{ group_post.postDate }}</small>
+                    {% if current_user.userID == group_post.authorID %}
                     <span class="btn-group list-link-dropdown">
                         <button class="dropdown-button btn btn-mini button-transparent dropdown-toggle" data-toggle="dropdown">
                           <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu pull-right">
-
+                            
+                            <li>
+                                <a onclick="$(this).find('> form:first').submit()" style="cursor:pointer;">
+                                    <form action="{{ url_for('users.remove_post_form') }}" method="POST" style="display:none;">
+                                        {{ group_post.remove_post_form.hidden_tag() }}
+                                        {{ group_post.remove_post_form.postID(type="hidden", value=group_post.postID) }}
+                                    </form>
+                                    <span class="glyphicon glyphicon-remove" style="padding-right:10px;"></span>
+                                    Delete
+                                </a>
+                            </li>
                         </ul>
                     </span>
+                    {% endif %}
                     <br>
                     <p class="post-text">{{ group_post.postContent }}</p>
                   </a>
@@ -57,7 +69,7 @@
                           <span class="caret"></span>
                       </button>
                       <ul class="dropdown-menu pull-right">
-
+                      <li><a style="cursor:pointer;"><span class="glyphicon glyphicon-plus" style="padding-right:10px;"></span>Join group</a></li>
                       </ul>
                     </span>
                   </a>

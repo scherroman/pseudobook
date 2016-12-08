@@ -47,6 +47,9 @@ def groups():
     prev_group_posts = True if group_post_offset > 0 else False
     next_group_posts = True if ((group_post_offset + 1) * POSTS_PER_PAGE) < total_group_posts else False
 
+    for group_post in group_posts:
+        remove_post_form = RemovePostForm()
+        group_post.remove_post_form = remove_post_form
     return render_template('groups.html', 
                             current_user=current_user, 
                             groups=groups, 

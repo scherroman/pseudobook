@@ -22,12 +22,13 @@
                         {% endif %}
                     </span>
                     <small class='post-timestamp'> {{ user_post.postDate }}</small>
+                    {% if current_user.userID == user_post.authorID %}
                     <span class="btn-group list-link-dropdown">
                         <button class="dropdown-button btn btn-mini button-transparent dropdown-toggle" data-toggle="dropdown">
                           <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu pull-right">
-                            {% if current_user.userID == user_post.authorID %}
+                            
                             <li>
                                 <a onclick="$(this).find('> form:first').submit()" style="cursor:pointer;">
                                     <form action="{{ url_for('users.remove_post_form') }}" method="POST" style="display:none;">
@@ -38,9 +39,9 @@
                                     Delete
                                 </a>
                             </li>
-                            {% endif %}
                         </ul>
                     </span>
+                    {% endif %}
                     <br>
                     <p class="post-text">{{ user_post.postContent }}</p>
                   </a>
@@ -68,7 +69,7 @@
                           <span class="caret"></span>
                       </button>
                       <ul class="dropdown-menu pull-right">
-                          <li><a class="message-user" style="cursor:pointer;"><span class="glyphicon glyphicon-envelope" style="padding-right:10px;"></span>Message</a></li>
+                          <li><a style="cursor:pointer;"><span class="glyphicon glyphicon-plus" style="padding-right:10px;"></span>Add to group</a></li>
                       </ul>
                     </span>
                   </a>
