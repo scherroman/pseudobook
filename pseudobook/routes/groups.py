@@ -202,9 +202,6 @@ def join_group():
     groupID = request.form['groupID']
     userID = request.form['userID']
 
-    print("groupID {}".format(groupID))
-    print("userID {}".format(userID))
-
     join_unjoin_form = JoinUnjoinForm(request.form)
     if request.form and join_unjoin_form.validate_on_submit():
         group = group_model.Group.get_group_by_id(groupID)
