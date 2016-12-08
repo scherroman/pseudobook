@@ -7,12 +7,8 @@ from pseudobook.authentication import login_manager
 # Blueprints
 from pseudobook.routes import admin
 from pseudobook.routes import users
-<<<<<<< HEAD
 from pseudobook.routes import manager
-
-=======
 from pseudobook.routes import groups
->>>>>>> group-creation/join/unjoin
 '''
 Setup
 '''
