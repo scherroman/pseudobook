@@ -19,8 +19,15 @@
         </div>
         <div>
 	        <ul class="nav nav-tabs page-menu">
-	          <li class="active"><a data-toggle="tab" href="#posts-section">Posts</a></li>
-	          <li><a data-toggle="tab" href="#users-section">Users</a></li>
+				<li class="active"><a  data-toggle="tab" href="#posts-section">Posts</a></li>
+				<li><a  data-toggle="tab" href="#users-section">Users</a></li>
+				<li><a  data-toggle="tab" href="#add-users-section">Add Users</a></li>
+				<li class="dropdown hover-tab">
+					<a class="dropdown-toggle" data-toggle="tab" href="#settings-section">Settings <span class="caret"></span></a>
+					<ul class="dropdown-menu">
+						<li><a href="#">Join Group</a></li>                      
+					</ul>
+	          	</li>
 	        </ul>
 	    </div>
 	    <div class="tab-content">
@@ -66,7 +73,7 @@
 	            	</div>
 	        	{% endif %}
 	        </div>
-            <div id="users-section" class="tab-pane fade in">
+            <div id="users-section" class="tab-pane fade in hover-tab">
     	        {% for user in users %}
     		        <div class="list-link-div">
 			        	<a class="list-link" href="{{ url_for('users.user_page', userID=user.userID) }}">
@@ -101,6 +108,10 @@
                 		{% endif %}
                 	</div>
             	{% endif %}
+            </div>
+            <div id="add-users-section" class="tab-pane fade in hover-tab">
+            </div>
+            <div id="settings-section" class="tab-pane fade in hover-tab">
             </div>
 	    </div>
 	    {% with messages = get_flashed_messages() %}

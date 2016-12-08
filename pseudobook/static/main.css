@@ -72,6 +72,10 @@ p { font-size: 15px; }
     content: "\00b7";
 }
 
+.hover-tab:hover > ul.dropdown-menu {
+    display: block;    
+}
+
 .nextprev { font-size: 20px; }
 
 input[type=submit] {

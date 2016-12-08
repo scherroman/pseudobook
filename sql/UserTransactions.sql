@@ -89,7 +89,7 @@ CREATE PROCEDURE addUserToOwnGroup(
     userID INTEGER
 )
 BEGIN
-	IF (SELECT 1 FROM `Group` WHERE (selfID = `Group`.ownerID AND groupID = `Group`.groupID)) THEN
+	IF (SELECT EXISTS(SELECT 1 FROM `Group` WHERE (selfID = `Group`.ownerID AND groupID = `Group`.groupID))) THEN
 		INSERT INTO GroupUsers (groupID, userID)
 		VALUES (groupID, userID);
 	END IF;
@@ -175,7 +175,7 @@ CREATE PROCEDURE removeUserFromGroup(
     userID INTEGER
 )
 BEGIN
-	IF (SELECT 1 FROM `Group` WHERE (selfID = `Group`.ownerID AND groupID = `Group`.groupID)) THEN
+	IF (SELECT EXISTS(SELECT 1 FROM `Group` WHERE (selfID = `Group`.ownerID AND groupID = `Group`.groupID))) THEN
 		DELETE FROM GroupUsers
 		WHERE (groupID = GroupUsers.groupID AND userID = GroupUsers.userID);
 	END IF;

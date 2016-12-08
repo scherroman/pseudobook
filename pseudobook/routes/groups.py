@@ -181,3 +181,12 @@ def remove_post_form():
             abort(403)
 
     return redirect(request.referrer)
+
+@mod.route('/groups/forms/join_group', methods=['POST'])
+@login_required
+def join_group():
+    # groupID = request.form['groupID']
+    # group = group_model.Group.get_group_by_id(groupID)
+    # group.join_group(current_user.userID)
+
+    return redirect(request.referrer)
