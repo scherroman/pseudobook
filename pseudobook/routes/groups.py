@@ -16,6 +16,28 @@ mod = Blueprint('groups', __name__, template_folder='../templates/groups')
 '''
 View Routes
 '''
+@mod.route('/groups', methods=['GET'])
+@login_required
+def groups():
+    search = request.values.get('search')
+    offset = request.values.get('offset')
+    offset = int(offset) if offset else 0
+    group_post_offset = request.values.get('group_post_offset')
+    group_post_offset = int(user_post_offset) if user_post_offset else 0
+
+    total_users = user_model.User.count_users(search)
+    users = user_model.User.scroll_users(offset, USERS_PER_PAGE, search)
+    prev_users = True if offset > 0 else False
+    next_users = True if ((offset + 1) * USERS_PER_PAGE) < total_users else False
+
+    # Scroll all posts made by user
+    total_user_posts = page_model.Page.count_posts_for_page_type(page_model.Page.PAGE_TYPE_USER, None)
+    user_posts = page_model.Page.scroll_posts_for_user_pages(user_post_offset, POSTS_PER_PAGE, None)
+    prev_user_posts = True if user_post_offset > 0 else False
+    next_user_posts = True if ((user_post_offset + 1) * POSTS_PER_PAGE) < total_user_posts else False
+
+
+
 @mod.route('/groups/<string:groupID>', methods=['GET'])
 @login_required
 def group_page():
