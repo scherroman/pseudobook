@@ -5,6 +5,7 @@ from urllib.parse import urlparse, urljoin
 
 from pseudobook.database import mysql
 
+from pseudobook.models import page as page_model
 from pseudobook.models import group as group_model
 from pseudobook.models import page as page_model
 from pseudobook.models import post as post_model
@@ -15,6 +16,8 @@ from pseudobook.forms.remove_post import RemovePost as RemovePostForm
 
 POSTS_PER_PAGE = 10
 USERS_PER_PAGE = 15
+GROUPS_PER_PAGE = 15
+
 
 '''
 Setup Blueprint
@@ -31,18 +34,30 @@ def groups():
     offset = request.values.get('offset')
     offset = int(offset) if offset else 0
     group_post_offset = request.values.get('group_post_offset')
-    group_post_offset = int(user_post_offset) if user_post_offset else 0
+    group_post_offset = int(group_post_offset) if group_post_offset else 0
 
-    total_users = user_model.User.count_users(search)
-    users = user_model.User.scroll_users(offset, USERS_PER_PAGE, search)
-    prev_users = True if offset > 0 else False
-    next_users = True if ((offset + 1) * USERS_PER_PAGE) < total_users else False
+    total_groups = group_model.Group.count_groups(search)
+    groups = group_model.Group.scroll_groups(offset, GROUPS_PER_PAGE, search)
+    prev_groups = True if offset > 0 else False
+    next_groups = True if ((offset + 1) * GROUPS_PER_PAGE) < total_groups else False
 
-    # Scroll all posts made by user
-    total_user_posts = page_model.Page.count_posts_for_page_type(page_model.Page.PAGE_TYPE_USER, None)
-    user_posts = page_model.Page.scroll_posts_for_user_pages(user_post_offset, POSTS_PER_PAGE, None)
-    prev_user_posts = True if user_post_offset > 0 else False
-    next_user_posts = True if ((user_post_offset + 1) * POSTS_PER_PAGE) < total_user_posts else False
+    # Scroll all posts made in groups
+    total_group_posts = page_model.Page.count_posts_for_page_type(page_model.Page.PAGE_TYPE_GROUP, None)
+    group_posts = page_model.Page.scroll_posts_for_group_pages(group_post_offset, POSTS_PER_PAGE, None)
+    prev_group_posts = True if group_post_offset > 0 else False
+    next_group_posts = True if ((group_post_offset + 1) * POSTS_PER_PAGE) < total_group_posts else False
+
+    return render_template('groups.html', 
+                            current_user=current_user, 
+                            groups=groups, 
+                            prev_groups=prev_groups, 
+                            next_groups=next_groups,
+                            offset=offset,
+                            search=search,
+                            group_posts=group_posts,
+                            prev_group_posts=prev_group_posts,
+                            next_group_posts=next_group_posts,
+                            group_post_offset=group_post_offset)
 
 @mod.route('/group/<string:groupID>', methods=['GET'])
 @login_required
@@ -59,35 +74,35 @@ def group_page(groupID):
     if group:
         page = page_model.Page.get_page_by_group_id(groupID)
 
-        total_posts = page.count_posts(posts_search)
-        posts = page.scroll_posts(posts_offset, POSTS_PER_PAGE, posts_search)
-        prev_posts = True if posts_offset > 0 else False
-        next_posts = True if ((posts_offset + 1) * POSTS_PER_PAGE) < total_posts else False
+    total_posts = page.count_posts(posts_search)
+    posts = page.scroll_posts(posts_offset, POSTS_PER_PAGE, posts_search)
+    prev_posts = True if posts_offset > 0 else False
+    next_posts = True if ((posts_offset + 1) * POSTS_PER_PAGE) < total_posts else False
 
-        total_users = group.count_users(users_search)
-        users = group.scroll_users(users_offset, USERS_PER_PAGE, users_search)
-        prev_users = True if users_offset > 0 else False
-        next_users = True if ((users_offset + 1) * USERS_PER_PAGE) < total_users else False
+    total_users = group.count_users(users_search)
+    users = group.scroll_users(users_offset, USERS_PER_PAGE, users_search)
+    prev_users = True if users_offset > 0 else False
+    next_users = True if ((users_offset + 1) * USERS_PER_PAGE) < total_users else False
 
-        make_post_form = MakePostForm()
-        for post in posts:
-            remove_post_form = RemovePostForm()
-            post.remove_post_form = remove_post_form
-        return render_template('group_page.html', 
-                                current_user=current_user, 
-                                group=group,
-                                page=page,
-                                posts=posts,
-                                prev_posts=prev_posts, 
-                                next_posts=next_posts,
-                                posts_offset=posts_offset,
-                                posts_search=posts_search,
-                                users=users,
-                                prev_users=prev_users,
-                                next_users=next_users,
-                                users_offset=users_offset,
-                                users_search=users_search,
-                                make_post_form=make_post_form)
+    make_post_form = MakePostForm()
+    for post in posts:
+        remove_post_form = RemovePostForm()
+        post.remove_post_form = remove_post_form
+    return render_template('group_page.html', 
+                            current_user=current_user, 
+                            group=group,
+                            page=page,
+                            posts=posts,
+                            prev_posts=prev_posts, 
+                            next_posts=next_posts,
+                            posts_offset=posts_offset,
+                            posts_search=posts_search,
+                            users=users,
+                            prev_users=prev_users,
+                            next_users=next_users,
+                            users_offset=users_offset,
+                            users_search=users_search,
+                            make_post_form=make_post_form)
 
 @mod.route('/groups/create', methods=['GET', 'POST'])
 @login_required

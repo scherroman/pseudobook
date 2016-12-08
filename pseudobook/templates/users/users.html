@@ -18,7 +18,7 @@
                         {% if user_post.authorID == user_post.page_owner_id %}
                             <b>{{ user_post.author_name }}</a> posted a status</b>
                         {% else %}
-                            <b>{{ user_post.author_name }}</a> wrote on <a class="list-link" href="{{ url_for('users.user_page', userID=user_post.page_owner_id) }}">{{ user_post.page_owner_name }}'s</a> page</b>
+                            <b>{{ user_post.author_name }}</a> wrote on <a class="list-link" href="{{ url_for('users.user_page', userID=user_post.page_owner_id) }}">{{ user_post.page_owner_name }}'s</a> wall</b>
                         {% endif %}
                     </span>
                     <small class='post-timestamp'> {{ user_post.postDate }}</small>
