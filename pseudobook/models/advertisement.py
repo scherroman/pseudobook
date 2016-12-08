@@ -1,5 +1,4 @@
 from pseudobook.database import mysql, MySQL
-
 from pseudobook.models import user as user_model
 
 searchable_ad_columns = dict()
@@ -33,29 +32,32 @@ class Advertisement():
         )
 
     @staticmethod
-    def scroll_ads(offset, num_ads, searchcol, search):
+    def scroll_ads(offset, num_ads, searchcol, search, year, month):
         if not searchcol in searchable_ad_columns.keys():
             searchcol = 'Item Name'
         searchcol = searchable_ad_columns[searchcol]
         search = search if search else ""
+
+        if year.isdigit():
+            year = "AND YEAR(A.datePosted) = " + year
+        else:
+            year = ""
+        if month.isdigit():
+            month = "AND MONTH(A.datePosted) = " + month
+        else:
+            month = ""
         ads = []
-        
-        deal = '''SELECT A.adID, A.employeeID, CONCAT(E.firstName,\' \',E.lastName) AS employeeName, A.adType, A.datePosted, A.company, A.itemName, A.content, A.unitPrice, A.numberAvailableUnits
-                          FROM Advertisement AS A, User As E
-                          WHERE A.employeeID = E.userID
-                            AND {0} LIKE \'%{1}%\'
-                          ORDER BY A.adID
-                          LIMIT {2} OFFSET {3}
-                          '''.format(searchcol, search, num_ads, offset * num_ads)
-        print(deal)
+
         cursor = mysql.connection.cursor()
         cursor.execute('''SELECT A.adID, A.employeeID, CONCAT(E.firstName,\' \',E.lastName) AS employeeName, A.adType, A.datePosted, A.company, A.itemName, A.content, A.unitPrice, A.numberAvailableUnits
                           FROM Advertisement AS A, User As E
                           WHERE A.employeeID = E.userID
                             AND {0} LIKE \'%{1}%\'
+                            {2}
+                            {3}
                           ORDER BY A.adID
-                          LIMIT {2} OFFSET {3}
-                          '''.format(searchcol, search, num_ads, offset * num_ads))
+                          LIMIT {4} OFFSET {5}
+                          '''.format(searchcol, search, year, month, num_ads, offset * num_ads))
         
         results = cursor.fetchall()
         
@@ -78,3 +80,28 @@ class Advertisement():
             ad_dict.get('unitPrice'),
             ad_dict.get('numberAvailableUnits')
         )
+
+    @staticmethod
+    def get_months_with_ads():
+        rawMonths = []
+        months = []
+
+        cursor = mysql.connection.cursor()
+        cursor.execute('''SELECT A.datePosted
+                          FROM Advertisement AS A
+                          ''')
+        
+        results = cursor.fetchall()
+
+        for result in results:
+            date = result.get('datePosted')
+            yearMonth = (date.year, date.month)
+            if yearMonth not in rawMonths:
+                rawMonths.append(yearMonth)
+
+        intToMonth = ["","Jan","Feb","March","April","May","June","July","Aug","Sep","Oct","Nov","Dec"]
+
+        for month in sorted(rawMonths):
+            months.append((str(month[0])+","+str(month[1]), str(month[0]) + " " + intToMonth[month[1]]))
+
+        return months

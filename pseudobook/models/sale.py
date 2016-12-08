@@ -1,19 +1,11 @@
-from enum import Enum
 from pseudobook.database import mysql, MySQL
 from pseudobook.models import user as user_model
 
 searchable_sale_columns = dict()
 searchable_sale_columns['Item Name'] = 'ItemName'
-searchable_sale_columns['Item Type'] = 'ItemType'
 searchable_sale_columns['Company'] = 'Company'
 searchable_sale_columns['Ad Posted By'] = 'CustomerRepName'
 searchable_sale_columns['Customer'] = 'CustomerName'
-
-class REVENUE_REPORT_TYPES(Enum):
-    Item = 1
-    ItemType = 2
-    Customer = 3
-    Employee = 4
 
 class Sale():
     def __init__(self, ItemName, ItemType, ItemID, Company, Price, CustomerRepName, CustomerRepID, CustomerName, CustomerID, CustomerEmail, CustomerAccountNumber, UnitsSold, TransactionDateTime, TransactionID):
@@ -29,7 +21,7 @@ class Sale():
         self.customerEmail = CustomerEmail
         self.customerAccountNumber = CustomerAccountNumber
         self.unitsSold = UnitsSold
-        self.transactionDateTime = TransactionDateTime
+        self.transactionDateTime = str(TransactionDateTime)
         self.transactionID = TransactionID
 
     def __repr__(self):
@@ -41,16 +33,31 @@ class Sale():
         )
     
     @staticmethod
-    def scroll_sales(offset, num_sales, search):
+    def scroll_sales(offset, num_sales, searchcol, search, year, month):
+        if not searchcol in searchable_sale_columns.keys():
+            searchcol = 'Item Name'
+        searchcol = searchable_sale_columns[searchcol]
         search = search if search else ""
+
+        if year.isdigit():
+            year = "AND YEAR(TransactionDateTime) = " + year
+        else:
+            year = ""
+        if month.isdigit():
+            month = "AND MONTH(TransactionDateTime) = " + month
+        else:
+            month = ""
         sales = []
 
         cursor = mysql.connection.cursor()
         cursor.execute('''SELECT *
                           FROM SalesReport
+                          WHERE {0} LIKE \'%{1}%\'
+                            {2}
+                            {3}
                           ORDER BY TransactionID
-                          LIMIT {0} OFFSET {1}
-                          '''.format(num_sales, offset * num_sales))
+                          LIMIT {4} OFFSET {5}
+                          '''.format(searchcol, search, year, month, num_sales, offset * num_sales))
          
         results = cursor.fetchall()
         
@@ -59,42 +66,6 @@ class Sale():
             sales.append(sale)
 
         return sales
-
-    @staticmethod
-    def scroll_revenues(offset, num_items, search, reportType):
-        search = search if search else ""
-        revenues = []
-        extractedAttr = ""
-        groupByAttr = ""
-
-        if reportType == REVENUE_REPORT_TYPES.Item:
-            extractedAttr = "ItemName"
-            groupByAttr = "ItemID"
-        elif reportType == REVENUE_REPORT_TYPES.ItemType:
-            extractedAttr = "ItemType"
-            groupByAttr = "ItemType"
-        elif reportType == REVENUE_REPORT_TYPES.Customer:
-            extractedAttr = "CustomerName"
-            groupByAttr = "CustomerID"
-        elif reportType == REVENUE_REPORT_TYPES.Employee:
-            extractedAttr = "CustomerRepName"
-            groupByAttr = "CustomerRepID"
-
-        cursor = mysql.connection.cursor()
-        cursor.execute('''SELECT {0} AS Name, SUM(Price * UnitsSold) AS Revenue
-                          FROM SalesReport
-                          GROUP BY {1}
-                          ORDER BY SUM(Price * UnitsSold) DESC
-                          LIMIT {2} OFFSET {3}
-                          '''.format(extractedAttr, groupByAttr, num_items, offset * num_items))
-
-        results = cursor.fetchall()
-
-        for result in results:
-            revenue = Sale.revenue_from_dict(result) if result else None
-            revenues.append(revenue)
-
-        return revenues
 
     @staticmethod
     def sale_from_dict(sale_dict):
@@ -113,9 +84,28 @@ class Sale():
             sale_dict.get('TransactionDateTime'),
             sale_dict.get('TransactionID')
         )
-
+    
     @staticmethod
-    def revenue_from_dict(revenue_dict):
-        # return a tuple instead of class instance because different report types will give different meanings to values
-        return (revenue_dict.get('Name'),
-            "%.2f" % revenue_dict.get('Revenue'))
+    def get_months_with_sales():
+        rawMonths = []
+        months = []
+
+        cursor = mysql.connection.cursor()
+        cursor.execute('''SELECT TransactionDateTime
+                          FROM SalesReport S
+                          ''')
+        
+        results = cursor.fetchall()
+
+        for result in results:
+            date = result.get('TransactionDateTime')
+            yearMonth = (date.year, date.month)
+            if yearMonth not in rawMonths:
+                rawMonths.append(yearMonth)
+
+        intToMonth = ["","Jan","Feb","March","April","May","June","July","Aug","Sep","Oct","Nov","Dec"]
+
+        for month in sorted(rawMonths):
+            months.append((str(month[0])+","+str(month[1]), str(month[0]) + " " + intToMonth[month[1]]))
+
+        return months
