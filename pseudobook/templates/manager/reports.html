@@ -4,16 +4,30 @@
 
 <script type="text/javascript">
     $(document).ready(function() {
-        function setTableData(tableIndex, data) {
-            var currentTable;
-            var rowClass;
-            var desiredCols;
-            switch(tableIndex) {
-                case "1": rowClass = "items-row"; currentTable = "#items-table";
-                    desiredCols=["itemName","employeeName","adType","datePosted","company","unitPrice","numberAvailableUnits"];
-                    break;
-            }
+        var currentTableIndex = 0;
+        // Mappings of table indices to dependent variables
+        var wrappers = ["#all-items","#all-sales","#revenue-generated"];
+        var reportNames = ["Items","Sales","Revenue"];
+        var revenueTypes = ["Item","Item Type","Customer","Employee"];
+        var searchColSelectors = ["#ads-search-col-selector","#sales-search-col-selector",""];
+        var monthSelectors = ["#ads-month-selector","#sales-month-selector","#sales-month-selector"];
+        var serverFuncs = ["getads","getsales","getrevenue"];
+        var rowClasses = ["items-row","sales-row","revenue-row"];
+        var tables = ["#items-table","#sales-table","#revenue-table"];
+        var tableColumns = [
+            ["itemName","employeeName","adType","datePosted","company","unitPrice","numberAvailableUnits"],
+            ["itemName","company","customerName","customerRepName","transactionDateTime","unitsSold","price"],
+            ["name","revenue"]
+        ];
+
+        // Fill up the appropriate table with the recieved data
+        function setTableData(data) {
+            var currentTable = tables[currentTableIndex];
+            var rowClass = rowClasses[currentTableIndex];
+            var desiredCols = tableColumns[currentTableIndex];
             $("."+rowClass).remove();
+
+            // Add a row in the table for each data item received
             data.forEach(function(d) {
                 var rowString = "<tr class='"+rowClass+"'>";
                 desiredCols.forEach(function(c) {
@@ -24,44 +38,68 @@
             });
         }
 
+        // Submit search query to the server
         function search() {
-            var searchCol = $("#search-column-selector").val();
+            var searchCol = $(searchColSelectors[currentTableIndex]).val();
             var searchString = $("#search-input").val();
+            var serverFunc = serverFuncs[currentTableIndex];
+            var yearMonth = $(monthSelectors[currentTableIndex]).val().split(",");
+
+            var data = {
+                year: yearMonth[0],
+                month: yearMonth[1],
+                searchcol: searchCol,
+                search: searchString
+            }
+            if (currentTableIndex == 2)
+                data.revenuetype = $("#revenue-type-selector").val();
+            
             $.ajax({
                 type: "POST",
-                url: "/reports/getads",
+                url: "/manager/reports/" + serverFunc,
                 contentType: 'application/json;charset=UTF-8',
-                data: JSON.stringify({year: "2017", month: "9", searchcol: searchCol, search: searchString }),
+                data: JSON.stringify(data),
                 success: function(data) {
-                    console.log(JSON.parse(data));
-                    setTableData("1",JSON.parse(data));
+                    setTableData(JSON.parse(data));
                 }
             });
         }
 
+        // Switch current report
         function setCurrentReport(val) {
+            currentTableIndex = parseInt(val);
             $(".individual-report").hide();
-            $("#revenue-filter").hide();
-            switch (val) {
-                case "1": $("#all-items").show(); $("#report-name").html("Items"); break;
-                case "2": $("#all-sales").show(); $("#report-name").html("Sales"); break;
-                case "3": $("#revenue-generated").show(); $("#report-name").html("Revenue"); $("#revenue-filter").show(); break;
-            }
+            $(wrappers[currentTableIndex]).show();
+            $("#report-name").html(reportNames[currentTableIndex]);
+            $(".search-col-selector").hide();
+            $(searchColSelectors[currentTableIndex]).show();
+            $(".month-selector").hide();
+            $(monthSelectors[currentTableIndex]).show();
+            if (currentTableIndex == 2)
+                $("#revenue-filter").show();
+            else
+                $("#revenue-filter").hide();
+            
+            search();
         }
 
         $("#report-type-select").change(function() {
             setCurrentReport($(this).val());
         });
 
-        $("#search-column-selector").change(search);
-
+        $(".search-col-selector").change(search);
         $("#search-input").keypress(function(e) {
             if (e.which != 13)
                 return;
             search();
         });
+        $(".month-selector").change(search);
+        $("#revenue-type-selector").change(function() {
+            $("#revenue-type-header").html(revenueTypes[$(this).val()]);
+            search();
+        });
 
-        setCurrentReport("1");
+        setCurrentReport(currentTableIndex);
     });
 </script>
 
@@ -74,53 +112,66 @@
 <div class="left-container container">
     <div class="row list-header">
         <h2 id="report-name" class="col-xs-3 list-title">Sales Report</h2>
-
+    </div>
+    <div class="row list-header">
         <!-- Report type selector -->
-        <span class="filter-selector">
+        <span class="filter-selector" style="padding-left: 25px;">
             Report Type:
             <select id="report-type-select" style="margin-top:28px;">
                 <!-- Add ability to sort by column -->
-                <option value="1">Items</option><!-- TODO: When you click on a row, see which customers have purchased the item -->
-                <option value="2">Sales</option>
-                <option value="3">Revenue</option>
+                <option value="0">Items</option><!-- TODO: When you click on a row, see which customers have purchased the item -->
+                <option value="1">Sales</option>
+                <option value="2">Revenue</option>
             </select>
         </span>
 
         <!-- Revenue type selector -->
         <span id="revenue-filter" class="filter-selector">
             By:
-            <select id="revenue-type-filter">
-                <option value="1">Item</option>
-                <option value="2">Item Type</option>
-                <option value="3">Customer</option>
-                <option value="4">Employee</option>
-            </select>
-        </span>
-
-        <!-- Month selector -->
-        <span class="filter-selector">
-            During:
-            <select>
-                <option value="0">All Months</option>
-                {% for month in months %}
-                    <option value="{{ month[0] }}">{{ month[1] }}</option>
-                {% endfor %}
+            <select id="revenue-type-selector">
+                <option value="0">Item</option>
+                <option value="1">Item Type</option>
+                <option value="2">Customer</option>
+                <option value="3">Employee</option>
             </select>
         </span>
         
         <!-- Search -->
         <span class="filter-selector">
             Search for:
-            <select id="search-column-selector">
+            <select id="ads-search-col-selector" class="search-col-selector">
                 {% for col in ad_columns %}
+                    <option val="{{col}}">{{col}}</option>
+                {% endfor %}
+            </select>
+            <select id="sales-search-col-selector" class="search-col-selector">
+                {% for col in sale_columns %}
                     <option val="{{col}}">{{col}}</option>
                 {% endfor %}
             </select>
             <input id="search-input" type="text" />
         </span>
+
+        <!-- Month selector -->
+        <span class="filter-selector">
+            During:
+            <select id="ads-month-selector" class="month-selector">
+                <option value=",">All Months</option>
+                {% for month in months_with_ads %}
+                    <option value="{{ month[0] }}">{{ month[1] }}</option>
+                {% endfor %}
+            </select>
+            <select id="sales-month-selector" class="month-selector">
+                <option value=",">All Months</option>
+                {% for month in months_with_sales %}
+                    <option value="{{ month[0] }}">{{ month[1] }}</option>
+                {% endfor %}
+            </select>
+        </span>
     </div>
     <hr class="list-divider">
 
+    <!-- Items report -->
     <div id="all-items" class="individual-report">
         <table id="items-table">
             <thead>
@@ -132,22 +183,12 @@
                 <th>Unit Price</th>
                 <th>Available Units</th>
             </thead>
-            {% for ad in all_ads %}
-                <tr class="items-row">
-                    <td>{{ ad.itemName }}</td>
-                    <td>{{ ad.employeeName }}</td>
-                    <td>{{ ad.adType }}</td>
-                    <td>{{ ad.datePosted }}</td>
-                    <td>{{ ad.company }}</td>
-                    <td>{{ ad.unitPrice }}</td>
-                    <td>{{ ad.numberAvailableUnits }}</td>
-                </tr>
-            {% endfor %}
         </table>
     </div>
 
+    <!-- Sales report -->
     <div id="all-sales" class="individual-report">
-        <table>
+        <table id="sales-table">
             <thead>
                 <th>Item</th>
                 <th>Company</th>
@@ -157,32 +198,16 @@
                 <th>Units Purchased</th>
                 <th>Unit Price</th>
             </thead>
-            {% for sale in all_sales %}
-                <tr>
-                    <td>{{ sale.itemName }}</td>
-                    <td>{{ sale.company }}</td>
-                    <td>{{ sale.customerName }}</td>
-                    <td>{{ sale.customerRepName }}</td>
-                    <td>{{ sale.transactionDateTime }}</td>
-                    <td>{{ sale.unitsSold }}</td>
-                    <td>{{ sale.price }}</td>
-                </tr>
-            {% endfor %}
         </table>
     </div>
 
+    <!-- Revenue report -->
     <div id="revenue-generated" class="individual-report">
-        <table>
+        <table id="revenue-table">
             <thead>
-                <th>Item Name</th>
+                <th id="revenue-type-header">Item</th>
                 <th>Revenue Generated</th>
             </thead>
-            {% for revenue in all_revenues %}
-                <tr>
-                    <td>{{ revenue[0] }}</td>
-                    <td>{{ revenue[1] }}</td>
-                </tr>
-            {% endfor %}
         </table>
     </div>
 </div>
