@@ -143,6 +143,33 @@ class Page():
         return posts
 
     @staticmethod
+    def scroll_posts_for_group_pages(offset, num_posts, search): 
+        search = search if search else ""
+        posts = []
+        
+        cursor = mysql.connection.cursor()
+        cursor.execute('''SELECT P.postID, P.pageID, P.postDate, P.postContent, P.authorID, CONCAT(U.firstName, \' \', U.lastName) AS author_name, G.groupID AS page_owner_id, G.groupName AS page_owner_name
+                          FROM Post AS P, User AS U, Page AS Pa, `Group` AS G
+                          WHERE Pa.pageType = '{0}'
+                                AND P.authorID = U.userID
+                                AND P.pageID = Pa.pageID
+                                AND Pa.groupID = G.groupID
+                                AND P.postContent LIKE \'%{1}%\'
+                          ORDER BY P.postDate DESC
+                          LIMIT {2} OFFSET {3}
+                          '''.format(Page.PAGE_TYPE_GROUP, search, num_posts, offset * num_posts))
+        results = cursor.fetchall()
+        
+        for result in results:
+            post = post_model.Post.post_from_dict(result) if result else None
+            post.author_name = result.get('author_name')
+            post.page_owner_id = result.get('page_owner_id')
+            post.page_owner_name = result.get('page_owner_name')
+            posts.append(post)
+
+        return posts
+
+    @staticmethod
     def count_posts_for_page_type(pageType, search):
         search = search if search else ""
 
