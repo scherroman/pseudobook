@@ -32,11 +32,8 @@ View Routing
 '''
 app.register_blueprint(admin.mod)
 app.register_blueprint(users.mod)
-<<<<<<< HEAD
 app.register_blueprint(manager.mod)
-=======
 app.register_blueprint(groups.mod)
->>>>>>> group-creation/join/unjoin
 
 @app.route('/', methods=['GET'])
 def home_page():
