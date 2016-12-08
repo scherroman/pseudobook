@@ -7,8 +7,12 @@ from pseudobook.authentication import login_manager
 # Blueprints
 from pseudobook.routes import admin
 from pseudobook.routes import users
+<<<<<<< HEAD
 from pseudobook.routes import manager
 
+=======
+from pseudobook.routes import groups
+>>>>>>> group-creation/join/unjoin
 '''
 Setup
 '''
@@ -28,7 +32,11 @@ View Routing
 '''
 app.register_blueprint(admin.mod)
 app.register_blueprint(users.mod)
+<<<<<<< HEAD
 app.register_blueprint(manager.mod)
+=======
+app.register_blueprint(groups.mod)
+>>>>>>> group-creation/join/unjoin
 
 @app.route('/', methods=['GET'])
 def home_page():
