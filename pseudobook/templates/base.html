@@ -38,6 +38,7 @@
               <li><a href="{{ url_for('admin.login') }}">My page</a></li>
               {% endif %}
               <li><a href="{{ url_for('users.users') }}">Users</a></li>
+              <li><a href="{{ url_for('groups.groups') }}">Groups</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
               {% if current_user.is_anonymous %}
