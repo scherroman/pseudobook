@@ -13,11 +13,11 @@ from pseudobook.models import post as post_model
 from pseudobook.forms.create_group import CreateGroup as CreateGroupForm
 from pseudobook.forms.make_post import MakePost as MakePostForm
 from pseudobook.forms.remove_post import RemovePost as RemovePostForm
+from pseudobook.forms.join_unjoin_group import JoinUnjoinGroup as JoinUnjoinForm
 
 POSTS_PER_PAGE = 10
 USERS_PER_PAGE = 15
 GROUPS_PER_PAGE = 15
-
 
 '''
 Setup Blueprint
@@ -30,82 +30,95 @@ View Routes
 @mod.route('/groups', methods=['GET'])
 @login_required
 def groups():
-    search = request.values.get('search')
-    offset = request.values.get('offset')
-    offset = int(offset) if offset else 0
-    group_post_offset = request.values.get('group_post_offset')
-    group_post_offset = int(group_post_offset) if group_post_offset else 0
+    groups_offset = request.values.get('groups_offset')
+    groups_offset = int(groups_offset) if groups_offset else 0
+    group_posts_offset = request.values.get('group_posts_offset')
+    group_posts_offset = int(group_posts_offset) if group_posts_offset else 0
 
-    total_groups = group_model.Group.count_groups(search)
-    groups = group_model.Group.scroll_groups(offset, GROUPS_PER_PAGE, search)
-    prev_groups = True if offset > 0 else False
-    next_groups = True if ((offset + 1) * GROUPS_PER_PAGE) < total_groups else False
+    total_groups = group_model.Group.count_groups(None)
+    groups = group_model.Group.scroll_groups(groups_offset, GROUPS_PER_PAGE, None)
+    prev_groups = True if groups_offset > 0 else False
+    next_groups = True if ((groups_offset + 1) * GROUPS_PER_PAGE) < total_groups else False
 
     # Scroll all posts made in groups
     total_group_posts = page_model.Page.count_posts_for_page_type(page_model.Page.PAGE_TYPE_GROUP, None)
-    group_posts = page_model.Page.scroll_posts_for_group_pages(group_post_offset, POSTS_PER_PAGE, None)
-    prev_group_posts = True if group_post_offset > 0 else False
-    next_group_posts = True if ((group_post_offset + 1) * POSTS_PER_PAGE) < total_group_posts else False
+    group_posts = page_model.Page.scroll_posts_for_group_pages(group_posts_offset, POSTS_PER_PAGE, None)
+    prev_group_posts = True if group_posts_offset > 0 else False
+    next_group_posts = True if ((group_posts_offset + 1) * POSTS_PER_PAGE) < total_group_posts else False
 
     for group_post in group_posts:
-        remove_post_form = RemovePostForm()
-        group_post.remove_post_form = remove_post_form
+        group_post.remove_post_form = RemovePostForm()
     return render_template('groups.html', 
                             current_user=current_user, 
                             groups=groups, 
                             prev_groups=prev_groups, 
                             next_groups=next_groups,
-                            offset=offset,
-                            search=search,
+                            groups_offset=groups_offset,
                             group_posts=group_posts,
                             prev_group_posts=prev_group_posts,
                             next_group_posts=next_group_posts,
-                            group_post_offset=group_post_offset)
+                            group_posts_offset=group_posts_offset)
 
 @mod.route('/group/<string:groupID>', methods=['GET'])
 @login_required
 def group_page(groupID):
-    posts_search = request.values.get('posts_search')
     posts_offset = request.values.get('posts_offset')
     posts_offset = int(posts_offset) if posts_offset else 0
 
-    users_search = request.values.get('users_search')
     users_offset = request.values.get('users_offset')
     users_offset = int(users_offset) if users_offset else 0
+
+    addable_users_offset = request.values.get('addable_users_offset')
+    addable_users_offset = int(addable_users_offset) if addable_users_offset else 0
 
     group = group_model.Group.get_group_by_id(groupID)
     if group:
         page = page_model.Page.get_page_by_group_id(groupID)
 
-    total_posts = page.count_posts(posts_search)
-    posts = page.scroll_posts(posts_offset, POSTS_PER_PAGE, posts_search)
+    total_posts = page.count_posts(None)
+    posts = page.scroll_posts(posts_offset, POSTS_PER_PAGE, None)
     prev_posts = True if posts_offset > 0 else False
     next_posts = True if ((posts_offset + 1) * POSTS_PER_PAGE) < total_posts else False
 
-    total_users = group.count_users(users_search)
-    users = group.scroll_users(users_offset, USERS_PER_PAGE, users_search)
+    total_users = group.count_users(None)
+    users = group.scroll_users(users_offset, USERS_PER_PAGE, None)
     prev_users = True if users_offset > 0 else False
     next_users = True if ((users_offset + 1) * USERS_PER_PAGE) < total_users else False
 
+    total_addable_users = group.count_addable_users()
+    addable_users = group.scroll_addable_users(addable_users_offset, USERS_PER_PAGE)
+    prev_addable_users = True if addable_users_offset > 0 else False
+    next_addable_users = True if ((addable_users_offset + 1) * USERS_PER_PAGE) < total_addable_users else False
+
+    current_user_is_member = group.is_member(current_user.userID)
+
     make_post_form = MakePostForm()
+    join_unjoin_form = JoinUnjoinForm()
     for post in posts:
-        remove_post_form = RemovePostForm()
-        post.remove_post_form = remove_post_form
+        post.remove_post_form = RemovePostForm()
+    for user in users:
+        user.join_unjoin_form = JoinUnjoinForm()
+    for user in addable_users:
+        user.join_unjoin_form = JoinUnjoinForm()
     return render_template('group_page.html', 
                             current_user=current_user, 
                             group=group,
                             page=page,
+                            current_user_is_member=current_user_is_member,
                             posts=posts,
                             prev_posts=prev_posts, 
                             next_posts=next_posts,
                             posts_offset=posts_offset,
-                            posts_search=posts_search,
                             users=users,
                             prev_users=prev_users,
                             next_users=next_users,
                             users_offset=users_offset,
-                            users_search=users_search,
-                            make_post_form=make_post_form)
+                            addable_users=addable_users,
+                            prev_addable_users=prev_addable_users,
+                            next_addable_users=next_addable_users,
+                            addable_users_offset=addable_users_offset,
+                            make_post_form=make_post_form,
+                            join_unjoin_form=join_unjoin_form)
 
 @mod.route('/groups/create', methods=['GET', 'POST'])
 @login_required
@@ -126,7 +139,6 @@ def create_group_form():
         new_group = group_model.Group(None, groupName, current_user.userID)
         try:
             new_group.groupID = new_group.create_group()
-            print(new_group.groupID)
         except (mysql.connection.Error, mysql.connection.Warning) as e:
                 print("Exeption of type {} occured: {}".format(type(e), e))
         else:
@@ -152,7 +164,6 @@ def make_post_form():
     if request.form and make_post_form.validate_on_submit():
         try:
             postID = page.post_to_page(content, authorID)
-            print(postID)
         except (mysql.connection.Error, mysql.connection.Warning) as e:
             print(e)
             # Print custom error message
@@ -170,23 +181,66 @@ def make_post_form():
 def remove_post_form():
     postID = request.form['postID']
 
-    # Only allow user who owns page to delete a post on that page
-    post = post_model.Post.get_post_by_id(postID)
-    page = page_model.Page.get_page_by_id(post.pageID)
-    if page.pageType == page_model.Page.PAGE_TYPE_GROUP:
-        if current_user.userID == post.authorID:
-            page.remove_post(postID)
-            print("here")
-        else:
-            abort(403)
+    remove_post_form = RemovePostForm(request.form)
+    if request.form and remove_post_form.validate_on_submit():
+        # Only allow user who owns page to delete a post on that page
+        post = post_model.Post.get_post_by_id(postID)
+        page = page_model.Page.get_page_by_id(post.pageID)
+        if page.pageType == page_model.Page.PAGE_TYPE_GROUP:
+            if current_user.userID == post.authorID:
+                page.remove_post(postID)
+            else:
+                abort(403)
+    else:
+        flash('There was an error removing this post.')
 
     return redirect(request.referrer)
 
 @mod.route('/groups/forms/join_group', methods=['POST'])
 @login_required
 def join_group():
-    # groupID = request.form['groupID']
-    # group = group_model.Group.get_group_by_id(groupID)
-    # group.join_group(current_user.userID)
+    groupID = request.form['groupID']
+    userID = request.form['userID']
+
+    print("groupID {}".format(groupID))
+    print("userID {}".format(userID))
+
+    join_unjoin_form = JoinUnjoinForm(request.form)
+    if request.form and join_unjoin_form.validate_on_submit():
+        group = group_model.Group.get_group_by_id(groupID)
+        try:
+            group.join_group(userID)
+        except (mysql.connection.Error, mysql.connection.Warning) as e:
+            print(e)
+            # Print custom error message
+            if e.args[0] == 1644:
+                flash(e.args[1])
+            else:
+                flash('There was an error joining this group.')
+    else:
+        flash('There was an error joining this group.')
+
+    return redirect(request.referrer)
+
+@mod.route('/groups/forms/unjoin_group', methods=['POST'])
+@login_required
+def unjoin_group():
+    groupID = request.form['groupID']
+    userID = request.form['userID']
+
+    join_unjoin_form = JoinUnjoinForm(request.form)
+    if request.form and join_unjoin_form.validate_on_submit():
+        group = group_model.Group.get_group_by_id(groupID)
+        try:
+            group.unjoin_group(userID)
+        except (mysql.connection.Error, mysql.connection.Warning) as e:
+            print(e)
+            # Print custom error message
+            if e.args[0] == 1644:
+                flash(e.args[1])
+            else:
+                flash('There was an error unjoining this group.')
+    else:
+        flash('There was an error unjoining this group.')
 
     return redirect(request.referrer)

@@ -14,6 +14,7 @@ from pseudobook.forms.remove_post import RemovePost as RemovePostForm
 
 POSTS_PER_PAGE = 10
 USERS_PER_PAGE = 15
+GROUPS_PER_PAGE = 15
 
 '''
 Setup Blueprint
@@ -26,21 +27,24 @@ View Routes
 @mod.route('/user/<string:userID>', methods=['GET'])
 @login_required
 def user_page(userID):
-	search = request.values.get('search')
-	offset = request.values.get('offset')
-	offset = int(offset) if offset else 0
+	posts_offset = request.values.get('posts_offset')
+	posts_offset = int(posts_offset) if posts_offset else 0
+	groups_offset = request.values.get('groups_offset')
+	groups_offset = int(groups_offset) if groups_offset else 0
 
 	user = user_model.User.get_user_by_id(userID)
 	if user:
 		page = page_model.Page.get_page_by_user_id(userID)
 
-		total_posts = page.count_posts(search)
-		posts = page.scroll_posts(offset, POSTS_PER_PAGE, search)
-		prev_posts = True if offset > 0 else False
-		next_posts = True if ((offset + 1) * POSTS_PER_PAGE) < total_posts else False
-		groups = group_model.Group.group_list(userID)
-		prev_groups = None
-		next_groups = None
+		total_posts = page.count_posts(None)
+		posts = page.scroll_posts(posts_offset, POSTS_PER_PAGE, None)
+		prev_posts = True if posts_offset > 0 else False
+		next_posts = True if ((posts_offset + 1) * POSTS_PER_PAGE) < total_posts else False
+
+		total_groups = group_model.Group.count_groups_for_user(userID)
+		groups = group_model.Group.scroll_groups_for_user(userID, groups_offset, GROUPS_PER_PAGE)
+		prev_groups = True if groups_offset > 0 else False
+		next_groups = True if ((groups_offset + 1) * GROUPS_PER_PAGE) < total_groups else False
 
 		make_post_form = MakePostForm()
 		for post in posts:
@@ -53,9 +57,11 @@ def user_page(userID):
 								posts=posts,
 								prev_posts=prev_posts, 
 								next_posts=next_posts,
-								offset=offset,
-								search=search,
+								posts_offset=posts_offset,
 								groups=groups,
+								prev_groups=prev_groups,
+								next_groups=next_groups,
+								groups_offset=groups_offset,
 								is_current_users_page=(current_user.userID == user.userID),
 								make_post_form=make_post_form)
 	else:
@@ -64,37 +70,34 @@ def user_page(userID):
 @mod.route('/users', methods=['GET'])
 @login_required
 def users():
-	search = request.values.get('search')
-	offset = request.values.get('offset')
-	offset = int(offset) if offset else 0
-	user_post_offset = request.values.get('user_post_offset')
-	user_post_offset = int(user_post_offset) if user_post_offset else 0
+	users_offset = request.values.get('users_offset')
+	users_offset = int(users_offset) if users_offset else 0
+	user_posts_offset = request.values.get('user_posts_offset')
+	user_posts_offset = int(user_posts_offset) if user_posts_offset else 0
 
-	total_users = user_model.User.count_users(search)
-	users = user_model.User.scroll_users(offset, USERS_PER_PAGE, search)
-	prev_users = True if offset > 0 else False
-	next_users = True if ((offset + 1) * USERS_PER_PAGE) < total_users else False
+	total_users = user_model.User.count_users(None)
+	users = user_model.User.scroll_users(users_offset, USERS_PER_PAGE, None)
+	prev_users = True if users_offset > 0 else False
+	next_users = True if ((users_offset + 1) * USERS_PER_PAGE) < total_users else False
 
 	# Scroll all posts made by user
 	total_user_posts = page_model.Page.count_posts_for_page_type(page_model.Page.PAGE_TYPE_USER, None)
-	user_posts = page_model.Page.scroll_posts_for_user_pages(user_post_offset, POSTS_PER_PAGE, None)
-	prev_user_posts = True if user_post_offset > 0 else False
-	next_user_posts = True if ((user_post_offset + 1) * POSTS_PER_PAGE) < total_user_posts else False
+	user_posts = page_model.Page.scroll_posts_for_user_pages(user_posts_offset, POSTS_PER_PAGE, None)
+	prev_user_posts = True if user_posts_offset > 0 else False
+	next_user_posts = True if ((user_posts_offset + 1) * POSTS_PER_PAGE) < total_user_posts else False
 
 	for user_post in user_posts:
-			remove_post_form = RemovePostForm()
-			user_post.remove_post_form = remove_post_form
+			user_post.remove_post_form = RemovePostForm()
 	return render_template('users.html', 
 							current_user=current_user, 
 							users=users, 
 							prev_users=prev_users, 
 							next_users=next_users,
-							offset=offset,
-							search=search,
+							users_offset=users_offset,
 							user_posts=user_posts,
 							prev_user_posts=prev_user_posts,
 							next_user_posts=next_user_posts,
-							user_post_offset=user_post_offset)
+							user_posts_offset=user_posts_offset)
 '''
 Form Routes
 '''
@@ -123,14 +126,18 @@ def make_post_form():
 def remove_post_form():
 	postID = request.form['postID']
 
-	# Only allow user who owns page to delete a post on that page
-	post = post_model.Post.get_post_by_id(postID)
-	page = page_model.Page.get_page_by_id(post.pageID)
-	if page.pageType == page_model.Page.PAGE_TYPE_USER:
-		if current_user.userID == page.userID or current_user.userID == post.authorID:
-			page.remove_post(postID)
-		else:
-			abort(403)
+	remove_post_form = RemovePostForm(request.form)
+	if request.form and remove_post_form.validate_on_submit():
+		# Only allow user who owns page to delete a post on that page
+		post = post_model.Post.get_post_by_id(postID)
+		page = page_model.Page.get_page_by_id(post.pageID)
+		if page.pageType == page_model.Page.PAGE_TYPE_USER:
+			if current_user.userID == page.userID or current_user.userID == post.authorID:
+				page.remove_post(postID)
+			else:
+				abort(403)
+	else:
+		flash('There was an error removing this post.')
 
 	return redirect(request.referrer)
 	

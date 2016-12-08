@@ -21,11 +21,32 @@
 	        <ul class="nav nav-tabs page-menu">
 				<li class="active"><a  data-toggle="tab" href="#posts-section">Posts</a></li>
 				<li><a  data-toggle="tab" href="#users-section">Users</a></li>
-				<li><a  data-toggle="tab" href="#add-users-section">Add Users</a></li>
+				{% if current_user_is_member %}
+					<li><a  data-toggle="tab" href="#add-users-section">Add Users</a></li>
+				{% endif %}
 				<li class="dropdown hover-tab">
 					<a class="dropdown-toggle" data-toggle="tab" href="#settings-section">Settings <span class="caret"></span></a>
 					<ul class="dropdown-menu">
-						<li><a href="#">Join Group</a></li>                      
+						<li>
+							{% if current_user_is_member %}
+								<a onclick="$(this).find('> form:first').submit()" style="cursor:pointer;">
+									<form action="{{ url_for('groups.unjoin_group') }}" method="POST" style="display:none;">
+									    {{ join_unjoin_form.hidden_tag() }}
+									    {{ join_unjoin_form.groupID(type="hidden", value=group.groupID) }}
+									    {{ join_unjoin_form.userID(type="hidden", value=current_user.userID) }}
+									</form>
+								Leave Group
+							{% else %}
+								<a onclick="$(this).find('> form:first').submit()" style="cursor:pointer;">
+									<form action="{{ url_for('groups.join_group') }}" method="POST" style="display:none;">
+									    {{ join_unjoin_form.hidden_tag() }}
+									    {{ join_unjoin_form.groupID(type="hidden", value=group.groupID) }}
+									    {{ join_unjoin_form.userID(type="hidden", value=current_user.userID) }}
+									</form>
+								Join Group
+							{% endif %}
+							</a>
+						</li>                      
 					</ul>
 	          	</li>
 	        </ul>
@@ -38,25 +59,27 @@
 			            	<b>{{ post.author_name }}</b> 
 			            </a>
 			            <small class='post-timestamp'> {{ post.postDate }}</small>
-			            <span class="btn-group list-link-dropdown">
-							<button class="dropdown-button btn btn-mini button-transparent dropdown-toggle" data-toggle="dropdown">
-							  <span class="caret"></span>
-							</button>
-							<ul class="dropdown-menu pull-right">
-								{% if current_user.userID == post.authorID %}
-								<li>
-									<a onclick="$(this).find('> form:first').submit()" style="cursor:pointer;">
-										<form action="{{ url_for('groups.remove_post_form') }}" method="POST" style="display:none;">
-										    {{ post.remove_post_form.hidden_tag() }}
-										    {{ post.remove_post_form.postID(type="hidden", value=post.postID) }}
-										</form>
-										<span class="glyphicon glyphicon-remove" style="padding-right:10px;"></span>
-										Delete
-									</a>
-								</li>
-								{% endif %}
-							</ul>
-			            </span>
+			            {% if current_user_is_member %}
+				            <span class="btn-group list-link-dropdown">
+								<button class="dropdown-button btn btn-mini button-transparent dropdown-toggle" data-toggle="dropdown">
+								  <span class="caret"></span>
+								</button>
+								<ul class="dropdown-menu pull-right">
+									{% if current_user.userID == post.authorID %}
+									<li>
+										<a onclick="$(this).find('> form:first').submit()" style="cursor:pointer;">
+											<form action="{{ url_for('groups.remove_post_form') }}" method="POST" style="display:none;">
+											    {{ post.remove_post_form.hidden_tag() }}
+											    {{ post.remove_post_form.postID(type="hidden", value=post.postID) }}
+											</form>
+											<span class="glyphicon glyphicon-remove" style="padding-right:10px;"></span>
+											Delete
+										</a>
+									</li>
+									{% endif %}
+								</ul>
+				            </span>
+				            {% endif %}
 			            <br>
 			        	<p class="post-text">{{ post.postContent }}</p>
 			          </a>
@@ -65,10 +88,10 @@
 	            {% if prev_posts or next_posts %}
 	            	<div>
 	            		{% if prev_posts %}
-	            			<a class="fade-link nextprev float-left" href="{{ url_for('groups.group_page', groupID=group.groupID, posts_offset=posts_offset - 1, posts_search=posts_search) }}">❮ Prev</a>
+	            			<a class="fade-link nextprev float-left" href="{{ url_for('groups.group_page', groupID=group.groupID, posts_offset=posts_offset - 1) }}">❮ Prev</a>
 	            		{% endif %}
 	        			{% if next_posts %}
-	        	    		<a class="fade-link nextprev float-right" href="{{ url_for('groups.group_page', groupID=group.groupID, posts_offset=posts_offset + 1, posts_search=posts_search) }}">Next ❯</a>
+	        	    		<a class="fade-link nextprev float-right" href="{{ url_for('groups.group_page', groupID=group.groupID, posts_offset=posts_offset + 1) }}">Next ❯</a>
 	            		{% endif %}
 	            	</div>
 	        	{% endif %}
@@ -79,14 +102,19 @@
 			        	<a class="list-link" href="{{ url_for('users.user_page', userID=user.userID) }}">
 			            	<b>{{ user.firstName }} {{ user.lastName }}</b> 
 			            </a>
-			            {% if current_user.userID == user.userID %}
+			            {% if current_user_is_member %}
 			            <span class="btn-group list-link-dropdown">
 							<button class="dropdown-button btn btn-mini button-transparent dropdown-toggle" data-toggle="dropdown">
 							  <span class="caret"></span>
 							</button>
 							<ul class="dropdown-menu pull-right">
 								<li>
-									<a style="cursor:pointer;">
+									<a onclick="$(this).find('> form:first').submit()" style="cursor:pointer;">
+										<form action="{{ url_for('groups.unjoin_group') }}" method="POST" style="display:none;">
+										    {{ user.join_unjoin_form.hidden_tag() }}
+										    {{ user.join_unjoin_form.groupID(type="hidden", value=group.groupID) }}
+										    {{ user.join_unjoin_form.userID(type="hidden", value=user.userID) }}
+										</form>
 										<span class="glyphicon glyphicon-minus" style="padding-right:10px;"></span>
 										Remove From Group
 									</a>
@@ -98,19 +126,58 @@
 			          </a>
 			        </div>
 		        {% endfor %}
-                {% if prev_groups or next_groups %}
+                {% if prev_users or next_users %}
                 	<div>
-                		{% if prev_groups %}
-                			<a class="fade-link nextprev float-left" href="{{ url_for('groups.group_page', groupID=group.groupID, users_offset=users_offset - 1, users_search=users_search) }}">❮ Prev</a>
+                		{% if prev_users %}
+                			<a class="fade-link nextprev float-left" href="{{ url_for('groups.group_page', groupID=group.groupID, users_offset=users_offset - 1) }}">❮ Prev</a>
                 		{% endif %}
-            			{% if next_groups %}
-            	    		<a class="fade-link nextprev float-right" href="{{ url_for('groups.group_page', groupID=group.groupID, users_offset=users_offset + 1, users_search=users_search) }}">Next ❯</a>
+            			{% if next_users %}
+            	    		<a class="fade-link nextprev float-right" href="{{ url_for('groups.group_page', groupID=group.groupID, users_offset=users_offset + 1) }}">Next ❯</a>
                 		{% endif %}
                 	</div>
             	{% endif %}
             </div>
-            <div id="add-users-section" class="tab-pane fade in hover-tab">
-            </div>
+            {% if current_user_is_member %}
+	            <div id="add-users-section" class="tab-pane fade in hover-tab">
+	            	{% for user in addable_users %}
+	    		        <div class="list-link-div">
+				        	<a class="list-link" href="{{ url_for('users.user_page', userID=user.userID) }}">
+				            	<b>{{ user.firstName }} {{ user.lastName }}</b> 
+				            </a>
+				            <span class="btn-group list-link-dropdown">
+								<button class="dropdown-button btn btn-mini button-transparent dropdown-toggle" data-toggle="dropdown">
+								  <span class="caret"></span>
+								</button>
+								<ul class="dropdown-menu pull-right">
+									<li>
+										<a onclick="$(this).find('> form:first').submit()" style="cursor:pointer;">
+											<form action="{{ url_for('groups.join_group') }}" method="POST" style="display:none;">
+											    {{ user.join_unjoin_form.hidden_tag() }}
+											    {{ user.join_unjoin_form.groupID(type="hidden", value=group.groupID) }}
+											    {{ user.join_unjoin_form.userID(type="hidden", value=user.userID) }}
+											</form>
+											<span class="glyphicon glyphicon-plus" style="padding-right:10px;"></span>
+											Add to Group
+										</a>
+									</li>
+								</ul>
+				            </span>
+				            <br>
+				          </a>
+				        </div>
+			        {% endfor %}
+	                {% if prev_addable_users or next_addable_users %}
+	                	<div>
+	                		{% if prev_addable_users %}
+	                			<a class="fade-link nextprev float-left" href="{{ url_for('groups.group_page', groupID=group.groupID, addable_users_offset=addable_users_offset - 1) }}">❮ Prev</a>
+	                		{% endif %}
+	            			{% if next_addable_users %}
+	            	    		<a class="fade-link nextprev float-right" href="{{ url_for('groups.group_page', groupID=group.groupID, addable_users_offset=addable_users_offset + 1) }}">Next ❯</a>
+	                		{% endif %}
+	                	</div>
+	            	{% endif %}
+	            </div>
+            {% endif %}
             <div id="settings-section" class="tab-pane fade in hover-tab">
             </div>
 	    </div>

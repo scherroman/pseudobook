@@ -50,10 +50,10 @@
             {% if prev_group_posts or next_group_posts %}
                 <div>
                     {% if prev_group_posts %}
-                        <a class="fade-link nextprev float-left" href="{{ url_for('groups.groups', group_post_offset=group_post_offset - 1) }}">❮ Prev</a>
+                        <a class="fade-link nextprev float-left" href="{{ url_for('groups.groups', group_posts_offset=group_posts_offset - 1) }}">❮ Prev</a>
                     {% endif %}
                     {% if next_group_posts %}
-                        <a class="fade-link nextprev float-right" href="{{ url_for('groups.groups', groups_post_offset=group_post_offset + 1) }}">Next ❯</a>
+                        <a class="fade-link nextprev float-right" href="{{ url_for('groups.groups', group_posts_offset=group_posts_offset + 1) }}">Next ❯</a>
                     {% endif %}
                 </div>
             {% endif %}
@@ -64,14 +64,6 @@
                     <a class="list-link" href="{{ url_for('groups.group_page', groupID=group.groupID) }}">
                         {{ group.groupName }}
                     </a>
-                    <span class="btn-group list-link-dropdown">
-                      <button class="dropdown-button btn btn-mini button-transparent dropdown-toggle" data-toggle="dropdown">
-                          <span class="caret"></span>
-                      </button>
-                      <ul class="dropdown-menu pull-right">
-                      <li><a style="cursor:pointer;"><span class="glyphicon glyphicon-plus" style="padding-right:10px;"></span>Join group</a></li>
-                      </ul>
-                    </span>
                   </a>
                 </div>
             {% endfor %}
@@ -81,10 +73,10 @@
             {% if prev_groups or next_groups %}
                 <div>
                     {% if prev_groups %}
-                        <a class="fade-link nextprev float-left" href="{{ url_for('groups.groups', offset=offset - 1, search=search) }}">❮ Prev</a>
+                        <a class="fade-link nextprev float-left" href="{{ url_for('groups.groups', groups_offset=groups_offset - 1) }}">❮ Prev</a>
                     {% endif %}
                     {% if next_groups %}
-                        <a class="fade-link nextprev float-right" href="{{ url_for('groups.groups', offset=offset + 1, search=search) }}">Next ❯</a>
+                        <a class="fade-link nextprev float-right" href="{{ url_for('groups.groups', groups_offset=groups_offset + 1) }}">Next ❯</a>
                     {% endif %}
                 </div>
             {% endif %}

@@ -280,6 +280,9 @@ BEGIN
     IF (userExists IS NULL) THEN
 		INSERT INTO GroupUsers(userID , groupID)
 		VALUES(selfID, groupID);
+    ELSE
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'User is already a member of this group.';
 	END IF;
 END$
 
@@ -293,5 +296,8 @@ BEGIN
     SELECT 1 into userExists FROM GroupUsers WHERE(GroupUsers.groupID = groupID AND GroupUsers.userID = selfID);
     IF (userExists IS NOT NULL) THEN
 		DELETE FROM GroupUsers WHERE(selfID = GroupUsers.userID AND groupID = GroupUsers.groupID);
+    ELSE
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'User is not a member of this group.';
 	END IF;
 END$

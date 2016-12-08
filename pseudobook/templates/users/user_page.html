@@ -63,10 +63,10 @@
 	            {% if prev_posts or next_posts %}
 	            	<div>
 	            		{% if prev_posts %}
-	            			<a class="fade-link nextprev float-left" href="{{ url_for('users.user_page', userID=user.userID, offset=offset - 1, search=search) }}">❮ Prev</a>
+	            			<a class="fade-link nextprev float-left" href="{{ url_for('users.user_page', userID=user.userID, posts_offset=posts_offset - 1) }}">❮ Prev</a>
 	            		{% endif %}
 	        			{% if next_posts %}
-	        	    		<a class="fade-link nextprev float-right" href="{{ url_for('users.user_page', userID=user.userID, offset=offset + 1, search=search) }}">Next ❯</a>
+	        	    		<a class="fade-link nextprev float-right" href="{{ url_for('users.user_page', userID=user.userID, posts_offset=posts_offset + 1) }}">Next ❯</a>
 	            		{% endif %}
 	            	</div>
 	        	{% endif %}
@@ -84,10 +84,10 @@
                 {% if prev_groups or next_groups %}
                 	<div>
                 		{% if prev_groups %}
-                			<a class="fade-link nextprev float-left" href="{{ url_for('users.user_page', userID=user.userID, offset=offset - 1, search=search) }}">❮ Prev</a>
+                			<a class="fade-link nextprev float-left" href="{{ url_for('users.user_page', userID=user.userID, groups_offset=groups_offset - 1) }}">❮ Prev</a>
                 		{% endif %}
             			{% if next_groups %}
-            	    		<a class="fade-link nextprev float-right" href="{{ url_for('users.user_page', userID=user.userID, offset=offset + 1, search=search) }}">Next ❯</a>
+            	    		<a class="fade-link nextprev float-right" href="{{ url_for('users.user_page', userID=user.userID, groups_offset=groups_offset + 1) }}">Next ❯</a>
                 		{% endif %}
                 	</div>
             	{% endif %}
