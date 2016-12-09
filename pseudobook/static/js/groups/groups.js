@@ -28,6 +28,9 @@ $( document ).ready(function() {
   });
   $(document).on('click', '#rename-group-submit', function() {
     rename_group_form = $('#rename-group-form')
+    new_content = rename_group_form.find('.content-field').val()
+    header_div = $('#status_section')
+    group_name = header_div.find('.page-header')
     // userID = rename_group_form.find('.userID-field').val()
     // posts_div = $('#' + post_id)
     // comments_container_div = posts_div.find(".comments-container")
@@ -39,9 +42,7 @@ $( document ).ready(function() {
         data: $(rename_group_form).serialize(),
         type: 'POST',
         success: function(response) {
-          console.log(response)
-          // comments_div.prepend(response)
-          // comments_container_div.css('display', 'block')
+          group_name.html(new_content + ' group wall')
         },
         error: function(error) {
             console.log(error);
@@ -54,19 +55,6 @@ $( document ).ready(function() {
     });
   });
 
-  $(document).on('click', '.rename-group', function() {
-      user_id = $(this).data('user-id')
-      group_id = $(this).data('group-id')
-
-      make_comment_form = $('#rename-group-form')
-      make_comment_form.find('.userID-field').val(user_id)
-      make_comment_form.find('.groupID-field').val(group_id)
-
-      $('#rename-group-modal').on('shown.bs.modal', function () {
-        $(this).find('.content-field').focus()
-      })
-      $('#rename-group-modal').modal('toggle');
-  });
   $(document).on('click', '#make-comment-submit', function() {
     make_comment_form = $('#make-comment-form')
     post_id = make_comment_form.find('.postID-field').val()
