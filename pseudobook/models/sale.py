@@ -56,7 +56,7 @@ class Sale():
                             {2}
                             {3}
                           ORDER BY TransactionID
-                          LIMIT {4} OFFSET {5}
+                          -- LIMIT {4} OFFSET {5}
                           '''.format(searchcol, search, year, month, num_sales, offset * num_sales))
          
         results = cursor.fetchall()
@@ -75,7 +75,7 @@ class Sale():
                           FROM SalesReport
                           WHERE CustomerID = {0} AND CustomerAccountNumber = {1}
                           ORDER BY TransactionID
-                          LIMIT {2} OFFSET {3}
+                          -- LIMIT {2} OFFSET {3}
                           '''.format(userID, accountNumber, num_sales, offset * num_sales))
          
         results = cursor.fetchall()

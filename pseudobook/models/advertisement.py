@@ -75,7 +75,7 @@ class Advertisement():
                             {2}
                             {3}
                           ORDER BY A.adID
-                          LIMIT {4} OFFSET {5}
+                          -- LIMIT {4} OFFSET {5}
                           '''.format(searchcol, search, year, month, num_ads, offset * num_ads))
         
         results = cursor.fetchall()
@@ -99,7 +99,7 @@ class Advertisement():
                           WHERE A.employeeID = E.userID
                             AND A.employeeID = {0}
                           ORDER BY A.adID
-                          LIMIT {1} OFFSET {2}
+                          -- LIMIT {1} OFFSET {2}
                           '''.format(userID, num_ads, offset * num_ads))
         
         results = cursor.fetchall()
@@ -129,7 +129,7 @@ class Advertisement():
                           WHERE S.CustomerID = {0}
                             AND {1} LIKE \'%{2}%\'
                           ORDER BY A.adID
-                          LIMIT {3} OFFSET {4}
+                          -- LIMIT {3} OFFSET {4}
                           '''.format(userID, searchcol, search, num_ads, offset * num_ads))
         
         results = cursor.fetchall()
@@ -159,7 +159,7 @@ class Advertisement():
                             AND {0} LIKE \'%{1}%\'
                           GROUP BY A.adID
                           ORDER BY SUM(S.numberOfUnits) DESC
-                          LIMIT {2} OFFSET {3}
+                          -- LIMIT {2} OFFSET {3}
                           '''.format(searchcol, search, num_ads, offset * num_ads))
         
         results = cursor.fetchall()

@@ -57,7 +57,7 @@ class Revenue():
                             {3}
                           GROUP BY {4}
                           ORDER BY SUM(Price * UnitsSold) DESC
-                          LIMIT {5} OFFSET {6}
+                          -- LIMIT {5} OFFSET {6}
                           '''.format(extractedAttr, search, year, month, groupByAttr, num_items, offset * num_items))
 
         results = cursor.fetchall()
