@@ -1,0 +1,23 @@
+<li class='like-unlike-container'>
+	{% if comment is defined %}
+		<a class='like-unlike' data-post-id="{{ comment.postID }}" data-parent-id="{{ comment.commentID }}" data-author-id="{{ current_user.userID }}" data-content-type="cm" data-user-has-liked="{{ comment.user_has_liked }}" style="cursor:pointer">
+		    {% if comment.user_has_liked %}
+		    <span class="glyphicon glyphicon-thumbs-down" style="padding-right:10px;"></span>
+		    Unlike
+		    {% else %}
+		    <span class="glyphicon glyphicon-thumbs-up" style="padding-right:10px;"></span>
+		    Like
+		    {% endif %}
+		</a>
+	{% elif post is defined %}
+		<a class='like-unlike' data-post-id="{{ post.postID }}" data-parent-id="{{ post.postID }}" data-author-id="{{ current_user.userID }}" data-content-type="po" data-user-has-liked="{{ post.user_has_liked }}" style="cursor:pointer">
+		    {% if post.user_has_liked %}
+		    <span class="glyphicon glyphicon-thumbs-down" style="padding-right:10px;"></span>
+		    Unlike
+		    {% else %}
+		    <span class="glyphicon glyphicon-thumbs-up" style="padding-right:10px;"></span>
+		    Like
+		    {% endif %}
+		</a>
+	{% endif %}
+</li>

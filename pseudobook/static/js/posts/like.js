@@ -1,34 +1,52 @@
 $( document ).ready(function() {
-	$(".like-unlike").click(function(e) {
-		//this obtains values put into html file
-		// post_id = $(this).data('postId')
-		// author_id = $(this).data('authorId')
+	$(document).on('click', '.like-unlike', function() {
+		postID = $(this).data('post-id');
+		parentID = $(this).data('parent-id');
+		authorID = $(this).data('author-id');
+		contentType = $(this).data('content-type');
+		user_has_liked = $(this).data('user-has-liked');
 
-		var data = new Object();
-		data.postID = $(this).data('postId');
-		data.authorID = $(this).data('authorId');
-		data.contentType = $(this).data('contentType');
-		// post_like_form = $('like-unlike-form')
-		// post_like_form.find('.postID-field').val(post_id)
-		// post_like_form.find('.authorID-field').val(author_id)
+		var like_counter;
+		var like_button;
+		var like_unlike_container;
 
-		console.log(data);
+		if (contentType === 'po') {
+			post_div = $('#post-' + parentID)
+			like_counter = post_div.find(".like-counter:first")
+			like_button = post_div.find(".like-unlike:first")
+			like_unlike_container = post_div.find(".like-unlike-container:first")
+		}
+		else {
+			comment_div = $('#comment-' + parentID)
+			like_counter = comment_div.find(".like-counter")
+			like_button = comment_div.find(".like-unlike")
+			like_unlike_container = comment_div.find(".like-unlike-container")
+		}
+
+		num_likes = parseInt(like_counter.html())
+		if (user_has_liked === "True") { num_likes -- }
+		else { num_likes ++ }
+
+		like_unlike_form = $('#like-unlike-form')
+      	like_unlike_form.find('.parentID-field').val(parentID)
+      	like_unlike_form.find('.authorID-field').val(authorID)
+      	like_unlike_form.find('.contentType-field').val(contentType)
+
+      	console.log(contentType)
+
 		//make POST request for like
 		$.ajax({
 			url: '/likes/forms/like_unlike',
-			data: JSON.stringify(data),
+			data: $(like_unlike_form).serialize(),
 			type: 'POST',
-			contentType: 'application/json;charset=UTF-8',
 			success: function(response) {
-				    $("#counter").html(response.count);
-				    $("#like-button").html(response.like_button);
+			    like_counter.html(num_likes);
+			    like_unlike_container.replaceWith(response);
 			},
 			error: function(error) {
 				console.log(error);
 				alert(error)
 			}
 		});
-
 	});
-
 });

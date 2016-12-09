@@ -68,7 +68,7 @@ p { font-size: 15px; }
 
 .page-menu { margin: 20px 0px 22px; }
 .post-text { font-size: 17px; }
-.post-author:after {
+.dotted:after {
     content: "\00b7";
 }
 

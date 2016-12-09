@@ -31,7 +31,7 @@
 	        <div id="posts-section" class="tab-pane fade in active">
 		        {% for post in posts %}
 			        <div class="list-link-div">
-			        	<a class="list-link post-author" href="{{ url_for('users.user_page', userID=post.authorID) }}">
+			        	<a class="list-link dotted" href="{{ url_for('users.user_page', userID=post.authorID) }}">
 			            	<b>{{ post.author_name }}</b> 
 			            </a>
 			            <small class='post-timestamp'> {{ post.postDate }}</small>

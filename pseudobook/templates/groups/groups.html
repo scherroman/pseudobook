@@ -11,17 +11,19 @@
         <div class="tab-content">
             <div id="activity-section" class="tab-pane fade in active">
             {% for post in posts %}
-                <div id="{{ post.postID }}" class="list-link-div">
-                    <span class="post-author">
+                <div id="post-{{ post.postID }}" class="list-link-div">
+                    <span class="dotted">
                         <a class="list-link" href="{{ url_for('users.user_page', userID=post.authorID) }}">
                         <b>{{ post.author_name }}</a> > <a class="list-link" href="{{ url_for('groups.group_page', groupID=post.page_owner_id) }}">{{ post.page_owner_name }}</a></b>
                     </span>
-                    <small class='post-timestamp'> {{ post.postDate }}</small>
+                    <small class='post-timestamp dotted'> {{ post.postDate }} </small>
+                    <small class='like-counter'>{{ post.like_count }}</small><small> likes</small>
                     <span class="btn-group list-link-dropdown">
                         <button class="dropdown-button btn btn-mini button-transparent dropdown-toggle" data-toggle="dropdown">
                           <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu pull-right">
+                            {% include 'like.html' %}
                             {% if current_user.userID == post.authorID %}
                             <li>
                                 <a class="edit-post" data-post-id="{{ post.postID }}" style="cursor:pointer;">
@@ -52,12 +54,6 @@
                     </span>
                     <br>
                     <p class="post-text">{{ post.postContent }}</p>
-                    <div class="list-link-div">
-                        <a class='list-link like-unlike' id='like-button' data-post-id="{{ post.postID }}" data-author-id="{{ current_user.userID }}" data-content-type="po" style="cursor:pointer">
-                            <b>{{ post.like_button }}</b>
-                        </a>
-                        <div class='list-link like-counter' id="counter">{{ post.counter }}</div>
-                    </div>
                     <div class="comments-container" {% if post.comments|length == 0 %}style="display:none;"{% endif %}>
                         <hr style="max-width: 350px;">
                         <div class="comments">
@@ -183,6 +179,13 @@
         <form id="remove-comment-form" action="{{ url_for('groups.remove_comment') }}" method="POST" style="display:none;"">
             {{ remove_comment_form.hidden_tag() }}
             {{ remove_comment_form.commentID(type="hidden", class="commentID-field") }}
+        </form>
+
+        <form id="like-unlike-form" action="{{ url_for('groups.like_unlike') }}" method="POST" style="display:none;"">
+            {{ like_unlike_form.hidden_tag() }}
+            {{ like_unlike_form.parentID(type="hidden", class="parentID-field") }}
+            {{ like_unlike_form.authorID(type="hidden", class="authorID-field") }}
+            {{ like_unlike_form.contentType(type="hidden", class="contentType-field") }}
         </form>
 
         {% with messages = get_flashed_messages() %}

@@ -11,6 +11,7 @@ from pseudobook.models import group as group_model
 from pseudobook.models import page as page_model
 from pseudobook.models import post as post_model
 from pseudobook.models import comment as comment_model
+from pseudobook.models import like as like_model
 
 from pseudobook.forms.create_group import CreateGroup as CreateGroupForm
 from pseudobook.forms.join_unjoin_group import JoinUnjoinGroup as JoinUnjoinForm
@@ -20,6 +21,7 @@ from pseudobook.forms.edit_post import EditPost as EditPostForm
 from pseudobook.forms.make_comment import MakeComment as MakeCommentForm
 from pseudobook.forms.remove_comment import RemoveComment as RemoveCommentForm
 from pseudobook.forms.edit_comment import EditComment as EditCommentForm
+from pseudobook.forms.like_unlike import LikeUnlike as LikeUnlikeForm
 
 POSTS_PER_PAGE = 10
 USERS_PER_PAGE = 15
@@ -53,14 +55,20 @@ def groups():
     next_posts = True if ((posts_offset + 1) * POSTS_PER_PAGE) < total_posts else False
 
     for group_post in posts:
-        group_post.comments = group_post.get_comments()
         group_post.remove_post_form = RemovePostForm()
-        group_post.like_button = post_model.Post.like_button(group_post.postID, current_user.userID, "po")
-        group_post.counter = post_model.Post.like_count(group_post.postID, "po")
+        group_post.user_has_liked = like_model.Like.user_has_liked(group_post.postID, current_user.userID, "po")
+        group_post.like_count = like_model.Like.like_count(group_post.postID, "po")
+
+        group_post.comments = group_post.get_comments()
+        for comment in group_post.comments:
+            comment.user_has_liked = like_model.Like.user_has_liked(comment.commentID, current_user.userID, "cm")
+            comment.like_count = like_model.Like.like_count(comment.commentID, "cm")
+        
     make_comment_form = MakeCommentForm()
     remove_comment_form = RemoveCommentForm()
     edit_post_form = EditPostForm()
     edit_comment_form = EditCommentForm()
+    like_unlike_form = LikeUnlikeForm()
     return render_template('groups.html', 
                             current_user=current_user, 
                             groups=groups, 
@@ -74,7 +82,8 @@ def groups():
                             make_comment_form=make_comment_form,
                             remove_comment_form=remove_comment_form,
                             edit_post_form=edit_post_form,
-                            edit_comment_form=edit_comment_form)
+                            edit_comment_form=edit_comment_form,
+                            like_unlike_form=like_unlike_form)
 
 @mod.route('/group/<string:groupID>', methods=['GET'])
 @login_required
@@ -116,10 +125,15 @@ def group_page(groupID):
     edit_post_form = EditPostForm()
     join_unjoin_form = JoinUnjoinForm()
     for post in posts:
-        post.comments = post.get_comments()
         post.remove_post_form = RemovePostForm()
-        post.like_button = post_model.Post.like_button(post.postID, current_user.userID, "po")
-        post.counter = post_model.Post.like_count(post.postID, "po")
+        group_post.user_has_liked = like_model.Like.user_has_liked(group_post.postID, current_user.userID, "po")
+        post.like_count = like_model.Like.like_count(post.postID, "po")
+
+        post.comments = post.get_comments()
+        for comment in post.comments:
+            comment.user_has_liked = like_model.Like.user_has_liked(comment.commentID, current_user.userID, "cm")
+            comment.like_count = like_model.Like.like_count(comment.commentID, "cm")
+            
     for user in users:
         user.join_unjoin_form = JoinUnjoinForm()
     for user in addable_users:
@@ -387,51 +401,29 @@ def edit_comment_form():
 @mod.route('/likes/forms/like_unlike', methods=['POST'])
 @login_required
 def like_unlike():
-    postID = request.json['postID']
-    authorID = request.json['authorID']
-    contentType = request.json['contentType']
-    response = {'like_button':None, 'count':None}
-    if contentType == 'po' or contentType == 'cm':
-        cursor = mysql.connection.cursor()
-        #check if like or unlike
-        query = '''SELECT COUNT(*) AS count
-                FROM Likes L 
-                WHERE L.parentID = {0}
-                AND L.authorID = {1}
-                AND L.contentType = "{2}"
-                '''.format(postID, authorID, contentType)    
+    parentID = request.form['parentID']
+    authorID = request.form['authorID']
+    contentType = request.form['contentType']
 
-        cursor.execute(query)
+    user_has_liked = like_model.Like.user_has_liked(parentID, authorID, contentType)
+    if user_has_liked:
+        like_model.Like.unlike(parentID, authorID, contentType)
+        user_has_liked = False
+    else:
+        like_model.Like.like(parentID, authorID, contentType)
+        user_has_liked = True
 
-        result = cursor.fetchone()
-
-        count = result['count']
-        if count == 0:
-            #like
-            query = '''CALL `like`({0}, {1}, "{2}")
-                    '''.format(postID, authorID, contentType)
-            cursor.execute(query)
-            mysql.connection.commit()
-            response['like_button'] = 'unlike'
-        else:
-            #unlike
-            query = '''CALL unlike({0}, {1}, "{2}")
-                    '''.format(postID, authorID, contentType)
-            cursor.execute(query)
-            mysql.connection.commit()
-            response['like_button'] = 'like'
-        #get new like count
-        query = '''SELECT COUNT(*) AS count
-                FROM Likes L 
-                WHERE L.parentID = {0}
-                AND L.contentType = "{1}"
-                '''.format(postID, contentType)  
-
-        cursor.execute(query)
-
-        result = cursor.fetchone()
-
-        response['count'] = result['count']  
-        return jsonify(response)
-    else :
-        return 'failure'
+    if contentType == 'po':
+        post = post_model.Post.get_post_by_id(parentID)
+        post.user_has_liked = user_has_liked
+        
+        return render_template('like.html',
+                                post=post)
+    elif contentType == 'cm':
+        comment = comment_model.Comment.get_comment_by_id(parentID)
+        comment.user_has_liked = user_has_liked
+        
+        return render_template('like.html',
+                                comment=comment)
+    else:
+        return abort(400, 'There was an error liking/unliking.')
