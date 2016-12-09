@@ -2,7 +2,6 @@ USE pseudobook;
 
 delimiter $
 DROP VIEW IF EXISTS SalesReport;
-
 CREATE VIEW SalesReport AS
 SELECT A.itemName AS ItemName, A.adType AS ItemType, A.adID AS ItemID, A.company AS Company, A.unitPrice AS Price,
 	CONCAT(E.firstName,' ',E.lastName) AS CustomerRepName, E.userID AS CustomerRepID,
@@ -12,6 +11,55 @@ FROM Sales S
 JOIN Advertisement A ON S.adID = A.adID
 JOIN `User` E ON A.employeeID = E.userID
 JOIN `User` B ON S.buyerID = B.userID;
+
+DROP PROCEDURE IF EXISTS editEmployee;
+CREATE PROCEDURE editEmployee (
+	userID INTEGER,
+    SSN CHAR(10),
+	hourlyRate DOUBLE
+)
+BEGIN
+	IF (EXISTS(SELECT * FROM `Employee` E WHERE E.userID = userID)) THEN
+		UPDATE `Employee` E
+		SET E.SSN = SSN, E.hourlyRate = hourlyRate
+		WHERE E.userID = userID;
+	ELSE
+		INSERT INTO `Employee` (userID, SSN, startDate, hourlyRate)
+		VALUES (userID, SSN, NOW(), hourlyRate);
+	END IF;
+END$
+
+DROP PROCEDURE IF EXISTS createAd;
+CREATE PROCEDURE createAd (
+	OUT adID INTEGER,
+    employeeID INTEGER,
+    adType CHAR(2),
+    company VARCHAR(60),
+    itemName VARCHAR(60),
+    content TEXT,
+    unitPrice DOUBLE,
+    numberAvailableUnits INTEGER
+)
+BEGIN
+	INSERT INTO `Advertisement` (employeeID, adType, datePosted, company, itemName, content, unitPrice, numberAvailableUnits)
+	VALUES (employeeID, adType, NOW(), company, itemName, content, unitPrice, numberAvailableUnits);
+	SET adID = last_insert_id();
+END$
+
+DROP PROCEDURE IF EXISTS purchaseItem;
+CREATE PROCEDURE purchaseItem (
+	OUT transactionID INTEGER,
+	adID INTEGER,
+    buyerID INTEGER,
+    buyerAccount INTEGER,
+    transactionDateTime DATETIME,
+    numberOfUnits INTEGER
+)
+BEGIN
+	INSERT INTO `Sales` (adID, buyerID, buyerAccount, transactionDateTime, numberOfUnits)
+	VALUES (adID, buyerID, buyerAccount, NOW(), numberOfUnits);
+	SET transactionID = last_insert_id();
+END$
 
 -- Manager-Level Transactions
 -- The manager should be able to:

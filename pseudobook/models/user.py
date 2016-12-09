@@ -43,6 +43,33 @@ class User():
             
         return userID
 
+    def is_manager(self):
+        cursor = mysql.connection.cursor()
+        cursor.execute('''SELECT COUNT(*) AS count
+                          FROM Manager M
+                          WHERE M.userID = {0}
+                          '''.format(self.userID))
+        results = cursor.fetchone()
+        count = results.get('count')
+        return count == 1
+
+    def is_employee(self):
+        cursor = mysql.connection.cursor()
+        cursor.execute('''SELECT COUNT(*) AS count
+                          FROM Employee E
+                          WHERE E.userID = {0}
+                          '''.format(self.userID))
+        results = cursor.fetchone()
+        count = results.get('count')
+        return count == 1
+
+    def user_from_dict(u_dict):
+        return User(u_dict.get('userID'), 
+                    u_dict.get('firstName'),
+                    u_dict.get('lastName'),
+                    u_dict.get('email'),
+                    u_dict.get('passwordHash'))
+
     @staticmethod
     def hash_password(password):
         return pwd_context.encrypt(password)
@@ -123,15 +150,7 @@ class User():
         count = results.get('count')
 
         return count
-
-    @staticmethod
-    def user_from_dict(u_dict):
-        return User(u_dict.get('userID'), 
-                    u_dict.get('firstName'),
-                    u_dict.get('lastName'),
-                    u_dict.get('email'),
-                    u_dict.get('passwordHash'))
-        
+    
 '''
 author @roman
 '''

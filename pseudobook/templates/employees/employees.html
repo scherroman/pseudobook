@@ -16,6 +16,18 @@
                     {{ employee.firstName }} {{ employee.lastName}}
                 </a>
                 </a>
+                <span class="btn-group list-link-dropdown">
+                    <button class="dropdown-button btn btn-mini button-transparent dropdown-toggle" data-toggle="dropdown">
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu pull-right">
+                        <li>
+                            <a onclick="openEditEmployeeModal({{employee.userID}},{{employee.SSN}},{{employee.hourlyRate}});" style="cursor:pointer;">
+                                Edit Info
+                            </a>
+                        </li>
+                    </ul>
+                </span>
             </div>
         {% endfor %}
         {% if employees|length == 0 %}
@@ -33,6 +45,33 @@
         {% endif %}
         </div>
     </div>
+
+    <!-- Modals -->
+    <div class="modal fade" id="edit-employee-modal" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Employee Info</h4>
+                </div>
+                <div class="modal-body">
+                    <p id="employee-current-info"></p>
+                    <form id="edit-employee-form" action="{{ url_for('employees.edit_employee_form') }}" method="POST">
+                        {{ edit_employee_form.hidden_tag() }}
+                        {{ edit_employee_form.SSN(class="form-control SSN-field") }}
+                        {{ edit_employee_form.hourlyRate(class="form-control hourlyRate-field") }}
+                        {{ edit_employee_form.userID(type="hidden", class="userID-field") }}
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button id="edit-employee-submit" type="submit" class="btn btn-success">Submit</button>  
+                </div>
+            </div>
+        </div>
+    </div>
+
     {% with messages = get_flashed_messages() %}
         {% if messages %}
         <div class="flashes row">
@@ -43,5 +82,35 @@
         {% endif %}
     {% endwith %}
 </div>
+
+<script type="text/javascript">
+    var currentEmployeeID;
+
+    function openEditEmployeeModal(userID, SSN, hourlyRate) {
+        $('#edit-employee-modal').modal('toggle');
+        currentEmployeeID=userID;
+        $("#employee-current-info").html("SSN: " + SSN + ", Hourly Rate: " + hourlyRate);
+    }
+
+    function submitEditEmployee() {
+        edit_employee_form = $("#edit-employee-form");
+        edit_employee_form.find(".userID-field").val(currentEmployeeID);
+
+        $.ajax({
+            type: "POST",
+            url: "/employees/forms/edit_employee",
+            data: $(edit_employee_form).serialize(),
+            success: function(data) {
+                if (data.length == 0)
+                    window.location = "/employee/" + currentEmployeeID
+                else {
+                    alert("Error: " + data);
+                }
+            }
+        });
+    }
+
+    $("#edit-employee-submit").on("click", submitEditEmployee);
+</script>
 
 {% endblock %}

@@ -93,16 +93,16 @@
                 Ads
             </a></li>
             {% if is_current_employees_page %}
-            <li><a data-toggle="tab" href="#create-ad-section">Groups</a></li>
-            <li><a data-toggle="tab" href="#info-section">My Info</a></li>
+            <li><a data-toggle="tab" href="#create-ad-section">Make New Ad</a></li>
             {% endif %}
+            <li><a data-toggle="tab" href="#info-section">My Info</a></li>
         </ul>
     </div>
     <div class="tab-content">
-        <div id="own-ads-section">
+        <div id="own-ads-section" class="tab-pane fade in active">
             <div class="row list-header">
                 <!-- Search -->
-                <span class="filter-selector">
+                <span class="filter-selector" style="margin-left:28px;">
                     Search for:
                     <select id="search-col-selector">
                         {% for col in searchable_columns %}
@@ -117,18 +117,53 @@
             <div id="own-ads-list"></div>
         </div>
         {% if is_current_employees_page %}
-        <div id="create-ad-section">
-
+        <div id="create-ad-section" class="tab-pane fade in">
+            <form action="{{ url_for('employees.create_ad_form') }}" method="POST">
+                <div class="form-group col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4">
+                {{ create_ad_form.hidden_tag() }}
+                </div>
+                <div class="form-group col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4">
+                {{ create_ad_form.itemName(class="form-control") }}
+                {{ create_ad_form.itemType(class="form-control") }}
+                {{ create_ad_form.company(class="form-control") }}
+                {{ create_ad_form.content(class="form-control") }}
+                {{ create_ad_form.price(class="form-control") }}
+                {{ create_ad_form.unitsAvailable(class="form-control") }}
+                </div>
+                <div class="col-xs-12 center-block">
+                <button id="create-ad-submit" type="submit" class="btn btn-default center-block">Create</button>
+                </div>
+            </form>
         </div>
-        <div id="info-section">
-            SSN: {{ employee.SSN }}
-            <br/>
+        {% endif %}
+        <div id="info-section" class="tab-pane fade in">
             Date Started: {{ employee.startDate }}
+            <br/>
+            SSN: {{ employee.SSN }}
             <br/>
             Hourly Wage: {{ employee.hourlyRate }}
         </div>
-        {% endif %}
     </div>
 </div>
+
+<script type="text/javascript">
+    function submitEditEmployee() {
+        create_ad_form = $("#create-ad-form");
+
+        $.ajax({
+            type: "POST",
+            url: "/employees/forms/create_ad_form",
+            data: $(create_ad_form).serialize(),
+            success: function(data) {
+                if (data.length == 0)
+                    $(create_ad_form)[0].reset();
+                else
+                    alert(data);
+            }
+        });
+    }
+
+    $("#create-ad-submit").on("click", submitEditEmployee);
+</script>
 
 {% endblock %}

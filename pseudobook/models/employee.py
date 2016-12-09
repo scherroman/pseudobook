@@ -5,11 +5,23 @@ class Employee():
         self.userID = userID
         self.SSN = SSN
         self.startDate = startDate
-        self.hourlyRate = hourlyRate
+        self.hourlyRate = "%.2f" % hourlyRate
         self.firstName = firstName
         self.lastName = lastName
         self.email = email
         self.password_hash = passwordHash
+
+    @staticmethod
+    def edit_employee(userID, SSN, hourlyRate):
+        cursor = mysql.connection.cursor()
+        try:
+            cursor.execute('''CALL editEmployee("{}", "{}", "{}")
+                              '''.format(userID, SSN, hourlyRate))
+            mysql.connection.commit()
+        except (mysql.connection.Error, mysql.connection.Warning) as e:
+            raise
+            
+        return userID
 
     @staticmethod
     def scroll_employees(offset, num_employees):

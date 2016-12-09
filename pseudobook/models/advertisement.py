@@ -32,13 +32,20 @@ class Advertisement():
         )
 
     @staticmethod
-    def create_new_ad():
-        return None
-        # return adID
-
-    @staticmethod
-    def delete_ad(adID):
-        return None
+    def create_new_ad(employeeID, itemName, itemType, company, content, price, numberAvailableUnits):
+        cursor = mysql.connection.cursor()
+        try:
+            cursor.execute('''CALL createAd(@adID, "{}", "{}", "{}", "{}", "{}", "{}", "{}")
+                              '''.format(employeeID, itemType, company, itemName, content, price, numberAvailableUnits))
+            mysql.connection.commit()
+            cursor.execute('''SELECT @adID''')
+        except (mysql.connection.Error, mysql.connection.Warning) as e:
+            raise
+        else:
+            result = cursor.fetchone()
+            adID = result.get('@adID') if result else None
+            
+        return adID
 
     '''
     Standard search method for ads

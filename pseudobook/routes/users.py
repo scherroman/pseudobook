@@ -14,6 +14,7 @@ from pseudobook.models import sale as sales_model
 
 from pseudobook.forms.make_post import MakePost as MakePostForm
 from pseudobook.forms.remove_post import RemovePost as RemovePostForm
+from pseudobook.forms.edit_employee import EditEmployee as EditEmployeeForm
 
 POSTS_PER_PAGE = 10
 USERS_PER_PAGE = 15
@@ -93,6 +94,8 @@ def users():
 
 	for user_post in user_posts:
 			user_post.remove_post_form = RemovePostForm()
+	edit_employee_form = EditEmployeeForm()
+	
 	return render_template('users.html', 
 							current_user=current_user, 
 							users=users, 
@@ -102,7 +105,8 @@ def users():
 							user_posts=user_posts,
 							prev_user_posts=prev_user_posts,
 							next_user_posts=next_user_posts,
-							user_posts_offset=user_posts_offset)
+							user_posts_offset=user_posts_offset,
+							edit_employee_form=edit_employee_form)
 
 @mod.route('/shop', methods=['GET'])
 @login_required

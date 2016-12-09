@@ -65,6 +65,20 @@
                         {{ user.firstName }} {{ user.lastName}}
                     </a>
                   </a>
+                  {% if not user.is_employee() %}
+                  <span class="btn-group list-link-dropdown">
+                        <button class="dropdown-button btn btn-mini button-transparent dropdown-toggle" data-toggle="dropdown">
+                          <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu pull-right">
+                            <li>
+                                <a onclick="$('#upgrade-to-employee-modal').modal('toggle'); currentUserID={{user.userID}};" style="cursor:pointer;">
+                                    Upgrade to Employee
+                                </a>
+                            </li>
+                        </ul>
+                    </span>
+                    {% endif %}
                 </div>
             {% endfor %}
             {% if users|length == 0 %}
@@ -82,6 +96,33 @@
             {% endif %}
             </div>
         </div>
+
+        <!-- Modals -->
+        <div class="modal fade" id="upgrade-to-employee-modal" role="dialog">
+            <div class="modal-dialog">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                      <h4 class="modal-title">Employee Info</h4>
+                    </div>
+                    <div class="modal-body">
+                      <form id="upgrade-to-employee-form" action="{{ url_for('employees.edit_employee_form') }}" method="POST">
+                          {{ edit_employee_form.hidden_tag() }}
+                          {{ edit_employee_form.SSN(class="form-control SSN-field") }}
+                          {{ edit_employee_form.hourlyRate(class="form-control hourlyRate-field") }}
+                          {{ edit_employee_form.userID(type="hidden", class="userID-field") }}
+                      </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button id="upgrade-to-employee-submit" type="submit" class="btn btn-success">Submit</button>  
+                    </div>
+                </div>
+            </div>
+        </div>
+
         {% with messages = get_flashed_messages() %}
           {% if messages %}
             <div class="flashes row">
@@ -93,4 +134,27 @@
         {% endwith %}
     </div>
 
+    <script type="text/javascript">
+        var currentUserID;
+
+        function submitUpgradeToEmployee() {
+            upgrade_form = $("#upgrade-to-employee-form");
+            upgrade_form.find(".userID-field").val(currentUserID);
+
+            $.ajax({
+                type: "POST",
+                url: "/employees/forms/edit_employee",
+                data: $(upgrade_form).serialize(),
+                success: function(data) {
+                    if (data.length == 0)
+                        window.location = "/employee/" + currentUserID
+                    else {
+                        alert(data);
+                    }
+                }
+            });
+        }
+
+        $("#upgrade-to-employee-submit").on("click", submitUpgradeToEmployee);
+    </script>
 {% endblock %}
