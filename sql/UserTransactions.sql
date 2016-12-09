@@ -14,7 +14,8 @@ CREATE PROCEDURE registerUser (
     zipCode CHAR(5),
     telephone CHAR(10),
     accountCreationDate DATETIME,
-    rating INTEGER
+    rating INTEGER,
+    creditCardNumber VARCHAR(16)
 )
 BEGIN
 	INSERT INTO `User` (firstName, lastName, email, passwordHash, address, city, state, zipCode, telephone, accountCreationDate, rating)
@@ -22,6 +23,8 @@ BEGIN
     SET userID = last_insert_id();
     INSERT INTO `Page` (userID, postCount, pageType)
     VALUES (userID, 0, "pr");
+    INSERT INTO `UserAccounts` (userID, accountNumber, creditCardNumber)
+    VALUES (userID, 1, creditCardNumber);
 END$
 
 DROP PROCEDURE IF EXISTS sendMessage;

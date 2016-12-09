@@ -28,11 +28,12 @@ class User():
     def verify_password(self, password):
         return pwd_context.verify(password, self.password_hash)
 
-    def register_user(self): 
+    def register_user(self):
+        defaultCCNumber = "1234567890"
         cursor = mysql.connection.cursor()
         try:
-            cursor.execute('''CALL registerUser(@userID, "{}", "{}", "{}", "{}", NULL, NULL, NULL, NULL, NULL, NULL, NULL)
-                              '''.format(self.firstName, self.lastName, self.email, self.password_hash))
+            cursor.execute('''CALL registerUser(@userID, "{}", "{}", "{}", "{}", NULL, NULL, NULL, NULL, NULL, NULL, NULL, {})
+                              '''.format(self.firstName, self.lastName, self.email, self.password_hash, defaultCCNumber))
             mysql.connection.commit()
             cursor.execute('''SELECT @userID''')
         except (mysql.connection.Error, mysql.connection.Warning) as e:
