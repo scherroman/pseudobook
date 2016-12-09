@@ -44,6 +44,14 @@
                     {% endif %}
                     <br>
                     <p class="post-text">{{ group_post.postContent }}</p>
+                    {% if current_user_is_member %}
+                        <div class="list-link-div">
+                            <a class='list-link like-unlike' id='like-button' data-post-id="{{ post.postID }}" data-author-id="{{ current_user.userID }}" data-content-type="po" style="cursor:pointer">
+                                <b>like</b>
+                            </a>
+                            <div class='list-link like-counter' id="counter">0</div>
+                        </div>
+                    {% endif %}
                   </a>
                 </div>
             {% endfor %}
