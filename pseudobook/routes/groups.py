@@ -49,6 +49,8 @@ def groups():
 
     for group_post in group_posts:
         group_post.remove_post_form = RemovePostForm()
+        group_post.like_button = post_model.Post.like_button(group_post.postID, current_user.userID, "po")
+        group_post.counter = post_model.Post.like_count(group_post.postID, "po")
     return render_template('groups.html', 
                             current_user=current_user, 
                             groups=groups, 
@@ -97,6 +99,8 @@ def group_page(groupID):
     join_unjoin_form = JoinUnjoinForm()
     for post in posts:
         post.remove_post_form = RemovePostForm()
+        post.like_button = post_model.Post.like_button(post.postID, current_user.userID, "po")
+        post.counter = post_model.Post.like_count(post.postID, "po")
     for user in users:
         user.join_unjoin_form = JoinUnjoinForm()
     for user in addable_users:
