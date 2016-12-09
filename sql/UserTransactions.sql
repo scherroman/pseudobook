@@ -114,13 +114,8 @@ BEGIN
 	ELSE SELECT userID into ownID FROM `Page` WHERE (pageID = `Page`.pageID);
 	END IF;
     IF (pageType = 'gr') THEN
-        IF (SELECT EXISTS(SELECT 1 FROM GroupUsers WHERE (ownID = GroupUsers.groupID AND selfID = GroupUsers.userID))) THEN
-    		INSERT INTO Post (pageID, postDate, postContent, authorID)
-    		VALUES (pageID, postDate, postContent, selfID);
-        ELSE
-            SIGNAL SQLSTATE '45000' 
-            SET MESSAGE_TEXT = 'Not authorized to post to this group';
-        END IF;
+		INSERT INTO Post (pageID, postDate, postContent, authorID)
+		VALUES (pageID, postDate, postContent, selfID);
 	ELSEIF (pageType = 'pr') THEN
 		INSERT INTO Post (pageID, postDate, postContent, authorID)
 		VALUES (pageID, postDate, postContent, selfID);
@@ -218,34 +213,24 @@ END$
 
 DROP PROCEDURE IF EXISTS modifyPost;
 CREATE PROCEDURE modifyPost(
-	selfID INTEGER,
-    selfType CHAR(2),
 	postID INTEGER,
     postContent VARCHAR(140)
 )
 BEGIN
 	UPDATE Post
     SET Post.postContent = postContent
-    WHERE (
-    postID = Post.postID 
-    AND selfID = Post.authorID
-    );
+    WHERE postID = Post.postID;
 END$
 
 DROP PROCEDURE IF EXISTS modifyComment;
 CREATE PROCEDURE modifyComment(
-	selfID INTEGER,
-    selfType CHAR(2),
 	commentID INTEGER,
     content VARCHAR(140)
 )
 BEGIN
 	UPDATE `Comment`
     SET `Comment`.content = content
-    WHERE (
-    commentID = `Comment`.commentID 
-    AND selfID = `Comment`.authorID 
-    );
+    WHERE commentID = `Comment`.commentID;
 END$
 
 DROP PROCEDURE IF EXISTS deleteGroup;
