@@ -56,13 +56,13 @@ def groups():
     prev_posts = True if posts_offset > 0 else False
     next_posts = True if ((posts_offset + 1) * POSTS_PER_PAGE) < total_posts else False
 
-    for group_post in posts:
-        group_post.remove_post_form = RemovePostForm()
-        group_post.user_has_liked = like_model.Like.user_has_liked(group_post.postID, current_user.userID, "po")
-        group_post.like_count = like_model.Like.like_count(group_post.postID, "po")
+    for post in posts:
+        post.remove_post_form = RemovePostForm()
+        post.user_has_liked = like_model.Like.user_has_liked(post.postID, current_user.userID, "po")
+        post.like_count = like_model.Like.like_count(post.postID, "po")
 
-        group_post.comments = group_post.get_comments()
-        for comment in group_post.comments:
+        post.comments = post.get_comments()
+        for comment in post.comments:
             comment.user_has_liked = like_model.Like.user_has_liked(comment.commentID, current_user.userID, "cm")
             comment.like_count = like_model.Like.like_count(comment.commentID, "cm")
         
@@ -129,10 +129,11 @@ def group_page(groupID):
     join_unjoin_form = JoinUnjoinForm()
     rename_group_form = RenameGroupForm()
     delete_group_form = DeleteGroupForm()
+    like_unlike_form = LikeUnlikeForm()
 
     for post in posts:
         post.remove_post_form = RemovePostForm()
-        group_post.user_has_liked = like_model.Like.user_has_liked(group_post.postID, current_user.userID, "po")
+        post.user_has_liked = like_model.Like.user_has_liked(post.postID, current_user.userID, "po")
         post.like_count = like_model.Like.like_count(post.postID, "po")
 
         post.comments = post.get_comments()
@@ -169,7 +170,8 @@ def group_page(groupID):
                             make_comment_form=make_comment_form,
                             remove_comment_form=remove_comment_form,
                             edit_post_form=edit_post_form,
-                            edit_comment_form=edit_comment_form)
+                            edit_comment_form=edit_comment_form,
+                            like_unlike_form=like_unlike_form)
 
 @mod.route('/groups/create', methods=['GET', 'POST'])
 @login_required

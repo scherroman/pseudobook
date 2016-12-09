@@ -42,6 +42,7 @@
 										    {{ delete_group_form.groupID(type="hidden", value=group.groupID) }}
 										    {{ delete_group_form.userID(type="hidden", value=current_user.userID) }}
 										</form>
+									<span class="glyphicon glyphicon-remove" style="padding-right:10px;"></span>
 									Delete Group
 									</a>
 								</li>
@@ -55,6 +56,7 @@
 										    {{ join_unjoin_form.groupID(type="hidden", value=group.groupID) }}
 										    {{ join_unjoin_form.userID(type="hidden", value=current_user.userID) }}
 										</form>
+									<span class="glyphicon glyphicon-log-out" style="padding-right:10px;"></span>
 									Leave Group
 									</a>
 								</li>
@@ -66,6 +68,7 @@
 										    {{ join_unjoin_form.groupID(type="hidden", value=group.groupID) }}
 										    {{ join_unjoin_form.userID(type="hidden", value=current_user.userID) }}
 										</form>
+									<span class="glyphicon glyphicon-log-in" style="padding-right:10px;"></span>
 									Join Group
 									</a>
 								</li>
@@ -82,20 +85,14 @@
 			        	<a class="list-link dotted" href="{{ url_for('users.user_page', userID=post.authorID) }}">
 			            	<b>{{ post.author_name }}</b> 
 			            </a>
-			            <small class='post-timestamp'> {{ post.postDate }}</small>
+			            <small class='post-timestamp dotted'> {{ post.postDate }} </small>
+			            <small class='like-counter'>{{ post.like_count }}</small><small> likes</small>
 			            <span class="btn-group list-link-dropdown">
 							<button class="dropdown-button btn btn-mini button-transparent dropdown-toggle" data-toggle="dropdown">
 							  <span class="caret"></span>
 							</button>
 							<ul class="dropdown-menu pull-right">
-								{% if current_user.userID == post.authorID %}
-								<li>
-								    <a class="edit-post" data-post-id="{{ post.postID }}" style="cursor:pointer;">
-								        <span class="glyphicon glyphicon-pencil" style="padding-right:10px;"></span>
-								        Edit
-								    </a>
-								</li>
-								{% endif %}
+								{% include 'like.html' %}
 								<li>
 								    <a class="make-comment" data-post-id="{{ post.postID }}" data-author-id="{{ current_user.userID }}" style="cursor:pointer;">
 								        <span class="glyphicon glyphicon-comment" style="padding-right:10px;"></span>
@@ -103,6 +100,12 @@
 								    </a>
 								</li>
 								{% if current_user.userID == post.authorID %}
+								<li>
+								    <a class="edit-post" data-post-id="{{ post.postID }}" style="cursor:pointer;">
+								        <span class="glyphicon glyphicon-pencil" style="padding-right:10px;"></span>
+								        Edit
+								    </a>
+								</li>
 								<li>
 									<a onclick="$(this).find('> form:first').submit()" style="cursor:pointer;">
 										<form action="{{ url_for('groups.remove_post_form') }}" method="POST" style="display:none;">
@@ -118,12 +121,6 @@
 			            </span>
 			            <br>
 			        	<p class="post-text">{{ post.postContent }}</p>
-			        	<div class="list-link-div">
-			        		<a class='list-link like-unlike' id='like-button' data-post-id="{{ post.postID }}" data-author-id="{{ current_user.userID }}" data-content-type="po" style="cursor:pointer">
-			        			<b>{{ post.like_button }}</b>
-			        		</a>
-			        	    <div class='list-link like-counter' id="counter">{{ post.counter }}</div>
-			        	</div>
 			        	<div class="comments-container" {% if post.comments|length == 0 %}style="display:none;"{% endif %}>
 			        	    <hr style="max-width: 350px;">
 			        	    <div class="comments">
@@ -336,6 +333,13 @@
 	    <form id="remove-comment-form" action="{{ url_for('groups.remove_comment') }}" method="POST" style="display:none;"">
             {{ remove_comment_form.hidden_tag() }}
             {{ remove_comment_form.commentID(type="hidden", class="commentID-field") }}
+        </form>
+
+        <form id="like-unlike-form" action="{{ url_for('groups.like_unlike') }}" method="POST" style="display:none;"">
+            {{ like_unlike_form.hidden_tag() }}
+            {{ like_unlike_form.parentID(type="hidden", class="parentID-field") }}
+            {{ like_unlike_form.authorID(type="hidden", class="authorID-field") }}
+            {{ like_unlike_form.contentType(type="hidden", class="contentType-field") }}
         </form>
 
 	    {% with messages = get_flashed_messages() %}

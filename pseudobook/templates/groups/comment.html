@@ -3,7 +3,7 @@
         <a class="list-link" href="{{ url_for('users.user_page', userID=comment.authorID) }}"><b>{{ comment.author_name }}</b></a>
     </span>
     <small class='post-timestamp dotted'> {{ comment.commentDate }} </small>
-    <small class='like-counter'>{{ post.like_count }}</small><small> likes</small>
+    <small class='like-counter'>{{ comment.like_count }}</small><small> likes</small>
     <span class="btn-group list-link-dropdown">
         <button class="dropdown-button btn btn-mini button-transparent dropdown-toggle" data-toggle="dropdown">
           <span class="caret"></span>
