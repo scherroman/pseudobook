@@ -32,6 +32,42 @@ class Post():
         return author_name
 
     @staticmethod
+    def like_count(postID, contentType):
+        cursor = mysql.connection.cursor()
+        query = '''SELECT COUNT(*) AS count
+                FROM Likes L 
+                WHERE L.parentID = {0}
+                AND L.contentType = "{1}"
+                '''.format(postID, contentType)  
+
+        cursor.execute(query)
+
+        result = cursor.fetchone()
+
+        count = result['count']
+
+        return count
+
+    @staticmethod
+    def like_button(postID, userID, contentType):
+        cursor = mysql.connection.cursor()
+        #check if like or unlike
+        query = '''SELECT COUNT(*) AS count
+                FROM Likes L 
+                WHERE L.parentID = {0}
+                AND L.authorID = {1}
+                AND L.contentType = "{2}"
+                '''.format(postID, userID, contentType)    
+
+        cursor.execute(query)
+
+        result = cursor.fetchone()
+
+        count = result['count']
+
+        return 'like' if count==0 else 'unlike'
+
+    @staticmethod
     def get_post_by_id(postID):
         cursor = mysql.connection.cursor()
         cursor.execute('''SELECT P.postID, P.pageID, P.postDate, P.postContent, P.authorID
