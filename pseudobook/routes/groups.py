@@ -1,5 +1,6 @@
 from flask import Blueprint, flash, abort, jsonify
 from flask import render_template, url_for, request, redirect 
+from flask import jsonify
 from flask_login import login_required, current_user
 from urllib.parse import urlparse, urljoin
 
@@ -54,6 +55,8 @@ def groups():
     for group_post in posts:
         group_post.comments = group_post.get_comments()
         group_post.remove_post_form = RemovePostForm()
+        group_post.like_button = post_model.Post.like_button(group_post.postID, current_user.userID, "po")
+        group_post.counter = post_model.Post.like_count(group_post.postID, "po")
     make_comment_form = MakeCommentForm()
     remove_comment_form = RemoveCommentForm()
     edit_post_form = EditPostForm()
@@ -115,6 +118,8 @@ def group_page(groupID):
     for post in posts:
         post.comments = post.get_comments()
         post.remove_post_form = RemovePostForm()
+        post.like_button = post_model.Post.like_button(post.postID, current_user.userID, "po")
+        post.counter = post_model.Post.like_count(post.postID, "po")
     for user in users:
         user.join_unjoin_form = JoinUnjoinForm()
     for user in addable_users:
@@ -378,3 +383,55 @@ def edit_comment_form():
         flash('There was an error editing this comment.')
 
     return abort(400, 'There was an error editing this comment.')
+
+@mod.route('/likes/forms/like_unlike', methods=['POST'])
+@login_required
+def like_unlike():
+    postID = request.json['postID']
+    authorID = request.json['authorID']
+    contentType = request.json['contentType']
+    response = {'like_button':None, 'count':None}
+    if contentType == 'po' or contentType == 'cm':
+        cursor = mysql.connection.cursor()
+        #check if like or unlike
+        query = '''SELECT COUNT(*) AS count
+                FROM Likes L 
+                WHERE L.parentID = {0}
+                AND L.authorID = {1}
+                AND L.contentType = "{2}"
+                '''.format(postID, authorID, contentType)    
+
+        cursor.execute(query)
+
+        result = cursor.fetchone()
+
+        count = result['count']
+        if count == 0:
+            #like
+            query = '''CALL `like`({0}, {1}, "{2}")
+                    '''.format(postID, authorID, contentType)
+            cursor.execute(query)
+            mysql.connection.commit()
+            response['like_button'] = 'unlike'
+        else:
+            #unlike
+            query = '''CALL unlike({0}, {1}, "{2}")
+                    '''.format(postID, authorID, contentType)
+            cursor.execute(query)
+            mysql.connection.commit()
+            response['like_button'] = 'like'
+        #get new like count
+        query = '''SELECT COUNT(*) AS count
+                FROM Likes L 
+                WHERE L.parentID = {0}
+                AND L.contentType = "{1}"
+                '''.format(postID, contentType)  
+
+        cursor.execute(query)
+
+        result = cursor.fetchone()
+
+        response['count'] = result['count']  
+        return jsonify(response)
+    else :
+        return 'failure'
