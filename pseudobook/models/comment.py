@@ -25,6 +25,15 @@ class Comment():
                 'content': self.content,
                 'authorID': self.authorID }
 
+    def edit_comment(self, content):
+        cursor = mysql.connection.cursor()
+        try:
+            cursor.execute('''CALL modifyComment("{}", "{}")
+                              '''.format(self.commentID, content))
+            mysql.connection.commit()
+        except (mysql.connection.Error, mysql.connection.Warning) as e:
+            raise
+
     @staticmethod
     def get_comment_by_id(commentID):
         cursor = mysql.connection.cursor()

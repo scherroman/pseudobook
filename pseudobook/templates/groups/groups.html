@@ -23,6 +23,14 @@
                           <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu pull-right">
+                            {% if current_user.userID == post.authorID %}
+                            <li>
+                                <a class="edit-post" data-post-id="{{ post.postID }}" style="cursor:pointer;">
+                                    <span class="glyphicon glyphicon-pencil" style="padding-right:10px;"></span>
+                                    Edit
+                                </a>
+                            </li>
+                            {% endif %}
                             <li>
                                 <a class="make-comment" data-post-id="{{ post.postID }}" data-author-id="{{ current_user.userID }}" style="cursor:pointer;">
                                     <span class="glyphicon glyphicon-comment" style="padding-right:10px;"></span>
@@ -114,6 +122,54 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                         <button id="make-comment-submit" type="submit" class="btn btn-success">Submit</button>  
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="edit-post-modal" role="dialog">
+            <div class="modal-dialog">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                      <h4 class="modal-title">Edit Post</h4>
+                    </div>
+                    <div class="modal-body">
+                      <form id="edit-post-form" action="{{ url_for('groups.edit_post_form') }}" method="POST">
+                          {{ edit_post_form.hidden_tag() }}
+                          {{ edit_post_form.content(class="form-control content-field") }}
+                          {{ edit_post_form.postID(type="hidden", class="postID-field") }}
+                      </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button id="edit-post-submit" type="submit" class="btn btn-success">Submit</button>  
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="edit-comment-modal" role="dialog">
+            <div class="modal-dialog">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                      <h4 class="modal-title">Edit Comment</h4>
+                    </div>
+                    <div class="modal-body">
+                      <form id="edit-comment-form" action="{{ url_for('groups.edit_comment_form') }}" method="POST">
+                          {{ edit_comment_form.hidden_tag() }}
+                          {{ edit_comment_form.content(class="form-control content-field") }}
+                          {{ edit_comment_form.commentID(type="hidden", class="commentID-field") }}
+                      </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button id="edit-comment-submit" type="submit" class="btn btn-success">Submit</button>  
                     </div>
                 </div>
             </div>

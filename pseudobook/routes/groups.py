@@ -12,11 +12,13 @@ from pseudobook.models import post as post_model
 from pseudobook.models import comment as comment_model
 
 from pseudobook.forms.create_group import CreateGroup as CreateGroupForm
+from pseudobook.forms.join_unjoin_group import JoinUnjoinGroup as JoinUnjoinForm
 from pseudobook.forms.make_post import MakePost as MakePostForm
 from pseudobook.forms.remove_post import RemovePost as RemovePostForm
-from pseudobook.forms.join_unjoin_group import JoinUnjoinGroup as JoinUnjoinForm
+from pseudobook.forms.edit_post import EditPost as EditPostForm
 from pseudobook.forms.make_comment import MakeComment as MakeCommentForm
 from pseudobook.forms.remove_comment import RemoveComment as RemoveCommentForm
+from pseudobook.forms.edit_comment import EditComment as EditCommentForm
 
 POSTS_PER_PAGE = 10
 USERS_PER_PAGE = 15
@@ -54,6 +56,8 @@ def groups():
         group_post.remove_post_form = RemovePostForm()
     make_comment_form = MakeCommentForm()
     remove_comment_form = RemoveCommentForm()
+    edit_post_form = EditPostForm()
+    edit_comment_form = EditCommentForm()
     return render_template('groups.html', 
                             current_user=current_user, 
                             groups=groups, 
@@ -65,7 +69,9 @@ def groups():
                             next_posts=next_posts,
                             posts_offset=posts_offset,
                             make_comment_form=make_comment_form,
-                            remove_comment_form=remove_comment_form)
+                            remove_comment_form=remove_comment_form,
+                            edit_post_form=edit_post_form,
+                            edit_comment_form=edit_comment_form)
 
 @mod.route('/group/<string:groupID>', methods=['GET'])
 @login_required
@@ -102,7 +108,9 @@ def group_page(groupID):
 
     make_post_form = MakePostForm()
     make_comment_form = MakeCommentForm()
+    edit_comment_form = EditCommentForm()
     remove_comment_form = RemoveCommentForm()
+    edit_post_form = EditPostForm()
     join_unjoin_form = JoinUnjoinForm()
     for post in posts:
         post.comments = post.get_comments()
@@ -131,7 +139,9 @@ def group_page(groupID):
                             make_post_form=make_post_form,
                             join_unjoin_form=join_unjoin_form,
                             make_comment_form=make_comment_form,
-                            remove_comment_form=remove_comment_form)
+                            remove_comment_form=remove_comment_form,
+                            edit_post_form=edit_post_form,
+                            edit_comment_form=edit_comment_form)
 
 @mod.route('/groups/create', methods=['GET', 'POST'])
 @login_required
@@ -216,6 +226,31 @@ def remove_post_form():
         flash('There was an error removing this post.')
 
     return redirect(request.referrer)
+
+@mod.route('/groups/forms/edit_post_form', methods=['POST'])
+@login_required
+def edit_post_form():
+    content = request.form['content']
+    postID = request.form['postID']
+
+    post = post_model.Post.get_post_by_id(postID)
+    edit_post_form = EditPostForm(request.form)
+    if request.form and edit_post_form.validate_on_submit():
+        try:
+            post.edit_post(content)
+        except (mysql.connection.Error, mysql.connection.Warning) as e:
+            print(e)
+            # Print custom error message
+            if e.args[0] == 1644:
+                flash(e.args[1])
+            else:
+                flash('There was an error editing this post.')
+        
+        return jsonify()
+    else:
+        flash('There was an error editing this post.')
+
+    return abort(400, 'There was an error editing this post.')
 
 @mod.route('/groups/forms/join_group', methods=['POST'])
 @login_required
@@ -318,3 +353,28 @@ def remove_comment():
         flash('There was an error removing this comment.')
 
     return abort(400, 'There was an error removing this comment.')
+
+@mod.route('/groups/forms/edit_comment_form', methods=['POST'])
+@login_required
+def edit_comment_form():
+    content = request.form['content']
+    commentID = request.form['commentID']
+
+    comment = comment_model.Comment.get_comment_by_id(commentID)
+    edit_comment_form = EditCommentForm(request.form)
+    if request.form and edit_comment_form.validate_on_submit():
+        try:
+            comment.edit_comment(content)
+        except (mysql.connection.Error, mysql.connection.Warning) as e:
+            print(e)
+            # Print custom error message
+            if e.args[0] == 1644:
+                flash(e.args[1])
+            else:
+                flash('There was an error editing this comment.')
+        
+        return jsonify()
+    else:
+        flash('There was an error editing this comment.')
+
+    return abort(400, 'There was an error editing this comment.')

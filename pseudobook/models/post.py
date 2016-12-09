@@ -21,6 +21,15 @@ class Post():
                 self.authorID
         )
 
+    def edit_post(self, content):
+        cursor = mysql.connection.cursor()
+        try:
+            cursor.execute('''CALL modifyPost("{}", "{}")
+                              '''.format(self.postID, content))
+            mysql.connection.commit()
+        except (mysql.connection.Error, mysql.connection.Warning) as e:
+            raise
+    
     def get_comments(self):
         comments = []
 
