@@ -72,9 +72,9 @@ p { font-size: 15px; }
     content: "\00b7";
 }
 
-.hover-tab:hover > ul.dropdown-menu {
-    display: block;    
-}
+.hover-tab:hover > ul.dropdown-menu { display: block;}
+
+.modal { color: black;}
 
 .nextprev { font-size: 20px; }
 

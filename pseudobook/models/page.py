@@ -35,15 +35,6 @@ class Page():
 
         return postID
 
-    def remove_post(self, postID):
-      cursor = mysql.connection.cursor()
-      try:
-          cursor.execute('''CALL removePost("{}")
-                            '''.format(postID))
-          mysql.connection.commit()
-      except (mysql.connection.Error, mysql.connection.Warning) as e:
-          raise
-
     def scroll_posts(self, offset, num_posts, search):
         search = search if search else ""
         posts = []

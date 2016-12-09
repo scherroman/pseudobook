@@ -16,7 +16,7 @@ class User():
         self.password_hash = password_hash
 
     def __repr__(self):
-        return ('{{id: {}, name: {} {}}}').format(
+        return ('{{userId: {}, firstName: {}, lastName {}}}').format(
                 self.userID,
                 self.firstName,
                 self.lastName

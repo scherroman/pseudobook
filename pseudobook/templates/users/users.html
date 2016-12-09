@@ -16,9 +16,9 @@
                     <span class="post-author">
                     <a class="list-link" href="{{ url_for('users.user_page', userID=user_post.authorID) }}">
                         {% if user_post.authorID == user_post.page_owner_id %}
-                            <b>{{ user_post.author_name }}</a> posted a status</b>
+                            <b>{{ user_post.author_name }}</a></b>
                         {% else %}
-                            <b>{{ user_post.author_name }}</a> wrote on <a class="list-link" href="{{ url_for('users.user_page', userID=user_post.page_owner_id) }}">{{ user_post.page_owner_name }}'s</a> wall</b>
+                            <b>{{ user_post.author_name }}</a> > <a class="list-link" href="{{ url_for('users.user_page', userID=user_post.page_owner_id) }}">{{ user_post.page_owner_name }}</a></b>
                         {% endif %}
                     </span>
                     <small class='post-timestamp'> {{ user_post.postDate }}</small>

@@ -131,6 +131,7 @@ END$
 
 DROP PROCEDURE IF EXISTS makeComment;
 CREATE PROCEDURE makeComment(
+    OUT commentID INTEGER,
 	postID INTEGER,
     commentDate DATETIME,
     content VARCHAR(140),
@@ -149,6 +150,7 @@ BEGIN
 	-- IF (userExistsInGroup != 0) THEN
 	INSERT INTO `Comment`(postID, commentDate, content, authorID)
 	VALUES (postID, commentDate, content, authorID);
+    SET commentID = last_insert_id();
     -- END IF;
 END$
 
@@ -198,12 +200,11 @@ END$
 
 DROP PROCEDURE IF EXISTS removeComment;
 CREATE PROCEDURE removeComment(
-	selfID INTEGER,
 	commentID INTEGER
 )
 BEGIN
 	DELETE FROM `Comment`
-	WHERE (commentID = `Comment`.commentID AND authorID = `Comment`.authorID);
+	WHERE (commentID = `Comment`.commentID);
 END$
 
 DROP PROCEDURE IF EXISTS removePost;

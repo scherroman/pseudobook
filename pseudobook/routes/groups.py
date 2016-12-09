@@ -1,4 +1,4 @@
-from flask import Blueprint, flash
+from flask import Blueprint, flash, abort, jsonify
 from flask import render_template, url_for, request, redirect 
 from flask_login import login_required, current_user
 from urllib.parse import urlparse, urljoin
@@ -9,11 +9,14 @@ from pseudobook.models import page as page_model
 from pseudobook.models import group as group_model
 from pseudobook.models import page as page_model
 from pseudobook.models import post as post_model
+from pseudobook.models import comment as comment_model
 
 from pseudobook.forms.create_group import CreateGroup as CreateGroupForm
 from pseudobook.forms.make_post import MakePost as MakePostForm
 from pseudobook.forms.remove_post import RemovePost as RemovePostForm
 from pseudobook.forms.join_unjoin_group import JoinUnjoinGroup as JoinUnjoinForm
+from pseudobook.forms.make_comment import MakeComment as MakeCommentForm
+from pseudobook.forms.remove_comment import RemoveComment as RemoveCommentForm
 
 POSTS_PER_PAGE = 10
 USERS_PER_PAGE = 15
@@ -32,8 +35,8 @@ View Routes
 def groups():
     groups_offset = request.values.get('groups_offset')
     groups_offset = int(groups_offset) if groups_offset else 0
-    group_posts_offset = request.values.get('group_posts_offset')
-    group_posts_offset = int(group_posts_offset) if group_posts_offset else 0
+    posts_offset = request.values.get('posts_offset')
+    posts_offset = int(posts_offset) if posts_offset else 0
 
     total_groups = group_model.Group.count_groups(None)
     groups = group_model.Group.scroll_groups(groups_offset, GROUPS_PER_PAGE, None)
@@ -41,23 +44,28 @@ def groups():
     next_groups = True if ((groups_offset + 1) * GROUPS_PER_PAGE) < total_groups else False
 
     # Scroll all posts made in groups
-    total_group_posts = page_model.Page.count_posts_for_page_type(page_model.Page.PAGE_TYPE_GROUP, None)
-    group_posts = page_model.Page.scroll_posts_for_group_pages(group_posts_offset, POSTS_PER_PAGE, None)
-    prev_group_posts = True if group_posts_offset > 0 else False
-    next_group_posts = True if ((group_posts_offset + 1) * POSTS_PER_PAGE) < total_group_posts else False
+    total_posts = page_model.Page.count_posts_for_page_type(page_model.Page.PAGE_TYPE_GROUP, None)
+    posts = page_model.Page.scroll_posts_for_group_pages(posts_offset, POSTS_PER_PAGE, None)
+    prev_posts = True if posts_offset > 0 else False
+    next_posts = True if ((posts_offset + 1) * POSTS_PER_PAGE) < total_posts else False
 
-    for group_post in group_posts:
+    for group_post in posts:
+        group_post.comments = group_post.get_comments()
         group_post.remove_post_form = RemovePostForm()
+    make_comment_form = MakeCommentForm()
+    remove_comment_form = RemoveCommentForm()
     return render_template('groups.html', 
                             current_user=current_user, 
                             groups=groups, 
                             prev_groups=prev_groups, 
                             next_groups=next_groups,
                             groups_offset=groups_offset,
-                            group_posts=group_posts,
-                            prev_group_posts=prev_group_posts,
-                            next_group_posts=next_group_posts,
-                            group_posts_offset=group_posts_offset)
+                            posts=posts,
+                            prev_posts=prev_posts,
+                            next_posts=next_posts,
+                            posts_offset=posts_offset,
+                            make_comment_form=make_comment_form,
+                            remove_comment_form=remove_comment_form)
 
 @mod.route('/group/<string:groupID>', methods=['GET'])
 @login_required
@@ -93,8 +101,11 @@ def group_page(groupID):
     current_user_is_member = group.is_member(current_user.userID)
 
     make_post_form = MakePostForm()
+    make_comment_form = MakeCommentForm()
+    remove_comment_form = RemoveCommentForm()
     join_unjoin_form = JoinUnjoinForm()
     for post in posts:
+        post.comments = post.get_comments()
         post.remove_post_form = RemovePostForm()
     for user in users:
         user.join_unjoin_form = JoinUnjoinForm()
@@ -118,7 +129,9 @@ def group_page(groupID):
                             next_addable_users=next_addable_users,
                             addable_users_offset=addable_users_offset,
                             make_post_form=make_post_form,
-                            join_unjoin_form=join_unjoin_form)
+                            join_unjoin_form=join_unjoin_form,
+                            make_comment_form=make_comment_form,
+                            remove_comment_form=remove_comment_form)
 
 @mod.route('/groups/create', methods=['GET', 'POST'])
 @login_required
@@ -188,7 +201,15 @@ def remove_post_form():
         page = page_model.Page.get_page_by_id(post.pageID)
         if page.pageType == page_model.Page.PAGE_TYPE_GROUP:
             if current_user.userID == post.authorID:
-                page.remove_post(postID)
+                try:
+                    post_model.Post.remove_post(postID)
+                except (mysql.connection.Error, mysql.connection.Warning) as e:
+                    print(e)
+                    # Print custom error message
+                    if e.args[0] == 1644:
+                        flash(e.args[1])
+                    else:
+                        flash('There was an error removing this post.')
             else:
                 abort(403)
     else:
@@ -241,3 +262,59 @@ def unjoin_group():
         flash('There was an error unjoining this group.')
 
     return redirect(request.referrer)
+
+@mod.route('/groups/forms/make_comment', methods=['POST'])
+@login_required
+def make_comment():
+    postID = request.form['postID']
+    content = request.form['content']
+    authorID = request.form['authorID']
+
+    make_comment_form = MakeCommentForm(request.form)
+    if request.form and make_comment_form.validate_on_submit():
+        post = post_model.Post.get_post_by_id(postID)
+        try:
+            commentID = post.make_comment(content, authorID)
+        except (mysql.connection.Error, mysql.connection.Warning) as e:
+            print(e)
+            # Print custom error message
+            if e.args[0] == 1644:
+                flash(e.args[1])
+            else:
+                flash('There was an error commenting on this post.')
+        else:
+            comment = comment_model.Comment.get_comment_by_id(commentID)
+            return render_template('comment.html', 
+                                    comment=comment)
+    else:
+        flash('There was an error commenting on this post.')
+
+    return abort(400, 'There was an error commenting on this post.')
+
+@mod.route('/groups/forms/remove_comment', methods=['POST'])
+@login_required
+def remove_comment():
+    commentID = request.form['commentID']
+
+    remove_comment_form = RemoveCommentForm(request.form)
+    if request.form and remove_comment_form.validate_on_submit():
+        # Only allow user who owns comment to delete it 
+        comment = comment_model.Comment.get_comment_by_id(commentID)
+        if current_user.userID == comment.authorID:
+            try:
+                comment_model.Comment.remove_comment(commentID)
+            except (mysql.connection.Error, mysql.connection.Warning) as e:
+                print(e)
+                # Print custom error message
+                if e.args[0] == 1644:
+                    flash(e.args[1])
+                else:
+                    flash('There was an error removing this comment.')
+
+            return jsonify()
+        else:
+            abort(403)
+    else:
+        flash('There was an error removing this comment.')
+
+    return abort(400, 'There was an error removing this comment.')

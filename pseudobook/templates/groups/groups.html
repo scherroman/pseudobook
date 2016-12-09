@@ -11,49 +11,59 @@
         </div>
         <div class="tab-content">
             <div id="activity-section" class="tab-pane fade in active">
-            {% for group_post in group_posts %}
-                <div class="list-link-div">
+            {% for post in posts %}
+                <div id="{{ post.postID }}" class="list-link-div">
                     <span class="post-author">
-                    <a class="list-link" href="{{ url_for('users.user_page', userID=group_post.authorID) }}">
-                        {% if group_post.ownerID == group_post.page_owner_id %}
-                            <b>{{ group_post.author_name }}</a> posted a status</b>
-                        {% else %}
-                            <b>{{ group_post.author_name }}</a> posted in <a class="list-link" href="{{ url_for('groups.group_page', groupID=group_post.page_owner_id) }}">{{ group_post.page_owner_name }}'s</a> group</b>
-                        {% endif %}
+                        <a class="list-link" href="{{ url_for('users.user_page', userID=post.authorID) }}">
+                        <b>{{ post.author_name }}</a> > <a class="list-link" href="{{ url_for('groups.group_page', groupID=post.page_owner_id) }}">{{ post.page_owner_name }}</a></b>
                     </span>
-                    <small class='post-timestamp'> {{ group_post.postDate }}</small>
-                    {% if current_user.userID == group_post.authorID %}
+                    <small class='post-timestamp'> {{ post.postDate }}</small>
                     <span class="btn-group list-link-dropdown">
                         <button class="dropdown-button btn btn-mini button-transparent dropdown-toggle" data-toggle="dropdown">
                           <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu pull-right">
-                            
+                            <li>
+                                <a class="make-comment" data-post-id="{{ post.postID }}" data-author-id="{{ current_user.userID }}" style="cursor:pointer;">
+                                    <span class="glyphicon glyphicon-comment" style="padding-right:10px;"></span>
+                                    Comment
+                                </a>
+                            </li>
+                            {% if current_user.userID == post.authorID %}
                             <li>
                                 <a onclick="$(this).find('> form:first').submit()" style="cursor:pointer;">
-                                    <form action="{{ url_for('users.remove_post_form') }}" method="POST" style="display:none;">
-                                        {{ group_post.remove_post_form.hidden_tag() }}
-                                        {{ group_post.remove_post_form.postID(type="hidden", value=group_post.postID) }}
+                                    <form action="{{ url_for('groups.remove_post_form') }}" method="POST" style="display:none;">
+                                        {{ post.remove_post_form.hidden_tag() }}
+                                        {{ post.remove_post_form.postID(type="hidden", value=post.postID) }}
                                     </form>
                                     <span class="glyphicon glyphicon-remove" style="padding-right:10px;"></span>
                                     Delete
                                 </a>
                             </li>
+                            {% endif %}
                         </ul>
                     </span>
-                    {% endif %}
                     <br>
-                    <p class="post-text">{{ group_post.postContent }}</p>
+                    <p class="post-text">{{ post.postContent }}</p>
+                    <div class="comments-container" {% if post.comments|length == 0 %}style="display:none;"{% endif %}>
+                        <hr style="max-width: 350px;">
+                        <div class="comments">
+                            {% for comment in post.comments %}
+                                {% include 'comment.html' %}
+                            {% endfor %}
+                            <hr>
+                        </div>
+                    </div>
                   </a>
                 </div>
             {% endfor %}
-            {% if prev_group_posts or next_group_posts %}
+            {% if prev_posts or next_posts %}
                 <div>
-                    {% if prev_group_posts %}
-                        <a class="fade-link nextprev float-left" href="{{ url_for('groups.groups', group_posts_offset=group_posts_offset - 1) }}">❮ Prev</a>
+                    {% if prev_posts %}
+                        <a class="fade-link nextprev float-left" href="{{ url_for('groups.groups', posts_offset=posts_offset - 1) }}">❮ Prev</a>
                     {% endif %}
-                    {% if next_group_posts %}
-                        <a class="fade-link nextprev float-right" href="{{ url_for('groups.groups', group_posts_offset=group_posts_offset + 1) }}">Next ❯</a>
+                    {% if next_posts %}
+                        <a class="fade-link nextprev float-right" href="{{ url_for('groups.groups', posts_offset=posts_offset + 1) }}">Next ❯</a>
                     {% endif %}
                 </div>
             {% endif %}
@@ -82,9 +92,51 @@
             {% endif %}
             </div>
         </div>
-        
 
-        
+        <!-- Modals -->
+        <div class="modal fade" id="make-comment-modal" role="dialog">
+            <div class="modal-dialog">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                      <h4 class="modal-title">Make a Comment</h4>
+                    </div>
+                    <div class="modal-body">
+                      <form id="make-comment-form" action="{{ url_for('groups.remove_post_form') }}" method="POST">
+                          {{ make_comment_form.hidden_tag() }}
+                          {{ make_comment_form.postID(type="hidden", class="postID-field") }}
+                          {{ make_comment_form.content(class="form-control content-field") }}
+                          {{ make_comment_form.authorID(type="hidden", class="authorID-field") }}
+                      </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button id="make-comment-submit" type="submit" class="btn btn-success">Submit</button>  
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <form id="remove-comment-form" action="{{ url_for('groups.remove_comment') }}" method="POST" style="display:none;"">
+            {{ remove_comment_form.hidden_tag() }}
+            {{ remove_comment_form.commentID(type="hidden", class="commentID-field") }}
+        </form>
+
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <div class="flashes row">
+            {% for message in messages %}
+              <p style="text-align:center;">{{ message }}</p>
+            {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
     </div>
 
+{% endblock %}
+
+{% block scripts %}
+    <script src="/static/js/groups/groups.js"></script>
 {% endblock %}

@@ -10,7 +10,8 @@ class Group():
 		self.ownerID = ownerID
 
 	def __repr__(self):
-		return ('{{groupName: {}, ownerID: {}}}').format(
+		return ('{{groupId: {}, groupName: {}, ownerID: {}}}').format(
+				self.groupID,
 				self.groupName,
 				self.ownerID
 		)
