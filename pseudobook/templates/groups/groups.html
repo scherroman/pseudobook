@@ -55,10 +55,10 @@
                     <br>
                     <p class="post-text">{{ post.postContent }}</p>
                     <div class="list-link-div">
-                        <a class='list-link like-unlike' id='like-button' data-post-id="{{ group_post.postID }}" data-author-id="{{ current_user.userID }}" data-content-type="po" style="cursor:pointer">
-                            <b>{{ group_post.like_button }}</b>
+                        <a class='list-link like-unlike' id='like-button' data-post-id="{{ post.postID }}" data-author-id="{{ current_user.userID }}" data-content-type="po" style="cursor:pointer">
+                            <b>{{ post.like_button }}</b>
                         </a>
-                        <div class='list-link like-counter' id="counter">{{ group_post.counter }}</div>
+                        <div class='list-link like-counter' id="counter">{{ post.counter }}</div>
                     </div>
                     <div class="comments-container" {% if post.comments|length == 0 %}style="display:none;"{% endif %}>
                         <hr style="max-width: 350px;">
