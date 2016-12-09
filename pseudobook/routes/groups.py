@@ -312,7 +312,7 @@ def unjoin_group():
 @login_required
 def rename_group():
     groupID = request.form['groupID']
-    groupName = request.form['groupName']
+    groupName = request.form['content']
     cursor = mysql.connection.cursor()
     try:
         query = '''CALL renameGroup({0}, {1}, "{2}")
