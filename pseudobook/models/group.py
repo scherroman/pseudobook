@@ -42,6 +42,9 @@ class Group():
 		
 		return True if exists else False
 
+	def is_owner(self, userID):
+		return self.ownerID == userID
+
 	def join_group(self, userID):
 		cursor = mysql.connection.cursor()
 		try:
