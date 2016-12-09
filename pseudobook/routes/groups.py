@@ -1,5 +1,6 @@
 from flask import Blueprint, flash
 from flask import render_template, url_for, request, redirect 
+from flask import jsonify
 from flask_login import login_required, current_user
 from urllib.parse import urlparse, urljoin
 
@@ -241,3 +242,55 @@ def unjoin_group():
         flash('There was an error unjoining this group.')
 
     return redirect(request.referrer)
+
+@mod.route('/likes/forms/like_unlike', methods=['POST'])
+@login_required
+def like_unlike():
+    postID = request.json['postID']
+    authorID = request.json['authorID']
+    contentType = request.json['contentType']
+    response = {'like_button':None, 'count':None}
+    if contentType == 'po' or contentType == 'cm':
+        cursor = mysql.connection.cursor()
+        #check if like or unlike
+        query = '''SELECT COUNT(*) AS count
+                FROM Likes L 
+                WHERE L.parentID = {0}
+                AND L.authorID = {1}
+                AND L.contentType = "{2}"
+                '''.format(postID, authorID, contentType)    
+
+        cursor.execute(query)
+
+        result = cursor.fetchone()
+
+        count = result['count']
+        if count == 0:
+            #like
+            query = '''CALL `like`({0}, {1}, "{2}")
+                    '''.format(postID, authorID, contentType)
+            cursor.execute(query)
+            mysql.connection.commit()
+            response['like_button'] = 'unlike'
+        else:
+            #unlike
+            query = '''CALL unlike({0}, {1}, "{2}")
+                    '''.format(postID, authorID, contentType)
+            cursor.execute(query)
+            mysql.connection.commit()
+            response['like_button'] = 'like'
+        #get new like count
+        query = '''SELECT COUNT(*) AS count
+                FROM Likes L 
+                WHERE L.parentID = {0}
+                AND L.contentType = "{1}"
+                '''.format(postID, contentType)  
+
+        cursor.execute(query)
+
+        result = cursor.fetchone()
+
+        response['count'] = result['count']  
+        return jsonify(response)
+    else :
+        return 'failure'
