@@ -19,12 +19,12 @@ Setup Blueprint
 mod = Blueprint('manager', __name__, template_folder='../templates/manager')
 
 '''
-Routes
+View Routes
 '''
 @mod.route('/manager/reports', methods=['GET'])
 @login_required
 def reports():
-    ad_columns = ads_model.searchable_ad_columns.keys()
+    ad_columns = ads_model.searchable_columns.keys()
     sale_columns = sale_model.searchable_sale_columns.keys()
 
     months_with_ads = ads_model.Advertisement.get_months_with_ads()
@@ -35,7 +35,11 @@ def reports():
         months_with_ads=months_with_ads,
         months_with_sales=months_with_sales)
 
+'''
+Post Methods
+'''
 @mod.route('/manager/reports/getads', methods=['POST'])
+@login_required
 def getads():
     year = request.json['year']
     month = request.json['month']
@@ -46,6 +50,7 @@ def getads():
     return json.dumps([o.__dict__ for o in ads])
 
 @mod.route('/manager/reports/getsales', methods=['POST'])
+@login_required
 def getsales():
     year = request.json['year']
     month = request.json['month']
@@ -56,6 +61,7 @@ def getsales():
     return json.dumps([o.__dict__ for o in sales])
 
 @mod.route('/manager/reports/getrevenue', methods=['POST'])
+@login_required
 def getrevenue():
     year = request.json['year']
     month = request.json['month']

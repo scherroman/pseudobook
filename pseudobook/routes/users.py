@@ -1,6 +1,7 @@
 from flask import Blueprint, abort
 from flask import render_template, url_for, request, redirect 
 from flask_login import login_required, current_user
+import json
 
 from pseudobook.database import mysql
 
@@ -8,6 +9,8 @@ from pseudobook.models import user as user_model
 from pseudobook.models import page as page_model
 from pseudobook.models import post as post_model
 from pseudobook.models import group as group_model
+from pseudobook.models import advertisement as ads_model
+from pseudobook.models import sale as sales_model
 
 from pseudobook.forms.make_post import MakePost as MakePostForm
 from pseudobook.forms.remove_post import RemovePost as RemovePostForm
@@ -15,6 +18,8 @@ from pseudobook.forms.remove_post import RemovePost as RemovePostForm
 POSTS_PER_PAGE = 10
 USERS_PER_PAGE = 15
 GROUPS_PER_PAGE = 15
+ADS_PER_PAGE = 5
+TRANSACTIONS_PER_PAGE = 15
 
 '''
 Setup Blueprint
@@ -98,6 +103,63 @@ def users():
 							prev_user_posts=prev_user_posts,
 							next_user_posts=next_user_posts,
 							user_posts_offset=user_posts_offset)
+
+@mod.route('/shop', methods=['GET'])
+@login_required
+def shop():
+	searchable_columns = [c for c in ads_model.searchable_columns.keys() if not c == 'Posted By']
+	user_accounts = user_model.User.get_user_accounts(current_user.userID)
+
+	return render_template('shop.html',
+		searchable_columns=searchable_columns,
+		user_accounts=user_accounts)
+
+@mod.route('/accounthistory', methods=['GET'])
+@login_required
+def accounthistory():
+	user_accounts = user_model.User.get_user_accounts(current_user.userID)
+
+	return render_template('accounthistory.html',
+		user_accounts=user_accounts)
+
+'''
+Post Methods
+'''
+@mod.route('/shop/getallitems', methods=['POST'])
+@login_required
+def getallitems():
+    searchcol = request.json['searchcol']
+    search = request.json['search']
+
+    ads = ads_model.Advertisement.scroll_ads(0, ADS_PER_PAGE, searchcol, search, "", "")
+    return json.dumps([o.__dict__ for o in ads])
+
+@mod.route('/shop/getsuggesteditems', methods=['POST'])
+@login_required
+def getsuggesteditems():
+    searchcol = request.json['searchcol']
+    search = request.json['search']
+
+    ads = ads_model.Advertisement.get_suggestions_for_user(0, ADS_PER_PAGE, current_user.userID, searchcol, search)
+    return json.dumps([o.__dict__ for o in ads])
+
+@mod.route('/shop/getbestsellers', methods=['POST'])
+@login_required
+def getbestsellers():
+    searchcol = request.json['searchcol']
+    search = request.json['search']
+
+    ads = ads_model.Advertisement.get_best_sellers(0, ADS_PER_PAGE, searchcol, search)
+    return json.dumps([o.__dict__ for o in ads])
+
+@mod.route('/getaccounthistory', methods=['POST'])
+@login_required
+def getaccounthistory():
+    accountNumber = request.json['accountNumber']
+
+    history = sales_model.Sale.get_user_account_history(0, TRANSACTIONS_PER_PAGE, current_user.userID, accountNumber)
+    return json.dumps([o.__dict__ for o in history])
+
 '''
 Form Routes
 '''

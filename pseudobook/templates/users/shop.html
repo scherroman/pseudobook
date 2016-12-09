@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        var currentTableIndex = 0;
+        // Mappings of table indices to dependent variables
+        var wrappers = ["#all-items","#suggestions","#best-sellers"];
+        var reportNames = ["All Items","Recommended","Best Sellers"];
+        var serverFuncs = ["getallitems","getsuggesteditems","getbestsellers"];
+        var rowClasses = ["all-items-row","suggestions-row","best-sellers-row"];
+        var tables = ["#all-items-table","#suggestions-table","#best-sellers-table"];
+
+        // Fill up the appropriate table with the recieved data
+        function setTableData(data) {
+            var currentReport = wrappers[currentTableIndex];
+            var rowClass = rowClasses[currentTableIndex];
+            $("."+rowClass).remove();
+
+            // Add a row in the table for each data item received
+            data.forEach(function(d) {
+                var itemString = "<div class='"+rowClass+" ad-item'>"
+                    + "<h3>"+d.itemName+"</h3>"
+                    + "<p>By "+d.company+"</p><hr/>"
+                    + "Type: "+d.adType+"<br/><br/>"
+                    + "<p>"+d.content+"</p>"
+                    + "$"+d.unitPrice+"<br/>"
+                    + d.numberAvailableUnits + " remaining"
+                    + "<input type='button' class='purchase-btn' adID='"+d.adID+"' value='Purchase'/>"
+                    + "</div>";
+                $(currentReport).append(itemString);
+            });
+        }
+
+        // Submit search query to the server
+        function search() {
+            var searchCol = $("#search-col-selector").val();
+            var searchString = $("#search-input").val();
+            var serverFunc = serverFuncs[currentTableIndex];
+
+            var data = {
+                searchcol: searchCol,
+                search: searchString
+            }
+            
+            $.ajax({
+                type: "POST",
+                url: "/shop/" + serverFunc,
+                contentType: 'application/json;charset=UTF-8',
+                data: JSON.stringify(data),
+                success: function(data) {
+                    setTableData(JSON.parse(data));
+                }
+            });
+        }
+
+        // Switch current report
+        function setCurrentReport(val) {
+            currentTableIndex = parseInt(val);
+            $(".individual-report").hide();
+            $(wrappers[currentTableIndex]).show();
+            $("#report-name").html(reportNames[currentTableIndex]);
+            $(".search-col-selector").hide();
+            $("#search-col-selector").show();
+            
+            search();
+        }
+
+        $("#report-type-select").change(function() {
+            setCurrentReport($(this).val());
+        });
+
+        $("#search-col-selector").change(search);
+        $("#search-input").keypress(function(e) {
+            if (e.which != 13)
+                return;
+            search();
+        });
+
+        setCurrentReport(currentTableIndex);
+    });
+</script>
+
+<style>
+    .filter-selector {
+        padding-right: 8px;
+    }
+
+    .ad-item {
+        border-style: solid;
+        border-radius: 4px;
+        margin: 10px;
+        padding-left: 5px;
+        padding-right: 5px;
+        padding-bottom: 5px;
+    }
+
+    .purchase-btn {
+        margin-left: 33%;
+        background-color: white;
+        color: #444;
+        font-size: 18px;
+        border-style: solid;
+        border-radius: 2px;
+    }
+</style>
+
+<div class="left-container container">
+    <div class="row list-header">
+        <h2 id="report-name" class="col-xs-3 list-title">Sales Report</h2>
+    </div>
+    <div class="row list-header">
+        <!-- Report type selector -->
+        <span class="filter-selector" style="padding-left: 25px;">
+            Report Type:
+            <select id="report-type-select" style="margin-top:28px;">
+                <!-- Add ability to sort by column -->
+                <option value="0">All Items</option>
+                <option value="1">Recommended</option>
+                <option value="2">Best Sellers</option>
+            </select>
+        </span>
+        
+        <!-- Search -->
+        <span class="filter-selector">
+            Search for:
+            <select id="search-col-selector">
+                {% for col in searchable_columns %}
+                    <option val="{{col}}">{{col}}</option>
+                {% endfor %}
+            </select>
+            <input id="search-input" type="text" />
+        </span>
+    </div>
+    <hr class="list-divider">
+
+    <!-- All Items -->
+    <div id="all-items" class="individual-report"></div>
+
+    <!-- Reccommended -->
+    <div id="suggestions" class="individual-report"></div>
+
+    <!-- Best Sellers -->
+    <div id="best-sellers" class="individual-report"></div>
+</div>
+
+{% endblock %}

@@ -72,6 +72,21 @@ class User():
         return user
 
     @staticmethod
+    def get_user_accounts(userID):
+        cursor = mysql.connection.cursor()
+        cursor.execute('''SELECT A.accountNumber, A.creditCardNumber
+                          FROM UserAccounts A
+                          WHERE A.userID = {0}
+                          '''.format(userID))
+        results = cursor.fetchall()
+        
+        accounts = []
+        for result in results:
+            accounts.append((result.get('accountNumber'), result.get('creditCardNumber')))
+            
+        return accounts
+
+    @staticmethod
     def scroll_users(offset, num_users, search):
         search = search if search else ""
         users = []

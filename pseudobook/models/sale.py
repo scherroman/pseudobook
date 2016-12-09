@@ -13,7 +13,7 @@ class Sale():
         self.itemType = ItemType
         self.itemID = ItemID
         self.company = Company
-        self.price = Price
+        self.price = "%.2f" % Price
         self.customerRepName = CustomerRepName
         self.customerRepID = CustomerRepID
         self.customerName = CustomerName
@@ -58,6 +58,25 @@ class Sale():
                           ORDER BY TransactionID
                           LIMIT {4} OFFSET {5}
                           '''.format(searchcol, search, year, month, num_sales, offset * num_sales))
+         
+        results = cursor.fetchall()
+        
+        for result in results:
+            sale = Sale.sale_from_dict(result) if result else None
+            sales.append(sale)
+
+        return sales
+
+    @staticmethod
+    def get_user_account_history(offset, num_sales, userID, accountNumber):
+        sales = []
+        cursor = mysql.connection.cursor()
+        cursor.execute('''SELECT *
+                          FROM SalesReport
+                          WHERE CustomerID = {0} AND CustomerAccountNumber = {1}
+                          ORDER BY TransactionID
+                          LIMIT {2} OFFSET {3}
+                          '''.format(userID, accountNumber, num_sales, offset * num_sales))
          
         results = cursor.fetchall()
         

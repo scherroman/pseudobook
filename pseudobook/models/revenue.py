@@ -11,7 +11,7 @@ class REVENUE_REPORT_TYPES(Enum):
 class Revenue():
     def __init__(self, Name, Revenue):
         self.name = Name
-        self.revenue = Revenue
+        self.revenue = "%.2f" % Revenue
 
     def __repr__(self):
         return ('{{name: {}, revenue: {}}}').format(
@@ -71,4 +71,4 @@ class Revenue():
     @staticmethod
     def revenue_from_dict(revenue_dict):
         return Revenue(revenue_dict.get('Name'),
-            "%.2f" % revenue_dict.get('Revenue'))
+            revenue_dict.get('Revenue'))

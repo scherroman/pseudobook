@@ -1,11 +1,11 @@
 from pseudobook.database import mysql, MySQL
 from pseudobook.models import user as user_model
 
-searchable_ad_columns = dict()
-searchable_ad_columns['Item Name'] = 'A.itemName'
-searchable_ad_columns['Type'] = 'A.adType'
-searchable_ad_columns['Company'] = 'A.company'
-searchable_ad_columns['Posted By'] = 'CONCAT(E.firstName,\' \',E.lastName)'
+searchable_columns = dict()
+searchable_columns['Item Name'] = 'A.itemName'
+searchable_columns['Type'] = 'A.adType'
+searchable_columns['Company'] = 'A.company'
+searchable_columns['Posted By'] = 'CONCAT(E.firstName,\' \',E.lastName)'
 
 class Advertisement():
     def __init__(self, adID, employeeID, employeeName, adType, datePosted, company, itemName, content, unitPrice, numberAvailableUnits):
@@ -17,7 +17,7 @@ class Advertisement():
         self.company = company
         self.itemName = itemName
         self.content = content
-        self.unitPrice = unitPrice
+        self.unitPrice = "%.2f" % unitPrice
         self.numberAvailableUnits = numberAvailableUnits
     
     def __repr__(self):
@@ -31,11 +31,14 @@ class Advertisement():
             self.numberAvailableUnits
         )
 
+    '''
+    Standard search method for ads
+    '''
     @staticmethod
     def scroll_ads(offset, num_ads, searchcol, search, year, month):
-        if not searchcol in searchable_ad_columns.keys():
+        if not searchcol in searchable_columns.keys():
             searchcol = 'Item Name'
-        searchcol = searchable_ad_columns[searchcol]
+        searchcol = searchable_columns[searchcol]
         search = search if search else ""
 
         if year.isdigit():
@@ -50,7 +53,7 @@ class Advertisement():
 
         cursor = mysql.connection.cursor()
         cursor.execute('''SELECT A.adID, A.employeeID, CONCAT(E.firstName,\' \',E.lastName) AS employeeName, A.adType, A.datePosted, A.company, A.itemName, A.content, A.unitPrice, A.numberAvailableUnits
-                          FROM Advertisement AS A, User As E
+                          FROM Advertisement AS A, User AS E
                           WHERE A.employeeID = E.userID
                             AND {0} LIKE \'%{1}%\'
                             {2}
@@ -67,6 +70,69 @@ class Advertisement():
 
         return ads
 
+    '''
+    Get item suggestions for a particular user
+    i.e. items sold by a company that the user has purchased from before
+    '''
+    @staticmethod
+    def get_suggestions_for_user(offset, num_ads, userID, searchcol, search):
+        if not searchcol in searchable_columns.keys():
+            searchcol = 'Item Name'
+        searchcol = searchable_columns[searchcol]
+        search = search if search else ""
+        ads = []
+
+        cursor = mysql.connection.cursor()
+        cursor.execute('''SELECT A.adID, A.employeeID, S.CustomerRepName as employeeName, A.adType, A.datePosted, A.company, A.itemName, A.content, A.unitPrice, A.numberAvailableUnits
+                          FROM Advertisement A
+                          JOIN SalesReport S ON A.company = S.Company
+                          WHERE S.CustomerID = {0}
+                            AND {1} LIKE \'%{2}%\'
+                          ORDER BY A.adID
+                          LIMIT {3} OFFSET {4}
+                          '''.format(userID, searchcol, search, num_ads, offset * num_ads))
+        
+        results = cursor.fetchall()
+        
+        for result in results:
+            ad = Advertisement.ad_from_dict(result) if result else None
+            ads.append(ad)
+
+        return ads
+    
+    '''
+    Get "best selling" items
+    i.e. all items, ordered by their total amount purchased
+    '''
+    @staticmethod
+    def get_best_sellers(offset, num_ads, searchcol, search):
+        if not searchcol in searchable_columns.keys():
+            searchcol = 'Item Name'
+        searchcol = searchable_columns[searchcol]
+        search = search if search else ""
+        ads = []
+
+        cursor = mysql.connection.cursor()
+        cursor.execute('''SELECT A.adID, A.employeeID, CONCAT(E.firstName,\' \',E.lastName) AS employeeName, A.adType, A.datePosted, A.company, A.itemName, A.content, A.unitPrice, A.numberAvailableUnits
+                          FROM Advertisement AS A, User AS E, Sales AS S
+                          WHERE A.employeeID = E.userID AND S.adID = A.adID
+                            AND {0} LIKE \'%{1}%\'
+                          GROUP BY A.adID
+                          ORDER BY SUM(S.numberOfUnits) DESC
+                          LIMIT {2} OFFSET {3}
+                          '''.format(searchcol, search, num_ads, offset * num_ads))
+        
+        results = cursor.fetchall()
+        
+        for result in results:
+            ad = Advertisement.ad_from_dict(result) if result else None
+            ads.append(ad)
+
+        return ads
+
+    '''
+    Create an Advertisement object from a row retrieved from the database
+    '''
     @staticmethod
     def ad_from_dict(ad_dict):
         return Advertisement(ad_dict.get('adID'),
@@ -80,7 +146,10 @@ class Advertisement():
             ad_dict.get('unitPrice'),
             ad_dict.get('numberAvailableUnits')
         )
-
+    
+    '''
+    Get all months in which ads were posted
+    '''
     @staticmethod
     def get_months_with_ads():
         rawMonths = []
