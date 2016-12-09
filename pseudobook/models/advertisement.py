@@ -123,7 +123,7 @@ class Advertisement():
         ads = []
 
         cursor = mysql.connection.cursor()
-        cursor.execute('''SELECT A.adID, A.employeeID, S.CustomerRepName as employeeName, A.adType, A.datePosted, A.company, A.itemName, A.content, A.unitPrice, A.numberAvailableUnits
+        cursor.execute('''SELECT DISTINCT A.adID, A.employeeID, S.CustomerRepName as employeeName, A.adType, A.datePosted, A.company, A.itemName, A.content, A.unitPrice, A.numberAvailableUnits
                           FROM Advertisement A
                           JOIN SalesReport S ON A.company = S.Company
                           WHERE S.CustomerID = {0}

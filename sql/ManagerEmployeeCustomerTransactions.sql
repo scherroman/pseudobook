@@ -52,7 +52,6 @@ CREATE PROCEDURE purchaseItem (
 	adID INTEGER,
     buyerID INTEGER,
     buyerAccount INTEGER,
-    transactionDateTime DATETIME,
     numberOfUnits INTEGER
 )
 BEGIN

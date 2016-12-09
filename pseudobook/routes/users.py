@@ -95,7 +95,7 @@ def users():
 	for user_post in user_posts:
 			user_post.remove_post_form = RemovePostForm()
 	edit_employee_form = EditEmployeeForm()
-	
+
 	return render_template('users.html', 
 							current_user=current_user, 
 							users=users, 
@@ -163,6 +163,13 @@ def getaccounthistory():
 
     history = sales_model.Sale.get_user_account_history(0, TRANSACTIONS_PER_PAGE, current_user.userID, accountNumber)
     return json.dumps([o.__dict__ for o in history])
+
+@mod.route('/user/purchaseitem', methods=['POST'])
+@login_required
+def purchase_item():
+	adID = request.json['adID']
+	sales_model.Sale.purchase_item(adID, current_user.userID, 1, 1)
+	return ""
 
 '''
 Form Routes

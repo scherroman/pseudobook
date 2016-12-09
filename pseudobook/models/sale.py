@@ -33,6 +33,22 @@ class Sale():
         )
     
     @staticmethod
+    def purchase_item(adID, buyerID, buyerAccount, numUnits):
+        cursor = mysql.connection.cursor()
+        try:
+            cursor.execute('''CALL purchaseItem(@transactionID, "{}", "{}", "{}", "{}")
+                              '''.format(adID, buyerID, buyerAccount, numUnits))
+            mysql.connection.commit()
+            cursor.execute('''SELECT @transactionID''')
+        except (mysql.connection.Error, mysql.connection.Warning) as e:
+            raise
+        else:
+            result = cursor.fetchone()
+            transactionID = result.get('@transactionID') if result else None
+            
+        return transactionID
+
+    @staticmethod
     def scroll_sales(offset, num_sales, searchcol, search, year, month):
         if not searchcol in searchable_sale_columns.keys():
             searchcol = 'Item Name'
