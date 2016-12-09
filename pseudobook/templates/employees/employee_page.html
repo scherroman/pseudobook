@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        // Fill the ads list with the received data
+        function setTableData(data) {
+            $(".ad-item").remove();
+
+            // Add a row in the table for each data item received
+            data.forEach(function(d) {
+                var itemString = "<div class='ad-item'>"
+                    + "<h3>"+d.itemName+"</h3>"
+                    + "<p>By "+d.company+"</p><hr/>"
+                    + "Type: "+d.adType+"<br/><br/>"
+                    + "<p>"+d.content+"</p>"
+                    + "$"+d.unitPrice+"<br/>"
+                    + d.numberAvailableUnits + " remaining"
+                    + "<input type='button' class='purchase-btn' adID='"+d.adID+"' value='Purchase'/>"
+                    + "</div>";
+                $("#own-ads-list").append(itemString);
+            });
+        }
+
+        // Submit search query to the server
+        function search() {
+            var searchCol = $("#search-col-selector").val();
+            var searchString = $("#search-input").val();
+
+            var data = {
+                searchcol: searchCol,
+                search: searchString,
+                userID: {{ employee.userID }}
+            }
+            
+            $.ajax({
+                type: "POST",
+                url: "/employee/getownads",
+                contentType: 'application/json;charset=UTF-8',
+                data: JSON.stringify(data),
+                success: function(data) {
+                    setTableData(JSON.parse(data));
+                }
+            });
+        }
+
+        $("#search-col-selector").change(search);
+        $("#search-input").keypress(function(e) {
+            if (e.which != 13)
+                return;
+            search();
+        });
+
+        search();
+    });
+</script>
+
+<style>
+    .filter-selector {
+        padding-right: 8px;
+    }
+
+    .ad-item {
+        border-style: solid;
+        border-radius: 4px;
+        margin: 10px;
+        padding-left: 5px;
+        padding-right: 5px;
+        padding-bottom: 5px;
+    }
+
+    .purchase-btn {
+        margin-left: 33%;
+        background-color: white;
+        color: #444;
+        font-size: 18px;
+        border-style: solid;
+        border-radius: 2px;
+    }
+</style>
+
+<div class="left-container container">
+    <h2 class="page-header">{{employee.firstName}} {{employee.lastName}}</h2>
+    <div>
+        <ul class="nav nav-tabs page-menu">
+            <li class="active"><a data-toggle="tab" href="#own-ads-section">
+                {% if is_current_employees_page %}
+                My
+                {% else %}
+                {{ employee.firstName }} {{employee.lastName}}'s
+                {% endif %}
+                Ads
+            </a></li>
+            {% if is_current_employees_page %}
+            <li><a data-toggle="tab" href="#create-ad-section">Groups</a></li>
+            <li><a data-toggle="tab" href="#info-section">My Info</a></li>
+            {% endif %}
+        </ul>
+    </div>
+    <div class="tab-content">
+        <div id="own-ads-section">
+            <div class="row list-header">
+                <!-- Search -->
+                <span class="filter-selector">
+                    Search for:
+                    <select id="search-col-selector">
+                        {% for col in searchable_columns %}
+                            <option val="{{col}}">{{col}}</option>
+                        {% endfor %}
+                    </select>
+                    <input id="search-input" type="text" />
+                </span>
+            </div>
+            <hr class="list-divider">
+
+            <div id="own-ads-list"></div>
+        </div>
+        {% if is_current_employees_page %}
+        <div id="create-ad-section">
+
+        </div>
+        <div id="info-section">
+            SSN: {{ employee.SSN }}
+            <br/>
+            Date Started: {{ employee.startDate }}
+            <br/>
+            Hourly Wage: {{ employee.hourlyRate }}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

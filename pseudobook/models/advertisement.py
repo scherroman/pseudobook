@@ -31,6 +31,15 @@ class Advertisement():
             self.numberAvailableUnits
         )
 
+    @staticmethod
+    def create_new_ad():
+        return None
+        # return adID
+
+    @staticmethod
+    def delete_ad(adID):
+        return None
+
     '''
     Standard search method for ads
     '''
@@ -61,6 +70,30 @@ class Advertisement():
                           ORDER BY A.adID
                           LIMIT {4} OFFSET {5}
                           '''.format(searchcol, search, year, month, num_ads, offset * num_ads))
+        
+        results = cursor.fetchall()
+        
+        for result in results:
+            ad = Advertisement.ad_from_dict(result) if result else None
+            ads.append(ad)
+
+        return ads
+    
+    '''
+    Get all ads made by the given user
+    '''
+    @staticmethod
+    def get_ads_made_by_user(offset, num_ads, userID):
+        ads = []
+
+        cursor = mysql.connection.cursor()
+        cursor.execute('''SELECT A.adID, A.employeeID, CONCAT(E.firstName,\' \',E.lastName) AS employeeName, A.adType, A.datePosted, A.company, A.itemName, A.content, A.unitPrice, A.numberAvailableUnits
+                          FROM Advertisement AS A, User AS E
+                          WHERE A.employeeID = E.userID
+                            AND A.employeeID = {0}
+                          ORDER BY A.adID
+                          LIMIT {1} OFFSET {2}
+                          '''.format(userID, num_ads, offset * num_ads))
         
         results = cursor.fetchall()
         
@@ -129,6 +162,17 @@ class Advertisement():
             ads.append(ad)
 
         return ads
+
+    @staticmethod
+    def get_ad_by_id(adID):
+        cursor = mysql.connection.cursor()
+        cursor.execute('''SELECT SELECT A.adID, A.employeeID, CONCAT(E.firstName,\' \',E.lastName) AS employeeName, A.adType, A.datePosted, A.company, A.itemName, A.content, A.unitPrice, A.numberAvailableUnits
+                          FROM Advertisement A, User E
+                          WHERE A.adID = {0}
+                          '''.format(adID))
+        result = cursor.fetchone()
+        ad = ad_from_dict(result) if result else None
+        return ad
 
     '''
     Create an Advertisement object from a row retrieved from the database

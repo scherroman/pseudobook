@@ -152,7 +152,7 @@ def getbestsellers():
     ads = ads_model.Advertisement.get_best_sellers(0, ADS_PER_PAGE, searchcol, search)
     return json.dumps([o.__dict__ for o in ads])
 
-@mod.route('/getaccounthistory', methods=['POST'])
+@mod.route('/user/getaccounthistory', methods=['POST'])
 @login_required
 def getaccounthistory():
     accountNumber = request.json['accountNumber']

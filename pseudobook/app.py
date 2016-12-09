@@ -8,6 +8,7 @@ from pseudobook.authentication import login_manager
 from pseudobook.routes import admin
 from pseudobook.routes import users
 from pseudobook.routes import manager
+from pseudobook.routes import employees
 from pseudobook.routes import groups
 
 '''
@@ -30,6 +31,7 @@ View Routing
 app.register_blueprint(admin.mod)
 app.register_blueprint(users.mod)
 app.register_blueprint(manager.mod)
+app.register_blueprint(employees.mod)
 app.register_blueprint(groups.mod)
 
 @app.route('/', methods=['GET'])

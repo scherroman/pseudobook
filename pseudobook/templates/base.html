@@ -45,6 +45,8 @@
               <li><a href="{{ url_for('users.shop') }}">Shop</a></li>
               <li><a href="{{ url_for('users.accounthistory') }}">Account History</a></li>
               {% endif %}
+              <li><a href="{{ url_for('employees.employees') }}">Employees</a></li>
+              <li><a href="{{ url_for('manager.reports') }}">Reports</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
               {% if current_user.is_anonymous %}

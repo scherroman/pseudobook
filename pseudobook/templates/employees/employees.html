@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+    
+<div class="left-container container">
+    <div>
+        <ul class="nav nav-tabs page-menu">
+            <li class="active"><a data-toggle="tab" href="#employees-section">Employees</a></li>
+        </ul>
+    </div>
+    <div class="tab-content">
+        <div id="employees-section" class="tab-pane fade in active">
+        {% for employee in employees %}
+            <div class="list-link-div">
+                <a class="list-link" href="{{ url_for('employees.employee_page', userID=employee.userID) }}">
+                    {{ employee.firstName }} {{ employee.lastName}}
+                </a>
+                </a>
+            </div>
+        {% endfor %}
+        {% if employees|length == 0 %}
+            <p>No Results</p>
+        {% endif %}
+        {% if prev_employees or next_employees %}
+            <div>
+                {% if prev_employees %}
+                    <a class="fade-link nextprev float-left" href="{{ url_for('employees.employees', employees_offset=employees_offset - 1) }}">❮ Prev</a>
+                {% endif %}
+                {% if next_employees %}
+                    <a class="fade-link nextprev float-right" href="{{ url_for('employees.employees', employees_offset=employees_offset + 1) }}">Next ❯</a>
+                {% endif %}
+            </div>
+        {% endif %}
+        </div>
+    </div>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="flashes row">
+        {% for message in messages %}
+            <p style="text-align:center;">{{ message }}</p>
+        {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}
+</div>
+
+{% endblock %}
