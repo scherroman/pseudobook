@@ -13,7 +13,7 @@
             <div id="activity-section" class="tab-pane fade in active">
             {% for user_post in user_posts %}
                 <div class="list-link-div">
-                    <span class="post-author">
+                    <span class="dotted">
                     <a class="list-link" href="{{ url_for('users.user_page', userID=user_post.authorID) }}">
                         {% if user_post.authorID == user_post.page_owner_id %}
                             <b>{{ user_post.author_name }}</a></b>

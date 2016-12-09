@@ -58,7 +58,7 @@ $( document ).ready(function() {
   $(document).on('click', '#make-comment-submit', function() {
     make_comment_form = $('#make-comment-form')
     post_id = make_comment_form.find('.postID-field').val()
-    posts_div = $('#' + post_id)
+    posts_div = $('#post-' + post_id)
     comments_container_div = posts_div.find(".comments-container")
     comments_div = posts_div.find(".comments")
 
@@ -110,7 +110,7 @@ $( document ).ready(function() {
 
   $(document).on('click', '.edit-post', function() {
       post_id = $(this).data('post-id')
-      posts_div = $('#' + post_id)
+      posts_div = $('#post-' + post_id)
       content = posts_div.find('.post-text').html() 
 
       edit_post_form = $('#edit-post-form')
@@ -126,7 +126,7 @@ $( document ).ready(function() {
     edit_post_form = $('#edit-post-form')
     new_content = edit_post_form.find('.content-field').val()
     post_id = edit_post_form.find('.postID-field').val()
-    posts_div = $('#' + post_id)
+    posts_div = $('#post-' + post_id)
     post_text = posts_div.find('.post-text')
 
     //Submit comment post
@@ -149,7 +149,7 @@ $( document ).ready(function() {
 
   $(document).on('click', '.edit-comment', function() {
       comment_id = $(this).data('comment-id')
-      comments_div = $('#' + comment_id)
+      comments_div = $('#comment-' + comment_id)
       content = comments_div.find('.comment-text').html() 
 
       edit_comment_form = $('#edit-comment-form')
@@ -165,7 +165,7 @@ $( document ).ready(function() {
     edit_comment_form = $('#edit-comment-form')
     new_content = edit_comment_form.find('.content-field').val()
     comment_id = edit_comment_form.find('.commentID-field').val()
-    comments_div = $('#' + comment_id)
+    comments_div = $('#comment-' + comment_id)
     comment_text = comments_div.find('.comment-text')
 
     //Submit comment comment

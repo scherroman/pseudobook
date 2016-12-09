@@ -53,7 +53,7 @@ class Comment():
         cursor = mysql.connection.cursor()
         try:
             cursor.execute('''CALL removeComment("{}")
-                            '''.format(commentID))
+                              '''.format(commentID))
             mysql.connection.commit()
         except (mysql.connection.Error, mysql.connection.Warning) as e:
             raise
