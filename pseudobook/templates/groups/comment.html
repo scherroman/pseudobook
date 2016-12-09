@@ -1,0 +1,28 @@
+<div id="{{ comment.commentID }}" class="comment list-link-div">
+    <span class="post-author">
+        <a class="list-link" href="{{ url_for('users.user_page', userID=comment.authorID) }}"><b>{{ comment.author_name }}</b></a>
+    </span>
+    <small class='post-timestamp'> {{ comment.commentDate }}</small>
+    <span class="btn-group list-link-dropdown">
+        <button class="dropdown-button btn btn-mini button-transparent dropdown-toggle" data-toggle="dropdown">
+          <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu pull-right">
+            {% if current_user.userID == comment.authorID %}
+            <li>
+                <a class="edit-comment" data-comment-id="{{ comment.commentID }}" style="cursor:pointer;">
+                    <span class="glyphicon glyphicon-pencil" style="padding-right:10px;"></span>
+                    Edit
+                </a>
+            </li>
+            <li>
+                <a class="remove-comment" data-comment-id="{{ comment.commentID }}" style="cursor:pointer;">
+                    <span class="glyphicon glyphicon-remove" style="padding-right:10px;"></span>
+                    Remove
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </span>
+    <p class="comment-text">{{ comment.content }}</p>
+</div>

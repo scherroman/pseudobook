@@ -195,7 +195,15 @@ def remove_post_form():
 		page = page_model.Page.get_page_by_id(post.pageID)
 		if page.pageType == page_model.Page.PAGE_TYPE_USER:
 			if current_user.userID == page.userID or current_user.userID == post.authorID:
-				page.remove_post(postID)
+				try:
+					post_model.Post.remove_post(postID)
+				except (mysql.connection.Error, mysql.connection.Warning) as e:
+				    print(e)
+				    # Print custom error message
+				    if e.args[0] == 1644:
+				        flash(e.args[1])
+				    else:
+				        flash('There was an error removing this post.')
 			else:
 				abort(403)
 	else:
