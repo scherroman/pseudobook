@@ -83,14 +83,12 @@
 				            {% endif %}
 			            <br>
 			        	<p class="post-text">{{ post.postContent }}</p>
-				        {% if current_user_is_member %}
 					        <div class="list-link-div">
 					        	<a class='list-link like-unlike' id='like-button' data-post-id="{{ post.postID }}" data-author-id="{{ current_user.userID }}" data-content-type="po" style="cursor:pointer">
 					        		<b>{{ post.like_button }}</b>
 					        	</a>
 					            <div class='list-link like-counter' id="counter">{{ post.counter }}</div>
 					        </div>
-				        {% endif %}
 			          </a>
 			          <br>
 			        </div>
