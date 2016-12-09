@@ -39,6 +39,10 @@
               {% endif %}
               <li><a href="{{ url_for('users.users') }}">Users</a></li>
               <li><a href="{{ url_for('groups.groups') }}">Groups</a></li>
+              {% if not current_user.is_anonymous %}
+              <li><a href="{{ url_for('users.shop') }}">Shop</a></li>
+              <li><a href="{{ url_for('users.accounthistory') }}">Account History</a></li>
+              {% endif %}
             </ul>
             <ul class="nav navbar-nav navbar-right">
               {% if current_user.is_anonymous %}

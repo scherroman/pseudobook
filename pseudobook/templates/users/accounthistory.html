@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        // Fill up the appropriate table with the recieved data
+        function setTableData(data) {
+            var desiredCols = ["itemName","itemType","company","transactionDateTime","price","unitsSold","totalSpent"];
+            $(".transaction-row").remove();
+
+            // Add a row in the table for each data item received
+            data.forEach(function(d) {
+                d.totalSpent = parseInt(d.unitsSold) * parseFloat(d.price);
+                var rowString = "<tr class='transaction-row'>";
+                desiredCols.forEach(function(c) {
+                    rowString += "<td>"+d[c]+"</td>";
+                });
+                rowString += "</tr>";
+                $("#history-table").append(rowString);
+            });
+        }
+
+        // Submit search query to the server
+        function getHistory() {
+            var currentAccount = $("#account-selector").val();
+
+            var data = {
+                accountNumber: currentAccount
+            }
+            
+            $.ajax({
+                type: "POST",
+                url: "/getaccounthistory",
+                contentType: 'application/json;charset=UTF-8',
+                data: JSON.stringify(data),
+                success: function(data) {
+                    setTableData(JSON.parse(data));
+                }
+            });
+        }
+
+        $("#account-selector").change(getHistory);
+
+        getHistory();
+    });
+</script>
+
+<style>
+    .filter-selector {
+        padding-right: 8px;
+    }
+</style>
+
+<div class="left-container container">
+    <div class="row list-header">
+        <h2 id="report-name" class="col-xs-3 list-title">Account History</h2>
+    </div>
+    <div class="row list-header">
+        <span style="padding-left: 25px;">
+            Credit Card:
+            <select id="account-selector">
+                {% for act in user_accounts %}
+                    <option value="{{act[0]}}">{{ act[1] }}</option>
+                {% endfor %}
+            </select>
+        </span>
+    </div>
+    <hr class="list-divider">
+
+    <div>
+        <table id="history-table">
+            <thead>
+                <th>Item Name</th>
+                <th>Type</th>
+                <th>Company</th>
+                <th>Date of Purchase</th>
+                <th>Unit Price</th>
+                <th>Units Bought</th>
+                <th>Total Spent</th>
+            </thead>
+        </table>
+    </div>
+
+{% endblock %}
