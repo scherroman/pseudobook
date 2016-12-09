@@ -169,17 +169,17 @@ INSERT INTO `Page` (`groupID`,`pageType`) VALUES
 (9,2),
 (10,2);
 
-INSERT INTO `Post` (`pageID`,`postDate`,`postContent`,`authorID`) VALUES 
-(3,"2017-07-16 23:33:09","Duis volutpat nunc sit amet metus. Aliquam erat volutpat. Nulla facilisis. Suspendisse commodo tincidunt nibh. Phasellus nulla.",4),
-(5,"2017-06-04 03:45:56","Nam consequat dolor vitae dolor. Donec fringilla. Donec feugiat metus sit amet ante. Vivamus non lorem vitae",3),
-(8,"2016-03-09 18:16:29","sed, sapien. Nunc pulvinar arcu et pede. Nunc sed orci lobortis",8),
-(3,"2016-02-28 19:06:01","non massa non ante bibendum ullamcorper. Duis cursus, diam at pretium aliquet, metus urna convallis erat, eget tincidunt",9),
-(6,"2016-01-29 04:07:33","sed, est. Nunc laoreet lectus quis massa. Mauris vestibulum, neque sed dictum eleifend, nunc risus varius orci, in consequat enim",5),
-(1,"2016-01-14 16:18:46","amet luctus vulputate, nisi sem semper erat, in consectetuer ipsum nunc",6),
-(8,"2016-07-23 15:10:14","velit egestas lacinia. Sed congue, elit sed consequat auctor, nunc nulla vulputate dui, nec tempus mauris",1),
-(1,"2016-08-27 12:06:56","ac nulla. In tincidunt congue turpis. In condimentum. Donec at arcu. Vestibulum ante ipsum",1),
-(7,"2017-03-18 02:34:00","ut, pellentesque eget, dictum placerat, augue. Sed molestie. Sed id risus quis",6),
-(2,"2017-10-03 00:48:25","Nulla tempor augue ac ipsum. Phasellus vitae mauris sit amet lorem semper auctor. Mauris vel turpis. Aliquam adipiscing",4);
+INSERT INTO `Post` (`pageID`,`postDate`,`postContent`,`authorID`,`pageType`) VALUES 
+(3,"2017-07-16 23:33:09","Duis volutpat nunc sit amet metus. Aliquam erat volutpat. Nulla facilisis. Suspendisse commodo tincidunt nibh. Phasellus nulla.",4,'pr'),
+(5,"2017-06-04 03:45:56","Nam consequat dolor vitae dolor. Donec fringilla. Donec feugiat metus sit amet ante. Vivamus non lorem vitae",3,'pr'),
+(8,"2016-03-09 18:16:29","sed, sapien. Nunc pulvinar arcu et pede. Nunc sed orci lobortis",8,'pr'),
+(3,"2016-02-28 19:06:01","non massa non ante bibendum ullamcorper. Duis cursus, diam at pretium aliquet, metus urna convallis erat, eget tincidunt",9,'pr'),
+(6,"2016-01-29 04:07:33","sed, est. Nunc laoreet lectus quis massa. Mauris vestibulum, neque sed dictum eleifend, nunc risus varius orci, in consequat enim",5,'pr'),
+(1,"2016-01-14 16:18:46","amet luctus vulputate, nisi sem semper erat, in consectetuer ipsum nunc",6,'pr'),
+(8,"2016-07-23 15:10:14","velit egestas lacinia. Sed congue, elit sed consequat auctor, nunc nulla vulputate dui, nec tempus mauris",1,'pr'),
+(1,"2016-08-27 12:06:56","ac nulla. In tincidunt congue turpis. In condimentum. Donec at arcu. Vestibulum ante ipsum",1,'pr'),
+(7,"2017-03-18 02:34:00","ut, pellentesque eget, dictum placerat, augue. Sed molestie. Sed id risus quis",6,'pr'),
+(2,"2017-10-03 00:48:25","Nulla tempor augue ac ipsum. Phasellus vitae mauris sit amet lorem semper auctor. Mauris vel turpis. Aliquam adipiscing",4,'pr');
 
 INSERT INTO `Comment` (`postID`,`commentDate`,`content`,`authorID`) VALUES 
 (9,"2015-11-20 04:36:03","viverra. Maecenas iaculis aliquet diam. Sed diam lorem, auctor quis, tristique ac, eleifend vitae, erat. Vivamus nisi.",1),
