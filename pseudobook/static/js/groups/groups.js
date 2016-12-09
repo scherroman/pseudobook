@@ -12,6 +12,49 @@ $( document ).ready(function() {
       })
       $('#make-comment-modal').modal('toggle');
   });
+
+  $(document).on('click', '.rename-group', function() {
+      user_id = $(this).data('user-id')
+      group_id = $(this).data('group-id')
+
+      rename_group_form = $('#rename-group-form')
+      rename_group_form.find('.userID-field').val(user_id)
+      rename_group_form.find('.groupID-field').val(group_id)
+
+      $('#rename-group-modal').on('shown.bs.modal', function () {
+        $(this).find('.content-field').focus()
+      })
+      $('#rename-group-modal').modal('toggle');
+  });
+  $(document).on('click', '#rename-group-submit', function() {
+    rename_group_form = $('#rename-group-form')
+    new_content = rename_group_form.find('.content-field').val()
+    header_div = $('#status_section')
+    group_name = header_div.find('.page-header')
+    // userID = rename_group_form.find('.userID-field').val()
+    // posts_div = $('#' + post_id)
+    // comments_container_div = posts_div.find(".comments-container")
+    // comments_div = posts_div.find(".comments")
+
+    //Submit comment post
+    $.ajax({
+        url: '/groups/forms/rename_group',
+        data: $(rename_group_form).serialize(),
+        type: 'POST',
+        success: function(response) {
+          group_name.html(new_content + ' group wall')
+        },
+        error: function(error) {
+            console.log(error);
+            alert(error)
+        },
+        complete: function(data) {
+          $('#rename-group-modal').modal('toggle');
+          rename_group_form.find('.content-field').val("")
+        }
+    });
+  });
+
   $(document).on('click', '#make-comment-submit', function() {
     make_comment_form = $('#make-comment-form')
     post_id = make_comment_form.find('.postID-field').val()

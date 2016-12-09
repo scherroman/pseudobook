@@ -14,12 +14,14 @@ from pseudobook.models import comment as comment_model
 
 from pseudobook.forms.create_group import CreateGroup as CreateGroupForm
 from pseudobook.forms.join_unjoin_group import JoinUnjoinGroup as JoinUnjoinForm
+from pseudobook.forms.rename_group import RenameGroup as RenameGroupForm
 from pseudobook.forms.make_post import MakePost as MakePostForm
 from pseudobook.forms.remove_post import RemovePost as RemovePostForm
 from pseudobook.forms.edit_post import EditPost as EditPostForm
 from pseudobook.forms.make_comment import MakeComment as MakeCommentForm
 from pseudobook.forms.remove_comment import RemoveComment as RemoveCommentForm
 from pseudobook.forms.edit_comment import EditComment as EditCommentForm
+from pseudobook.forms.delete_group import DeleteGroup as DeleteGroupForm
 
 POSTS_PER_PAGE = 10
 USERS_PER_PAGE = 15
@@ -108,6 +110,7 @@ def group_page(groupID):
     next_addable_users = True if ((addable_users_offset + 1) * USERS_PER_PAGE) < total_addable_users else False
 
     current_user_is_member = group.is_member(current_user.userID)
+    current_user_is_owner = group.is_owner(current_user.userID)
 
     make_post_form = MakePostForm()
     make_comment_form = MakeCommentForm()
@@ -115,6 +118,9 @@ def group_page(groupID):
     remove_comment_form = RemoveCommentForm()
     edit_post_form = EditPostForm()
     join_unjoin_form = JoinUnjoinForm()
+    rename_group_form = RenameGroupForm()
+    delete_group_form = DeleteGroupForm()
+
     for post in posts:
         post.comments = post.get_comments()
         post.remove_post_form = RemovePostForm()
@@ -129,6 +135,7 @@ def group_page(groupID):
                             group=group,
                             page=page,
                             current_user_is_member=current_user_is_member,
+                            current_user_is_owner=current_user_is_owner,
                             posts=posts,
                             prev_posts=prev_posts, 
                             next_posts=next_posts,
@@ -143,6 +150,8 @@ def group_page(groupID):
                             addable_users_offset=addable_users_offset,
                             make_post_form=make_post_form,
                             join_unjoin_form=join_unjoin_form,
+                            rename_group_form=rename_group_form,
+                            delete_group_form=delete_group_form,
                             make_comment_form=make_comment_form,
                             remove_comment_form=remove_comment_form,
                             edit_post_form=edit_post_form,
@@ -301,6 +310,36 @@ def unjoin_group():
     else:
         flash('There was an error unjoining this group.')
 
+    return redirect(request.referrer)
+
+@mod.route('/groups/forms/delete_group', methods=['POST'])
+@login_required
+def delete_group():
+    groupID = request.form['groupID']
+    userID = request.form['userID']
+    cursor = mysql.connection.cursor()
+    try:
+        query = '''CALL deleteGroup({0}, {1})
+                '''.format(current_user.userID, groupID) 
+        cursor.execute(query)
+        mysql.connection.commit()
+    except (mysql.connection.Error, mysql.connection.Warning) as e:
+            raise
+    return redirect(url_for('groups.groups'))
+
+@mod.route('/groups/forms/rename_group', methods=['POST'])
+@login_required
+def rename_group():
+    groupID = request.form['groupID']
+    groupName = request.form['content']
+    cursor = mysql.connection.cursor()
+    try:
+        query = '''CALL renameGroup({0}, {1}, "{2}")
+                '''.format(current_user.userID, groupID, groupName) 
+        cursor.execute(query)
+        mysql.connection.commit()
+    except (mysql.connection.Error, mysql.connection.Warning) as e:
+            raise
     return redirect(request.referrer)
 
 @mod.route('/groups/forms/make_comment', methods=['POST'])
