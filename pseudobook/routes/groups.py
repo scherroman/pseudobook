@@ -379,6 +379,8 @@ def make_comment():
                 flash('There was an error commenting on this post.')
         else:
             comment = comment_model.Comment.get_comment_by_id(commentID)
+            comment.user_has_liked = like_model.Like.user_has_liked(comment.commentID, current_user.userID, "cm")
+            comment.like_count = like_model.Like.like_count(comment.commentID, "cm")
             return render_template('comment.html', 
                                     comment=comment)
     else:
