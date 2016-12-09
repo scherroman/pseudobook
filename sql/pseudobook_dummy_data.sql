@@ -188,24 +188,24 @@ INSERT INTO `Comment` (`postID`,`commentDate`,`content`,`authorID`) VALUES
 (1,"2017-01-20 20:09:39","auctor, nunc nulla vulputate dui, nec tempus mauris erat eget ipsum. Suspendisse sagittis. Nullam",7),
 (6,"2016-08-21 15:05:19","Cras lorem lorem, luctus ut, pellentesque eget, dictum placerat, augue. Sed molestie.",3),
 (4,"2016-06-11 07:41:17","Nulla facilisi. Sed neque. Sed eget lacus. Mauris non dui nec urna suscipit",3),
-(10,"2017-03-13 09:07:25","pede blandit congue. In scelerisque scelerisque dui. Suspendisse ac metus vitae velit",2),
+(8,"2017-03-13 09:07:25","pede blandit congue. In scelerisque scelerisque dui. Suspendisse ac metus vitae velit",2),
 (4,"2017-05-29 07:21:58","dolor dapibus gravida. Aliquam tincidunt, nunc ac mattis ornare, lectus ante dictum mi, ac mattis velit justo nec",4),
 (8,"2016-02-18 14:06:00","Proin sed turpis nec mauris blandit mattis. Cras eget nisi dictum augue malesuada malesuada. Integer id magna et",4),
 (2,"2017-10-29 23:42:01","dui, nec tempus mauris erat eget ipsum. Suspendisse sagittis. Nullam vitae diam. Proin dolor. Nulla semper",1);
 
 INSERT INTO `Likes` (`parentID`,`authorID`,`postID`,`contentType`) VALUES 
-(3,8,3,1),
-(5,2,5,1),
-(4,2,4,1),
-(7,4,7,1),
-(8,1,8,1);
+(3,8,3,'po'),
+(5,2,5,'po'),
+(4,2,4,'po'),
+(7,4,7,'po'),
+(8,1,8,'po');
 
 INSERT INTO `Likes` (`parentID`,`authorID`,`commentID`,`contentType`) VALUES 
-(10,6,10,2),
-(4,10,4,2),
-(1,6,1,2),
-(1,9,1,2),
-(8,4,8,2);
+(10,6,10,'cm'),
+(4,10,4,'cm'),
+(1,6,1,'cm'),
+(1,9,1,'cm'),
+(8,4,8,'cm');
 
 INSERT INTO `Employee` (`userID`,`SSN`,`startDate`,`hourlyRate`) VALUES 
 (11,"3149460718","2016-12-24 13:55:07","73207.05"),
