@@ -1,5 +1,7 @@
 # Pseudobook
 
+Built with [Edgar Samudio](https://github.com/esamudio) and [Alex Scarlatos](https://www.linkedin.com/in/alex-scarlatos-399455113/)
+
 ## Start Guide
 
 **1 - [Install Miniconda 3.5](http://conda.pydata.org/miniconda.html) (A Python package manager)**
